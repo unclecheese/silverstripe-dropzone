@@ -1,0 +1,23 @@
+{
+      "url": null,
+      "method": "POST",
+      "withCredentials": false,
+      "parallelUploads": 2,
+      "uploadMultiple": false,
+      "maxFilesize": 256,
+      "paramName": "file",
+      "createImageThumbnails": true,
+      "maxThumbnailFilesize": 10,
+      "thumbnailWidth": 100,
+      "thumbnailHeight": 100,
+      "maxFiles": null,
+      "params": {},
+      "clickable": true,
+      "ignoreHiddenFiles": true,
+      "acceptedFiles": null,
+      "acceptedMimeTypes": null,
+      "autoProcessQueue": true,
+      "autoQueue": true,
+      "addRemoveLinks": false,
+      "previewsContainer": null
+}

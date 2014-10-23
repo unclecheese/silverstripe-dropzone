@@ -1,0 +1,20 @@
+---
+Name: dropzone
+After: 'framework/*','cms/*'
+---
+FileAttachmentField:
+  default_config_path: 'javascript/default_config.json'
+  defaults:
+    method: POST
+    parallel_uploads: 2
+    upload_multiple: false
+    max_filesize: 256
+    param_name: file
+    create_image_thumbnails: true
+    max_thumbnail_filesize: 10
+    thumbnail_width: 100
+    thumbnail_height: 100
+    clickable: true
+    auto_process_queue: true
+    auto_queue: true
+    add_remove_links: false    
