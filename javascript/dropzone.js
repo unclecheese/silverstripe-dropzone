@@ -420,7 +420,7 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
           this.element.classList.add("dz-started");
         }
         if (this.previewsContainer) {
-          console.log(this.previewsContainer);
+          
           file.previewElement = Dropzone.createElement(this.options.previewTemplate.trim());
           file.previewTemplate = file.previewElement;
           this.previewsContainer.appendChild(file.previewElement);

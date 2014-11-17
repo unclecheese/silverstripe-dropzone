@@ -1,0 +1,8 @@
+en:
+  Dropzone:
+    ATTACHFILESHERE_OR: "Attach files by dropping them in here, or"
+    BROWSEYOURCOMPUTER: "browse your computer"
+    UPLOADFILES: "Upload file(s)"
+    NOTSUPPORTED: "Your browser does not support HTML5 uploads. Please update to a newer version."
+    DETACHFILE: "Detach file"
+    MARKFORDELETION: "Mark for deletion"

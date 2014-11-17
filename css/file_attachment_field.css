@@ -1,20 +1,4 @@
-ul.file-attachment-field-previews {margin:0;padding:0;}
-ul.file-attachment-field-previews li {list-style:none;}
-ul.file-attachment-field-previews .file-icon img {border:0;}
-ul.file-attachment-field-previews .file-name,
-ul.file-attachment-field-previews .file-size {font-size:11px;vertical-align:66%;}
-ul.file-attachment-field-previews .file-progress-wrap {border:1px solid #999;border-radius:12px;display:inline-block;vertical-align:30%;height:10px;width:100px;}
-ul.file-attachment-field-previews a.remove {background:url(../images/remove.png) no-repeat;width:16px;height:16px;display:inline-block;vertical-align:50%;opacity:0.3;}
-ul.file-attachment-field-previews .file-progress {background:#ddd;display:inline-block;height:10px;vertical-align:top;border-radius:12px;}
-ul.file-attachment-field-previews .file-error {display:block;color:#b80000;}
-ul.file-attachment-field-attachments {margin:0;padding:0;clear:both;}
-ul.file-attachment-field-attachments li {list-style:none;float:left;height:120px;width:120px;padding:20px;border:1px solid #ccc;text-align:center;font-size:11px;line-height:120%;}
-ul.file-attachment-field-attachments li .attachment-filename {display:block;font-weight:bold;}
-ul.file-attachment-field-attachments li img {border:0;}
-ul.file-attachment-field-attachments li .remove {margin-top:5px; color:#fff;text-decoration:none;display:inline-block;border-radius:5px;border-top-left-radius:0;border-bottom-left-radius:0;background:#b80000;border:1px solid #b80000;padding:2px 4px;font-size:11px;}
-ul.file-attachment-field-attachments li .detach {margin-top:5px; color:#666;text-decoration:none;display:inline-block;border:1px solid #999;border-radius:5px;border-top-right-radius:0;border-bottom-right-radius:0;background:#fff;padding:2px 4px;font-size:11px;}
-ul.file-attachment-field-attachments li .attachment-filesize {display:block;text-transform:uppercase;color:#999;}
-
+template, .unsupported {display:none;}
 .dropzone-holder {
   clear:both;
   border:1px dashed #999;  
@@ -23,12 +7,336 @@ ul.file-attachment-field-attachments li .attachment-filesize {display:block;text
   padding: 1em;
   min-height: 150px;
   -webkit-border-radius: 12px;
-  border-radius: 3px;    
+  border-radius: 3px;
+  max-width:600px;  
+}
+.dropzone-holder:after {
+  content: ".";
+  visibility: hidden;
+  clear:both;
 }
 
 .dropzone.dz-clickable {
   cursor: pointer;
 }
+
+.fileattachment a {
+  cursor:pointer;
+  border:0;
+  text-decoration:none;
+}
+.fileattachment ul img {
+  border:0;
+  background:none;
+}
+
+.fileattachment ul.file-attachment-field-previews {
+  margin:0;
+  padding:0;
+}
+
+.fileattachment ul.file-attachment-field-previews li {
+  list-style:none;
+  display:table;
+  position:relative;
+
+}
+.fileattachment ul.file-attachment-field-previews li span {
+  display: table-cell;
+  padding: 0 3px;
+  vertical-align:middle;
+}
+
+.fileattachment ul.file-attachment-field-previews li .check {
+  display:none;
+}
+
+.fileattachment ul.file-attachment-field-previews li.success .check {
+  display:inline;
+  border:0;
+  background:none;
+}
+
+.fileattachment ul.file-attachment-field-previews .file-icon img {
+  border:0;
+  width:auto;
+  height:auto;
+}
+
+.fileattachment ul.file-attachment-field-previews .file-name,
+.fileattachment ul.file-attachment-field-previews .file-size {
+  max-width:150px;
+  font-size:11px;
+  text-align:left;
+}
+.fileattachment .backend ul.file-attachment-field-previews .file-name {
+  font-weight:bold;
+  font-size:12px;
+}
+.fileattachment .backend ul.file-attachment-field-previews .file-size:after {
+  content: "]";
+}
+.fileattachment .backend ul.file-attachment-field-previews .file-size:before {
+  content: "[";
+}
+
+.fileattachment ul.file-attachment-field-previews .file-progress-wrap {
+  border:1px solid #999;
+  border-radius:12px;
+  height:10px;
+  width:100px;
+  display:inline-block;
+  padding:0;
+}
+
+.fileattachment ul.file-attachment-field-previews span.remove {
+  background:url(../images/remove.png) no-repeat center;
+  width:16px;
+  height:16px;
+  opacity:0.3;
+}
+
+.fileattachment ul.file-attachment-field-previews span.remove:hover {
+  text-decoration:none;
+}
+
+.fileattachment ul.file-attachment-field-previews .file-progress {
+  background:#ddd;
+  height:10px;
+  vertical-align:top;
+  border-radius:12px;
+  display:inline-block;
+  padding:0;  
+}
+
+.fileattachment ul.file-attachment-field-previews .file-error {
+  display:block;
+  color:#b80000;
+}
+
+
+
+.fileattachment ul.file-attachment-field-previews.grid li {
+  float:left;
+  display:block;
+  border:1px solid #acacac;
+  -webkit-box-shadow:1px 1px 4px rgba(0,0,0,0.16);
+  box-shadow:1px 1px 4px rgba(0,0,0,0.16);
+  padding:6px 6px 30px 6px;
+  margin:10px;
+}
+.fileattachment ul.file-attachment-field-previews.grid li span {
+  display:block;
+  padding:0;
+}
+.fileattachment ul.file-attachment-field-previews.grid li > span.remove {
+  position:absolute;
+  bottom:-18px;
+  left:50%;
+  margin-left:-8px;
+  opacity:0.7;  
+}
+.fileattachment ul.file-attachment-field-previews.list li > span.remove {
+  padding:0 8px;
+}
+.fileattachment ul.file-attachment-field-previews li .delete-options > span.remove {
+  position:absolute;
+  top: 0px;
+  right:0px;
+  background-size:12px 12px;
+}
+
+.fileattachment ul.file-attachment-field-previews.grid li .file-size {
+  display:none;
+}
+
+.fileattachment ul.file-attachment-field-previews.grid li .file-name {
+  font-size:10px;
+  text-align:center;
+}
+
+.fileattachment ul.file-attachment-field-previews.grid .file-progress-wrap {
+  position:absolute;
+  bottom:5px;
+  left:6px;
+  right:6px;
+  width:auto;
+  border:0;
+  border-radius:12px;
+  height:3px;  
+  display:block;
+  padding:0;
+
+}
+.fileattachment ul.file-attachment-field-previews.grid .file-progress {
+  background:green;
+  height:3px;
+  vertical-align:top;
+  border-radius:0;
+  display:inline-block;
+  padding:0;  
+}
+.fileattachment ul.file-attachment-field-previews.grid li.success .file-progress-wrap {
+  display:none;
+}
+.fileattachment ul.file-attachment-field-previews.grid li.success .check-holder {
+  text-align:center;
+  position:absolute;
+  bottom:-3px;
+  left:0;
+  right:0;
+}
+
+.fileattachment ul.file-attachment-field-previews li.success .file-progress-wrap {
+  display:none;
+}
+.fileattachment ul.file-attachment-field-previews li.success .file-name {
+  max-width:250px;
+}
+.fileattachment .backend ul.file-attachment-field-previews li .file-name {
+  max-width:450px;
+}
+
+.fileattachment ul.file-attachment-field-previews {
+  margin:0;
+  padding:0;
+  clear:both;
+}
+
+.fileattachment ul.file-attachment-field-previews a:hover {
+  border:0;
+}
+
+.fileattachment ul.file-attachment-field-previews li {
+  list-style:none;
+  padding:10px;
+  text-align:center;
+  font-size:11px;
+  line-height:120%;
+}
+
+.fileattachment ul.file-attachment-field-previews li .attachment-filename {
+  display:block;
+  font-weight:700;
+}
+
+.fileattachment ul.file-attachment-field-previews li img {
+  border:0;
+  background:none;
+}
+
+
+.fileattachment ul.file-attachment-field-previews li .delete-options {
+  position: absolute;
+  background: rgb(220,220,220);
+  text-align: center;
+  z-index: 99;
+  width: 110px;
+  padding: 10px;
+  border: 1px solid #999;
+  display:none;
+}
+.fileattachment ul.file-attachment-field-previews.list li .delete-options {
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  width:auto;
+  background: rgba(220,220,220, 0.9);
+  border:0;
+}
+
+.fileattachment ul.file-attachment-field-previews.grid li .delete-options {
+  left: 50%;
+  margin-left:-65px;
+  bottom:8px;
+}
+.fileattachment ul.file-attachment-field-previews.grid li .delete-options:after,
+.fileattachment ul.file-attachment-field-previews.grid li .delete-options:before {  
+  content: "";
+  display: block;
+  left: 50%;
+  position: absolute;
+  z-index: 99;
+}
+
+.fileattachment ul.file-attachment-field-previews.grid li .delete-options:after {
+  border: solid;
+  border-color: rgb(220, 220, 220) transparent;
+  border-width: 10px 10px 0 10px;
+  bottom:-9px;
+  margin-left: -11px;
+}
+.fileattachment ul.file-attachment-field-previews.grid li .delete-options:before {
+  border: solid;
+  border-color: #999 transparent;
+  border-width: 12px 12px 0px 12px;
+  margin-left: -12px;
+  bottom: -11px;
+}
+
+
+.fileattachment ul.file-attachment-field-previews li .delete-options.active {
+  display:block;
+}
+
+
+
+.fileattachment ul.file-attachment-field-previews li .delete-options a {
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 2px;
+  padding: 4px;
+  font-size: 10px;
+  width: 85%; 
+  max-width:150px; 
+  text-align: center;
+  margin: 3px 0;
+}
+
+.fileattachment ul.file-attachment-field-previews li .delete-options a.delete {
+  background: #b80000;
+  color: #fff;
+  border: 1px solid #333;
+
+}
+.fileattachment ul.file-attachment-field-previews li a.delete:hover {
+  background: #D20101;
+}
+
+
+.fileattachment ul.file-attachment-field-previews li a.detach {
+  border: 1px solid #ccc;
+  background: #999;
+  color:#fff;
+}
+
+.fileattachment ul.file-attachment-field-previews li a.detach:hover {
+  background: #9D9C9C;
+}
+
+.fileattachment ul.file-attachment-field-previews.list li .delete-buttons {
+  position: absolute;
+  left:0;
+  right:0;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);  
+}
+.fileattachment ul.file-attachment-field-previews li .attachment-filesize {
+  display:block;
+  text-transform:uppercase;
+  color:#999;
+}
+
+button.process {
+  margin-top:24px;
+  float:none;
+  clear:both;
+}
+
+
 .dropzone.dz-clickable .dz-message,
 .dropzone.dz-clickable .dz-message span {
   cursor: pointer;
@@ -48,326 +356,17 @@ ul.file-attachment-field-attachments li .attachment-filesize {display:block;text
 .dropzone.dz-started .dz-message {
   display: none;
 }
-.dropzone-holder .dz-preview,
-.dropzone-previews .dz-preview {
-  background: rgba(255,255,255,0.8);
-  position: relative;
-  display: inline-block;
-  margin: 17px;
-  vertical-align: top;
-  border: 1px solid #acacac;
-  padding: 6px 6px 6px 6px;
+
+.truncate {
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;  
 }
-.dropzone-holder .dz-preview.dz-file-preview [data-dz-thumbnail],
-.dropzone-previews .dz-preview.dz-file-preview [data-dz-thumbnail] {
-  display: none;
+.pad {
+  padding:10px;
 }
-.dropzone-holder .dz-preview .dz-details,
-.dropzone-previews .dz-preview .dz-details {
-  width: 100px;
-  height: 100px;
-  position: relative;
-  background: #ebebeb;
-  padding: 5px;
-  margin-bottom: 22px;
-}
-.dropzone-holder .dz-preview .dz-details .dz-filename,
-.dropzone-previews .dz-preview .dz-details .dz-filename {
-  overflow: hidden;
-  height: 100%;
-}
-.dropzone-holder .dz-preview .dz-details img,
-.dropzone-previews .dz-preview .dz-details img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100px;
-  height: 100px;
-}
-.dropzone-holder .dz-preview .dz-details .dz-size,
-.dropzone-previews .dz-preview .dz-details .dz-size {
-  position: absolute;
-  bottom: -28px;
-  left: 3px;
-  height: 28px;
-  line-height: 28px;
-}
-.dropzone-holder .dz-preview.dz-error .dz-error-mark,
-.dropzone-previews .dz-preview.dz-error .dz-error-mark {
-  display: block;
-}
-.dropzone-holder .dz-preview.dz-success .dz-success-mark,
-.dropzone-previews .dz-preview.dz-success .dz-success-mark {
-  display: block;
-}
-.dropzone-holder .dz-preview:hover .dz-details img,
-.dropzone-previews .dz-preview:hover .dz-details img {
-  display: none;
-}
-.dropzone-holder .dz-preview .dz-success-mark,
-.dropzone-previews .dz-preview .dz-success-mark,
-.dropzone-holder .dz-preview .dz-error-mark,
-.dropzone-previews .dz-preview .dz-error-mark {
-  display: none;
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  font-size: 30px;
-  text-align: center;
-  right: -10px;
-  top: -10px;
-}
-.dropzone-holder .dz-preview .dz-success-mark,
-.dropzone-previews .dz-preview .dz-success-mark {
-  color: #8cc657;
-}
-.dropzone-holder .dz-preview .dz-error-mark,
-.dropzone-previews .dz-preview .dz-error-mark {
-  color: #ee162d;
-}
-.dropzone-holder .dz-preview .dz-progress,
-.dropzone-previews .dz-preview .dz-progress {
-  position: absolute;
-  top: 100px;
-  left: 6px;
-  right: 6px;
-  height: 6px;
-  background: #d7d7d7;
-  display: none;
-}
-.dropzone-holder .dz-preview .dz-progress .dz-upload,
-.dropzone-previews .dz-preview .dz-progress .dz-upload {
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 0%;
-  background-color: #8cc657;
-}
-.dropzone-holder .dz-preview.dz-processing .dz-progress,
-.dropzone-previews .dz-preview.dz-processing .dz-progress {
-  display: block;
-}
-.dropzone-holder .dz-preview .dz-error-message,
-.dropzone-previews .dz-preview .dz-error-message {
-  display: none;
-  position: absolute;
-  top: -5px;
-  left: -20px;
-  background: rgba(245,245,245,0.8);
-  padding: 8px 10px;
-  color: #800;
-  min-width: 140px;
-  max-width: 500px;
-  z-index: 500;
-}
-.dropzone-holder .dz-preview:hover.dz-error .dz-error-message,
-.dropzone-previews .dz-preview:hover.dz-error .dz-error-message {
-  display: block;
-}
-.dropzone-holder .dz-default.dz-message {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
-  -webkit-transition: opacity 0.3s ease-in-out;
-  -moz-transition: opacity 0.3s ease-in-out;
-  -o-transition: opacity 0.3s ease-in-out;
-  -ms-transition: opacity 0.3s ease-in-out;
-  transition: opacity 0.3s ease-in-out;
-  background-image: url("../images/spritemap.png");
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  position: absolute;
-  width: 428px;
-  height: 123px;
-  margin-left: -214px;
-  margin-top: -61.5px;
-  top: 50%;
-  left: 50%;
-}
-@media all and (-webkit-min-device-pixel-ratio:1.5),(min--moz-device-pixel-ratio:1.5),(-o-min-device-pixel-ratio:1.5/1),(min-device-pixel-ratio:1.5),(min-resolution:138dpi),(min-resolution:1.5dppx) {
-  .dropzone-holder .dz-default.dz-message {
-    background-image: url("../images/spritemap@2x.png");
-    -webkit-background-size: 428px 406px;
-    -moz-background-size: 428px 406px;
-    background-size: 428px 406px;
-  }
-}
-.dropzone-holder .dz-default.dz-message span {
-  display: none;
-}
-.dropzone.dz-square .dz-default.dz-message {
-  background-position: 0 -123px;
-  width: 268px;
-  margin-left: -134px;
-  height: 174px;
-  margin-top: -87px;
-}
-.dropzone.dz-drag-hover .dz-message {
-  opacity: 0.15;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=15)";
-  filter: alpha(opacity=15);
-}
-.dropzone.dz-started .dz-message {
-  display: block;
-  opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-}
-.dropzone-holder .dz-preview,
-.dropzone-previews .dz-preview {
-  -webkit-box-shadow: 1px 1px 4px rgba(0,0,0,0.16);
-  box-shadow: 1px 1px 4px rgba(0,0,0,0.16);
-  font-size: 14px;
-}
-.dropzone-holder .dz-preview.dz-image-preview:hover .dz-details img,
-.dropzone-previews .dz-preview.dz-image-preview:hover .dz-details img {
-  display: block;
-  opacity: 0.1;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=10)";
-  filter: alpha(opacity=10);
-}
-.dropzone-holder .dz-preview.dz-success .dz-success-mark,
-.dropzone-previews .dz-preview.dz-success .dz-success-mark {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
-}
-.dropzone-holder .dz-preview.dz-error .dz-error-mark,
-.dropzone-previews .dz-preview.dz-error .dz-error-mark {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
-}
-.dropzone-holder .dz-preview.dz-error .dz-progress .dz-upload,
-.dropzone-previews .dz-preview.dz-error .dz-progress .dz-upload {
-  background: #ee1e2d;
-}
-.dropzone-holder .dz-preview .dz-error-mark,
-.dropzone-previews .dz-preview .dz-error-mark,
-.dropzone-holder .dz-preview .dz-success-mark,
-.dropzone-previews .dz-preview .dz-success-mark {
-  display: block;
-  opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-  -webkit-transition: opacity 0.4s ease-in-out;
-  -moz-transition: opacity 0.4s ease-in-out;
-  -o-transition: opacity 0.4s ease-in-out;
-  -ms-transition: opacity 0.4s ease-in-out;
-  transition: opacity 0.4s ease-in-out;
-  background-image: url("../images/spritemap.png");
-  background-repeat: no-repeat;
-}
-@media all and (-webkit-min-device-pixel-ratio:1.5),(min--moz-device-pixel-ratio:1.5),(-o-min-device-pixel-ratio:1.5/1),(min-device-pixel-ratio:1.5),(min-resolution:138dpi),(min-resolution:1.5dppx) {
-  .dropzone-holder .dz-preview .dz-error-mark,
-  .dropzone-previews .dz-preview .dz-error-mark,
-  .dropzone-holder .dz-preview .dz-success-mark,
-  .dropzone-previews .dz-preview .dz-success-mark {
-    background-image: url("../images/spritemap@2x.png");
-    -webkit-background-size: 428px 406px;
-    -moz-background-size: 428px 406px;
-    background-size: 428px 406px;
-  }
-}
-.dropzone-holder .dz-preview .dz-error-mark span,
-.dropzone-previews .dz-preview .dz-error-mark span,
-.dropzone-holder .dz-preview .dz-success-mark span,
-.dropzone-previews .dz-preview .dz-success-mark span {
-  display: none;
-}
-.dropzone-holder .dz-preview .dz-error-mark,
-.dropzone-previews .dz-preview .dz-error-mark {
-  background-position: -268px -123px;
-}
-.dropzone-holder .dz-preview .dz-success-mark,
-.dropzone-previews .dz-preview .dz-success-mark {
-  background-position: -268px -163px;
-}
-.dropzone-holder .dz-preview .dz-progress .dz-upload,
-.dropzone-previews .dz-preview .dz-progress .dz-upload {
-  -webkit-animation: loading 0.4s linear infinite;
-  -moz-animation: loading 0.4s linear infinite;
-  -o-animation: loading 0.4s linear infinite;
-  -ms-animation: loading 0.4s linear infinite;
-  animation: loading 0.4s linear infinite;
-  -webkit-transition: width 0.3s ease-in-out;
-  -moz-transition: width 0.3s ease-in-out;
-  -o-transition: width 0.3s ease-in-out;
-  -ms-transition: width 0.3s ease-in-out;
-  transition: width 0.3s ease-in-out;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 100%;
-  background-image: url("../images/spritemap.png");
-  background-repeat: repeat-x;
-  background-position: 0px -400px;
-}
-@media all and (-webkit-min-device-pixel-ratio:1.5),(min--moz-device-pixel-ratio:1.5),(-o-min-device-pixel-ratio:1.5/1),(min-device-pixel-ratio:1.5),(min-resolution:138dpi),(min-resolution:1.5dppx) {
-  .dropzone-holder .dz-preview .dz-progress .dz-upload,
-  .dropzone-previews .dz-preview .dz-progress .dz-upload {
-    background-image: url("../images/spritemap@2x.png");
-    -webkit-background-size: 428px 406px;
-    -moz-background-size: 428px 406px;
-    background-size: 428px 406px;
-  }
-}
-.dropzone-holder .dz-preview.dz-success .dz-progress,
-.dropzone-previews .dz-preview.dz-success .dz-progress {
-  display: block;
-  opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-  -webkit-transition: opacity 0.4s ease-in-out;
-  -moz-transition: opacity 0.4s ease-in-out;
-  -o-transition: opacity 0.4s ease-in-out;
-  -ms-transition: opacity 0.4s ease-in-out;
-  transition: opacity 0.4s ease-in-out;
-}
-.dropzone-holder .dz-preview .dz-error-message,
-.dropzone-previews .dz-preview .dz-error-message {
-  display: block;
-  opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-  -webkit-transition: opacity 0.3s ease-in-out;
-  -moz-transition: opacity 0.3s ease-in-out;
-  -o-transition: opacity 0.3s ease-in-out;
-  -ms-transition: opacity 0.3s ease-in-out;
-  transition: opacity 0.3s ease-in-out;
-}
-.dropzone-holder .dz-preview:hover.dz-error .dz-error-message,
-.dropzone-previews .dz-preview:hover.dz-error .dz-error-message {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
-}
-.dropzone-holder a.dz-remove,
-.dropzone-previews a.dz-remove {
-  background-image: -webkit-linear-gradient(top, #fafafa, #eee);
-  background-image: -moz-linear-gradient(top, #fafafa, #eee);
-  background-image: -o-linear-gradient(top, #fafafa, #eee);
-  background-image: -ms-linear-gradient(top, #fafafa, #eee);
-  background-image: linear-gradient(to bottom, #fafafa, #eee);
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  border: 1px solid #eee;
-  text-decoration: none;
-  display: block;
-  padding: 4px 5px;
-  text-align: center;
-  color: #aaa;
-  margin-top: 26px;
-}
-.dropzone-holder a.dz-remove:hover,
-.dropzone-previews a.dz-remove:hover {
-  color: #666;
-}
+
+
 @-moz-keyframes loading {
   from {
     background-position: 0 -400px;
@@ -399,4 +398,130 @@ ul.file-attachment-field-attachments li .attachment-filesize {display:block;text
   to {
     background-position: -7px -400px;
   }
+}
+
+
+
+
+@-webkit-keyframes bounceInUp {
+  0%, 60%, 75%, 90%, 100% {
+    -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100px, 0);
+            transform: translate3d(0, 100px, 0);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, -2px, 0);
+            transform: translate3d(0, -2px, 0);
+  }
+
+  75% {
+    -webkit-transform: translate3d(0, 2px, 0);
+            transform: translate3d(0, 2px, 0);
+  }
+
+  90% {
+    -webkit-transform: translate3d(0, -2px, 0);
+            transform: translate3d(0, -2px, 0);
+  }
+
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes bounceInUp {
+  0%, 60%, 75%, 90%, 100% {
+    -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+            transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100px, 0);
+            transform: translate3d(0, 100px, 0);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, -2px, 0);
+            transform: translate3d(0, -2px, 0);
+  }
+
+  75% {
+    -webkit-transform: translate3d(0, 2px, 0);
+            transform: translate3d(0, 2px, 0);
+  }
+
+  90% {
+    -webkit-transform: translate3d(0, -2px, 0);
+            transform: translate3d(0, -2px, 0);
+  }
+
+  100% {
+    -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+  }
+}
+
+.bounceInUp {
+  -webkit-animation-name: bounceInUp;
+          animation-name: bounceInUp;
+}
+
+
+@-webkit-keyframes bounceOutDown {
+  20% {
+    -webkit-transform: translate3d(0, 2px, 0);
+            transform: translate3d(0, 2px, 0);
+  }
+
+  40%, 45% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, -2px, 0);
+            transform: translate3d(0, -2px, 0);
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100px, 0);
+            transform: translate3d(0, 100px, 0);
+  }
+}
+
+@keyframes bounceOutDown {
+  20% {
+    -webkit-transform: translate3d(0, 2px, 0);
+            transform: translate3d(0, 2px, 0);
+  }
+
+  40%, 45% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, -2px, 0);
+            transform: translate3d(0, -2px, 0);
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100px, 0);
+            transform: translate3d(0, 100px, 0);
+  }
+}
+
+.bounceOutDown {
+  -webkit-animation-name: bounceOutDown;
+          animation-name: bounceOutDown;
+}
+.animated {
+  -webkit-animation-duration: .5s;
+          animation-duration: .5s;
+  -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
 }
