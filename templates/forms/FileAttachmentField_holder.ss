@@ -1,11 +1,19 @@
 <div id="$Name" class="field<% if $extraClass %> $extraClass<% end_if %> supported">
     <% if $Title %><label class="left" for="$ID">$Title</label><% end_if %>
     <div id="{$Name}Dropzone" class="dropzone-holder <% if $isCMS %>backend<% end_if %>" data-config='$ConfigJSON'>
-        <p class=""><%t Dropzone.ATTACHFILESHERE_OR "Attach files by dropping them in here, or" %>  <a class="dropzone-select"><%t Dropzone.BROWSEYOURCOMPUTER "browse your computer" %></a>.</p>
+        <p>
+            <% if $IsMultiple %>
+                <%t Dropzone.ATTACHFILESHERE_OR "Attach files by dropping them in here, or" %>  <a class="dropzone-select"><%t Dropzone.BROWSEYOURCOMPUTER "browse your computer" %></a>.
+            <% else %>
+                <%t Dropzone.ATTACHFILEHERE_OR "Attach a file by dropping it in here, or" %>  <a class="dropzone-select"><%t Dropzone.BROWSEYOURCOMPUTER "browse your computer" %></a>.
+            <% end_if %>
+        </p>
         <ul data-container data-attachments class="file-attachment-field-previews $View">
-            <% loop $AttachedFiles %>
-                <% include FileAttachmentField_attachments File=$Me, Scope=$Up %>
-            <% end_loop %>
+            <% if $AttachedFiles %>
+                <% loop $AttachedFiles %>
+                    <% include FileAttachmentField_attachments File=$Me, Scope=$Up %>
+                <% end_loop %>
+            <% end_if %>
         </ul>
 
 

@@ -1,10 +1,11 @@
             <li <% if $View == 'grid' %>style="width:{$SelectedThumbnailWidth}px;height:{$SelectedThumbnailHeight}px;"<% end_if %>>
-                <span data-dz-remove class="remove"></span>
+                <span data-dz-remove class="action detach"></span>
+
                 <span class="file-icon">
                     <img data-dz-thumbnail width="$SelectedThumbnailWidth">                    
                 </span>
-                <span class="file-name truncate" data-dz-name></span>
-                <span class="file-size" data-dz-size></span>                
+                <span class="file-meta file-name truncate" data-dz-name></span>
+                <span class="file-meta file-size" data-dz-size></span>                
                 <span class="file-progress-holder">
                     <span class="file-progress-wrap">
                         <span class="file-progress" data-dz-uploadprogress></span>

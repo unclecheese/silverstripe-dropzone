@@ -94,7 +94,9 @@ class FileAttachmentField extends FileField {
         $instance = $this;
         $this->permissions['upload'] = true;
         $this->permissions['detach'] = true;
-        $this->permissions['delete'] = Injector::inst()->get('File')->canDelete();        
+        $this->permissions['delete'] = function () use ($instance) {
+            Injector::inst()->get('File')->canDelete() && $instance->isCMS();
+        };
         $this->permissions['attach'] = function () use ($instance) {
             return $instance->isCMS();
         };
@@ -118,14 +120,13 @@ class FileAttachmentField extends FileField {
             $this->settings['url'] = $this->Link('upload');
         }
 
-        if(!$this->getSetting('maxFilesize')) {
+        if(!$this->getSetting('maxFilesize')) {            
             $bytes = min(array(
                 File::ini2bytes(ini_get('post_max_size') ?: '8M'),
                 File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
             )); 
             $this->settings['maxFilesize'] = floor($bytes/(1024*1024));        
         }
-
         // The user may not have opted into a multiple upload. If the form field
         // is attached to a record that has a multi relation, set that automatically.
         $this->settings['uploadMultiple'] = $this->IsMultiple();
@@ -308,9 +309,9 @@ class FileAttachmentField extends FileField {
      */
     public function setAcceptedFiles($files = array ()) {
         if(is_array($files)) {
-            $files = explode(',', $files);
+            $files = implode(',', $files);
         }
-        $this->settings['acceptedFiles'] = $files;
+        $this->settings['acceptedFiles'] = str_replace(' ', '', $files);
 
         return $this;
     }
@@ -747,7 +748,7 @@ class FileAttachmentField extends FileField {
      * @return mixed
      */
     protected function getSetting($setting) {        
-        if(isset($this->settings[$setting])) { 
+        if(isset($this->settings[$setting])) {             
             return $this->settings[$setting];
         }        
 
@@ -809,7 +810,6 @@ class FileAttachmentField extends FileField {
     public function getConfigJSON() {
         $data = $this->settings;
         $defaults = $this->getDefaults();
-
         foreach($this->config()->defaults as $setting => $value) {
             $js_name = static::camelise($setting);
 

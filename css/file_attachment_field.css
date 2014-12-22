@@ -1,3 +1,4 @@
+/** main preview UI **/
 template, .unsupported {display:none;}
 .dropzone-holder {
   clear:both;
@@ -8,7 +9,8 @@ template, .unsupported {display:none;}
   min-height: 150px;
   -webkit-border-radius: 12px;
   border-radius: 3px;
-  max-width:600px;  
+  max-width:600px;
+  margin-bottom:20px;
 }
 .dropzone-holder:after {
   content: ".";
@@ -33,20 +35,33 @@ template, .unsupported {display:none;}
 .fileattachment ul.file-attachment-field-previews {
   margin:0;
   padding:0;
+  clear:both;
 }
+
 
 .fileattachment ul.file-attachment-field-previews li {
-  list-style:none;
-  display:table;
+  list-style:none;  
   position:relative;
-
+  border: 1px solid #e7eaec;
+  list-style:none;
+  text-align:center;
+  font-size:11px;
+  line-height:120%;
+  overflow:hidden;
+  border-left: 10px solid #DFDCDC;
 }
+
 .fileattachment ul.file-attachment-field-previews li span {
   display: table-cell;
-  padding: 0 3px;
+  padding: 0;
   vertical-align:middle;
 }
 
+.fileattachment ul.file-attachment-field-previews li img {
+  border:0;
+  background:none;
+}
+  
 .fileattachment ul.file-attachment-field-previews li .check {
   display:none;
 }
@@ -57,48 +72,125 @@ template, .unsupported {display:none;}
   background:none;
 }
 
+
+
 .fileattachment ul.file-attachment-field-previews .file-icon img {
   border:0;
   width:auto;
   height:auto;
 }
 
-.fileattachment ul.file-attachment-field-previews .file-name,
-.fileattachment ul.file-attachment-field-previews .file-size {
+
+.fileattachment ul.file-attachment-field-previews .dz-error .file-error {
+  display: block;
+  color: #fff;
+  position: absolute;
+  left: 32px;
+  right: 0;
+  bottom: 0;
+  background: #b80000;
+  top: 0;
+  padding:6px;
+  overflow:auto;
+}
+.fileattachment ul.file-attachment-field-previews.grid .file-error {
+  left:0;
+}
+
+
+.fileattachment ul.file-attachment-field-previews.grid li {
+  float:left;
+  display:block;
+  margin:10px;
+  background:#fff;
+  padding:0 0 40px 0;
+  border:0;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+}
+.fileattachment ul.file-attachment-field-previews li:after {
+  position: absolute;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  line-height: 0;
+  border: 0.6em solid transparent;
+  border-right: 0.6em solid #f1f1f1;
+  border-bottom: 0.6em solid #f1f1f1;
+  right: 0em;
+  bottom: 0em;
+  content: " ";
+}
+
+
+.fileattachment ul.file-attachment-field-previews.grid li.success .check-holder {
+  text-align:center;
+  position:absolute;
+  bottom:-3px;
+  left:0;
+  right:0;
+}
+.fileattachment ul.file-attachment-field-previews.list li.success .check-holder {
+  padding: 0 0 5px 5px;
+}
+
+
+.fileattachment ul.file-attachment-field-previews a:hover {
+  border:0;
+}
+
+
+.fileattachment ul.file-attachment-field-previews li .attachment-filename {
+  display:block;
+  font-weight:700;
+}
+
+.fileattachment ul.file-attachment-field-previews li .attachment-filesize {
+  display:block;
+  text-transform:uppercase;
+  color:#999;
+}
+
+
+/** file meta **/
+.fileattachment ul.file-attachment-field-previews .file-meta {
   max-width:150px;
   font-size:11px;
   text-align:left;
-}
-.fileattachment .backend ul.file-attachment-field-previews .file-name {
-  font-weight:bold;
-  font-size:12px;
-}
-.fileattachment .backend ul.file-attachment-field-previews .file-size:after {
-  content: "]";
-}
-.fileattachment .backend ul.file-attachment-field-previews .file-size:before {
-  content: "[";
+  padding:0 12px;
 }
 
+.fileattachment ul.file-attachment-field-previews.grid .file-meta {
+  max-width:100%;
+  font-size:10px;
+  padding: 4px 8px;
+  background-color: #f8f8f8;
+  border-top: 1px solid #e7eaec;  
+  height:17px;
+
+}
+
+.fileattachment ul.file-attachment-field-previews.grid li .file-size {
+  border-top:0;
+}
+.fileattachment ul.file-attachment-field-previews li .file-size {
+  border-top:0;
+  font-size:10px;
+  color:#999;
+}
+
+
+
+/** file progress **/
 .fileattachment ul.file-attachment-field-previews .file-progress-wrap {
   border:1px solid #999;
   border-radius:12px;
-  height:10px;
+  height:12px;
   width:100px;
   display:inline-block;
   padding:0;
 }
 
-.fileattachment ul.file-attachment-field-previews span.remove {
-  background:url(../images/remove.png) no-repeat center;
-  width:16px;
-  height:16px;
-  opacity:0.3;
-}
-
-.fileattachment ul.file-attachment-field-previews span.remove:hover {
-  text-decoration:none;
-}
 
 .fileattachment ul.file-attachment-field-previews .file-progress {
   background:#ddd;
@@ -107,52 +199,6 @@ template, .unsupported {display:none;}
   border-radius:12px;
   display:inline-block;
   padding:0;  
-}
-
-.fileattachment ul.file-attachment-field-previews .file-error {
-  display:block;
-  color:#b80000;
-}
-
-
-
-.fileattachment ul.file-attachment-field-previews.grid li {
-  float:left;
-  display:block;
-  border:1px solid #acacac;
-  -webkit-box-shadow:1px 1px 4px rgba(0,0,0,0.16);
-  box-shadow:1px 1px 4px rgba(0,0,0,0.16);
-  padding:6px 6px 30px 6px;
-  margin:10px;
-}
-.fileattachment ul.file-attachment-field-previews.grid li span {
-  display:block;
-  padding:0;
-}
-.fileattachment ul.file-attachment-field-previews.grid li > span.remove {
-  position:absolute;
-  bottom:-18px;
-  left:50%;
-  margin-left:-8px;
-  opacity:0.7;  
-}
-.fileattachment ul.file-attachment-field-previews.list li > span.remove {
-  padding:0 8px;
-}
-.fileattachment ul.file-attachment-field-previews li .delete-options > span.remove {
-  position:absolute;
-  top: 0px;
-  right:0px;
-  background-size:12px 12px;
-}
-
-.fileattachment ul.file-attachment-field-previews.grid li .file-size {
-  display:none;
-}
-
-.fileattachment ul.file-attachment-field-previews.grid li .file-name {
-  font-size:10px;
-  text-align:center;
 }
 
 .fileattachment ul.file-attachment-field-previews.grid .file-progress-wrap {
@@ -176,167 +222,89 @@ template, .unsupported {display:none;}
   display:inline-block;
   padding:0;  
 }
-.fileattachment ul.file-attachment-field-previews.grid li.success .file-progress-wrap {
-  display:none;
-}
-.fileattachment ul.file-attachment-field-previews.grid li.success .check-holder {
-  text-align:center;
+
+/** remove/delete UI **/
+.fileattachment ul.file-attachment-field-previews .overlay {
   position:absolute;
-  bottom:-3px;
+  top:0;
   left:0;
+  bottom:0;
   right:0;
+  background:rgba(237,237,237, 0.8);
+  display:none;
+  border: 1px solid #e7eaec;
+  margin: -1px 0 -2px 0;
+}
+.fileattachment ul.file-attachment-field-previews .detached .detach-overlay {
+  display:block;
+}
+.fileattachment ul.file-attachment-field-previews .deleted .delete-overlay {
+  display:block;
+}
+.fileattachment ul.file-attachment-field-previews .removed .action {
+  display:none;
 }
 
-.fileattachment ul.file-attachment-field-previews li.success .file-progress-wrap {
-  display:none;
+.fileattachment ul.file-attachment-field-previews .overlay > span {
+  position: absolute;
+  text-align: center;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  height: 45px;
+  top: 50%;
+  margin-top: -16px;
 }
-.fileattachment ul.file-attachment-field-previews li.success .file-name {
-  max-width:250px;
+.fileattachment ul.file-attachment-field-previews .overlay > span small {
+  font-size:12px;
+  display:block;
+  margin:8px 0;
+}
+.fileattachment ul.file-attachment-field-previews .delete-overlay > span small {
+  color:#b80000;
+}
+.fileattachment ul.file-attachment-field-previews .overlay > span .revert {
+  text-transform:uppercase;
+  cursor:pointer;
+  display:block;
+  font-size:9px;
+}
+.fileattachment ul.file-attachment-field-previews .action {
+  width:64px;
+  height:16px; 
+  position:absolute;
+  right:5px;
+  cursor:pointer;
+  text-align:right;
+}
+.fileattachment ul.file-attachment-field-previews .action.detach {
+  top: 5px;
+}
+
+.fileattachment ul.file-attachment-field-previews .action.delete {  
+  top: 24px;
+  color:#b80000;
+}
+
+/** CMS only **/
+.fileattachment .backend ul.file-attachment-field-previews .file-name {
+  font-weight:bold;
+  font-size:12px;
+}
+.fileattachment .backend ul.file-attachment-field-previews .file-size:after {
+  content: "]";
+}
+.fileattachment .backend ul.file-attachment-field-previews .file-size:before {
+  content: "[";
 }
 .fileattachment .backend ul.file-attachment-field-previews li .file-name {
   max-width:450px;
 }
 
-.fileattachment ul.file-attachment-field-previews {
-  margin:0;
-  padding:0;
-  clear:both;
-}
-
-.fileattachment ul.file-attachment-field-previews a:hover {
-  border:0;
-}
-
-.fileattachment ul.file-attachment-field-previews li {
-  list-style:none;
-  padding:10px;
-  text-align:center;
-  font-size:11px;
-  line-height:120%;
-}
-
-.fileattachment ul.file-attachment-field-previews li .attachment-filename {
-  display:block;
-  font-weight:700;
-}
-
-.fileattachment ul.file-attachment-field-previews li img {
-  border:0;
-  background:none;
-}
 
 
-.fileattachment ul.file-attachment-field-previews li .delete-options {
-  position: absolute;
-  background: rgb(220,220,220);
-  text-align: center;
-  z-index: 99;
-  width: 110px;
-  padding: 10px;
-  border: 1px solid #999;
-  display:none;
-}
-.fileattachment ul.file-attachment-field-previews.list li .delete-options {
-  top:0;
-  bottom:0;
-  left:0;
-  right:0;
-  width:auto;
-  background: rgba(220,220,220, 0.9);
-  border:0;
-}
-
-.fileattachment ul.file-attachment-field-previews.grid li .delete-options {
-  left: 50%;
-  margin-left:-65px;
-  bottom:8px;
-}
-.fileattachment ul.file-attachment-field-previews.grid li .delete-options:after,
-.fileattachment ul.file-attachment-field-previews.grid li .delete-options:before {  
-  content: "";
-  display: block;
-  left: 50%;
-  position: absolute;
-  z-index: 99;
-}
-
-.fileattachment ul.file-attachment-field-previews.grid li .delete-options:after {
-  border: solid;
-  border-color: rgb(220, 220, 220) transparent;
-  border-width: 10px 10px 0 10px;
-  bottom:-9px;
-  margin-left: -11px;
-}
-.fileattachment ul.file-attachment-field-previews.grid li .delete-options:before {
-  border: solid;
-  border-color: #999 transparent;
-  border-width: 12px 12px 0px 12px;
-  margin-left: -12px;
-  bottom: -11px;
-}
-
-
-.fileattachment ul.file-attachment-field-previews li .delete-options.active {
-  display:block;
-}
-
-
-
-.fileattachment ul.file-attachment-field-previews li .delete-options a {
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 2px;
-  padding: 4px;
-  font-size: 10px;
-  width: 85%; 
-  max-width:150px; 
-  text-align: center;
-  margin: 3px 0;
-}
-
-.fileattachment ul.file-attachment-field-previews li .delete-options a.delete {
-  background: #b80000;
-  color: #fff;
-  border: 1px solid #333;
-
-}
-.fileattachment ul.file-attachment-field-previews li a.delete:hover {
-  background: #D20101;
-}
-
-
-.fileattachment ul.file-attachment-field-previews li a.detach {
-  border: 1px solid #ccc;
-  background: #999;
-  color:#fff;
-}
-
-.fileattachment ul.file-attachment-field-previews li a.detach:hover {
-  background: #9D9C9C;
-}
-
-.fileattachment ul.file-attachment-field-previews.list li .delete-buttons {
-  position: absolute;
-  left:0;
-  right:0;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-          transform: translateY(-50%);  
-}
-.fileattachment ul.file-attachment-field-previews li .attachment-filesize {
-  display:block;
-  text-transform:uppercase;
-  color:#999;
-}
-
-button.process {
-  margin-top:24px;
-  float:none;
-  clear:both;
-}
-
-
+/** core dropzone styles **/
 .dropzone.dz-clickable .dz-message,
 .dropzone.dz-clickable .dz-message span {
   cursor: pointer;
@@ -356,7 +324,14 @@ button.process {
 .dropzone.dz-started .dz-message {
   display: none;
 }
+button.process {
+  margin-top:24px;
+  float:none;
+  clear:both;
+}
 
+
+/* mixins */
 .truncate {
   white-space:nowrap;
   overflow:hidden;
@@ -364,164 +339,4 @@ button.process {
 }
 .pad {
   padding:10px;
-}
-
-
-@-moz-keyframes loading {
-  from {
-    background-position: 0 -400px;
-  }
-  to {
-    background-position: -7px -400px;
-  }
-}
-@-webkit-keyframes loading {
-  from {
-    background-position: 0 -400px;
-  }
-  to {
-    background-position: -7px -400px;
-  }
-}
-@-o-keyframes loading {
-  from {
-    background-position: 0 -400px;
-  }
-  to {
-    background-position: -7px -400px;
-  }
-}
-@keyframes loading {
-  from {
-    background-position: 0 -400px;
-  }
-  to {
-    background-position: -7px -400px;
-  }
-}
-
-
-
-
-@-webkit-keyframes bounceInUp {
-  0%, 60%, 75%, 90%, 100% {
-    -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-            transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-  }
-
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 100px, 0);
-            transform: translate3d(0, 100px, 0);
-  }
-
-  60% {
-    opacity: 1;
-    -webkit-transform: translate3d(0, -2px, 0);
-            transform: translate3d(0, -2px, 0);
-  }
-
-  75% {
-    -webkit-transform: translate3d(0, 2px, 0);
-            transform: translate3d(0, 2px, 0);
-  }
-
-  90% {
-    -webkit-transform: translate3d(0, -2px, 0);
-            transform: translate3d(0, -2px, 0);
-  }
-
-  100% {
-    -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes bounceInUp {
-  0%, 60%, 75%, 90%, 100% {
-    -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-            transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-  }
-
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 100px, 0);
-            transform: translate3d(0, 100px, 0);
-  }
-
-  60% {
-    opacity: 1;
-    -webkit-transform: translate3d(0, -2px, 0);
-            transform: translate3d(0, -2px, 0);
-  }
-
-  75% {
-    -webkit-transform: translate3d(0, 2px, 0);
-            transform: translate3d(0, 2px, 0);
-  }
-
-  90% {
-    -webkit-transform: translate3d(0, -2px, 0);
-            transform: translate3d(0, -2px, 0);
-  }
-
-  100% {
-    -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-  }
-}
-
-.bounceInUp {
-  -webkit-animation-name: bounceInUp;
-          animation-name: bounceInUp;
-}
-
-
-@-webkit-keyframes bounceOutDown {
-  20% {
-    -webkit-transform: translate3d(0, 2px, 0);
-            transform: translate3d(0, 2px, 0);
-  }
-
-  40%, 45% {
-    opacity: 1;
-    -webkit-transform: translate3d(0, -2px, 0);
-            transform: translate3d(0, -2px, 0);
-  }
-
-  100% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 100px, 0);
-            transform: translate3d(0, 100px, 0);
-  }
-}
-
-@keyframes bounceOutDown {
-  20% {
-    -webkit-transform: translate3d(0, 2px, 0);
-            transform: translate3d(0, 2px, 0);
-  }
-
-  40%, 45% {
-    opacity: 1;
-    -webkit-transform: translate3d(0, -2px, 0);
-            transform: translate3d(0, -2px, 0);
-  }
-
-  100% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, 100px, 0);
-            transform: translate3d(0, 100px, 0);
-  }
-}
-
-.bounceOutDown {
-  -webkit-animation-name: bounceOutDown;
-          animation-name: bounceOutDown;
-}
-.animated {
-  -webkit-animation-duration: .5s;
-          animation-duration: .5s;
-  -webkit-animation-fill-mode: both;
-          animation-fill-mode: both;
 }

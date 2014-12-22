@@ -85,18 +85,19 @@ UploadInterface.prototype = {
             var fileID = li.getAttribute('data-id');
             _this.droppedFiles.push(new DroppedFile(_this, {serverID: fileID}));
             
-            q('[data-delete-control]', li).forEach(function (a) {
+            q('[data-delete-revert]', li).forEach(function (a) {
                 a.addEventListener('click', function(e) {
-                    _this.getFileByID(fileID).toggleDeleteOptions();
+                    _this.getFileByID(fileID).revertDeletion();
                 });
             });
-            q('.delete-options a[data-delete]', li).forEach(function (a) { 
+
+            q('[data-delete]', li).forEach(function (a) { 
                 a.addEventListener('click', function (e) {                
                     e.preventDefault();                
                     _this.getFileByID(fileID).markForDeletion();
                 });
             });
-            q('.delete-options a[data-detach]', li).forEach(function (a) { 
+            q('[data-detach]', li).forEach(function (a) { 
                 a.addEventListener('click', function (e) {                
                     e.preventDefault();                
                     _this.getFileByID(fileID).markForDetachment();
@@ -245,27 +246,6 @@ DroppedFile.prototype = {
         return this.file.serverID;
     },
 
-    /**
-     * Hide or show the delete options, with animation     
-     */
-    toggleDeleteOptions: function () {
-        var ui = this.getUI();
-        var opts = ui.querySelector('.delete-options');
-        var animationClass, activeClass;
-
-        if(opts.classList.contains('active')) {
-            opts.classList.add('animated', 'bounceOutDown');
-            setTimeout(function() {
-                opts.classList.remove('active','animated', 'bounceOutDown','bounceInUp');
-            } ,500);
-            return false;
-        }
-        else {                
-            opts.classList.remove('bounceOutDown');
-            opts.classList.add('animated', 'bounceInUp', 'active');
-            return false;
-        }
-    },
 
     /**
      * Get the name of this Dropzone, e.g. "MyFile"
@@ -327,10 +307,7 @@ DroppedFile.prototype = {
      * Saves the uploaded file as ready to submit in the form     
      */
     persist: function () {        
-        this.getHolder().appendChild(createElementFromString(
-            '<input type="hidden" class="input-attached-file" name="'+this.getName()+'" value="'+this.getIdentifier()+'">'
-        ));
-
+        this.createInput();
         this.file.previewElement.classList.add('success');          
     },
 
@@ -351,7 +328,7 @@ DroppedFile.prototype = {
             input.parentNode.removeChild(input);
         }
 
-        this.uploader.removeDroppedFile(this);
+        //this.uploader.removeDroppedFile(this);
     },
 
     /**
@@ -363,10 +340,11 @@ DroppedFile.prototype = {
             holder.appendChild(createElementFromString(
                 '<input type="hidden" class="input-deleted-file" name="__deletion__'+this.getName()+'" value="'+this.getIdentifier()+'">'
             ));
-            this.markForDetachment();        
+            this.removeFromQueue();
+            this.getUI().classList.add('removed','deleted');            
         }
 
-        this.uploader.removeDroppedFile(this);
+        //this.uploader.removeDroppedFile(this);
     },
 
     /**
@@ -375,8 +353,33 @@ DroppedFile.prototype = {
      */
     markForDetachment: function () {
         this.removeFromQueue();
-        this.getUI().parentNode.removeChild(this.getUI());
-    }
+        this.getUI().classList.add('removed','detached');         
+    },
+
+    /**
+     * Creates a new hidden input for sending this upload to the server     
+     */
+    createInput: function () {
+        this.getHolder().appendChild(createElementFromString(
+            '<input type="hidden" class="input-attached-file" name="'+this.getName()+'" value="'+this.getIdentifier()+'">'
+        ));
+    },
+
+    /**
+     * Undoes a detach/delete state     
+     */
+    revertDeletion: function () {
+        var del = this.getHolder().querySelector('input.input-deleted-file[value="'+this.getIdentifier()+'"]');
+        if(del) {
+            del.parentNode.removeChild(del);
+        }
+        if(!this.getInput()) {
+            this.createInput();        
+        }
+
+        this.getUI().classList.remove('removed','detached','deleted');        
+    },
+
 };
 
 

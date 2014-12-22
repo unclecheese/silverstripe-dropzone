@@ -14,7 +14,6 @@ FileAttachmentField:
     method: POST
     parallel_uploads: 2
     upload_multiple: false
-    max_filesize: 256
     param_name: file
     create_image_thumbnails: true
     max_thumbnail_filesize: 10
