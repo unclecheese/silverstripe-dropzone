@@ -252,14 +252,18 @@ template, .unsupported {display:none;}
   right: 0;
   bottom: 0;
   background: white;
-  height: 45px;
+  height: 44px;
   top: 50%;
-  margin-top: -16px;
+  margin-top: -22px;
+}
+.fileattachment ul.file-attachment-field-previews .overlay > span h5 {
+  font-size:11px;
+  text-transform:uppercase;
 }
 .fileattachment ul.file-attachment-field-previews .overlay > span small {
-  font-size:12px;
+  font-size:11px;
   display:block;
-  margin:8px 0;
+  margin:3px 0;
 }
 .fileattachment ul.file-attachment-field-previews .delete-overlay > span small {
   color:#b80000;
@@ -269,6 +273,9 @@ template, .unsupported {display:none;}
   cursor:pointer;
   display:block;
   font-size:9px;
+  position:absolute;
+  top:5px;
+  right:8px;
 }
 .fileattachment ul.file-attachment-field-previews .action {
   width:64px;

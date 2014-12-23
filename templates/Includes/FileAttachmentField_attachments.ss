@@ -6,14 +6,16 @@
                     <span data-delete class="action delete"><%t Dropzone.MARKFORDELEION 'delete' %> <img src="$Scope.DropzoneDir/images/trash.png" width="12"></span>
                         <span class="overlay detach-overlay">
                             <span>
-                                <small><%t Dropzone.FILEREMOVED 'This file will be removed when you save.' %></small>
-                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="12"> Undo</span>
+                                <h5><%t Dropzone.REMOVED 'removed' %></h5>
+                                <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
+                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
                             </span>
                         </span>
                         <span class="overlay delete-overlay">
                             <span>
-                                <small><%t Dropzone.FILEDELETED 'This file will be deleted when you save.' %></small>
-                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="12"> Undo</span>
+                                <h5><%t Dropzone.DELETED 'deleted' %></h5>
+                                <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
+                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
                             </span>
                         </span>                    
                 <% else %>
@@ -21,8 +23,9 @@
                         <span data-detach class="action detach"><img src="$Scope.DropzoneDir/images/remove.png" width="16"></span>
                         <span class="overlay detach-overlay">
                             <span>
-                                <small><%t Dropzone.FILEREMOVED 'This file will be removed when you save.' %></small>
-                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"> Undo</span>
+                                <h5><%t Dropzone.REMOVED 'removed' %></h5>
+                                <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
+                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
                             </span>
                         </span>
                     <% end_if %>
@@ -30,8 +33,9 @@
                         <span data-delete class="action delete"><img src="$Scope.DropzoneDir/images/trash.png" width="16"></span>
                         <span class="overlay delete-overlay">
                             <span>
-                                <small><%t Dropzone.FILEDELETED 'This file will be deleted when you save.' %></small>
-                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"> Undo</span>
+                                <h5><%t Dropzone.DELETED 'deleted' %></h5>
+                                <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
+                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
                             </span>
                         </span>                    
                     <% end_if %>
