@@ -1,44 +1,37 @@
             <li data-id="$File.ID" 
                 style="height:{$Scope.SelectedThumbnailHeight}px;<% if $Scope.View == 'grid' %>width:{$Scope.SelectedThumbnailWidth}px;<% end_if %>"
             >
-                <% if $Scope.CanDetach && $Scope.CanDelete %>
-                    <span data-detach class="action detach"><%t Dropzone.DETACHFILE 'remove' %> <img src="$Scope.DropzoneDir/images/remove.png" width="12"></span>
-                    <span data-delete class="action delete"><%t Dropzone.MARKFORDELEION 'delete' %> <img src="$Scope.DropzoneDir/images/trash.png" width="12"></span>
-                        <span class="overlay detach-overlay">
-                            <span>
-                                <h5><%t Dropzone.REMOVED 'removed' %></h5>
-                                <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
-                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
-                            </span>
+                <% if $Scope.CanDetach %>
+                    <span data-detach class="action detach">
+                        <% if $Scope.CanDelete %>
+                            <%t Dropzone.DETACHFILE 'remove' %>
+                        <% end_if %> 
+                        <img src="$Scope.DropzoneDir/images/remove.png" width="12">
+                    </span>
+                    <span class="overlay detach-overlay">
+                        <span>
+                            <h5><%t Dropzone.REMOVED 'removed' %></h5>
+                            <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
+                            <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
                         </span>
-                        <span class="overlay delete-overlay">
-                            <span>
-                                <h5><%t Dropzone.DELETED 'deleted' %></h5>
-                                <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
-                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
-                            </span>
-                        </span>                    
-                <% else %>
-                    <% if $Scope.CanDetach %>
-                        <span data-detach class="action detach"><img src="$Scope.DropzoneDir/images/remove.png" width="16"></span>
-                        <span class="overlay detach-overlay">
-                            <span>
-                                <h5><%t Dropzone.REMOVED 'removed' %></h5>
-                                <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
-                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
-                            </span>
+                    </span>
+
+                <% end_if %>
+                <% if $Scope.CanDelete %>
+                    <span data-delete class="action delete">
+                        <% if $Scope.CanDetach %>
+                            <%t Dropzone.MARKFORDELEION 'delete' %>
+                        <% end_if %>
+                        <img src="$Scope.DropzoneDir/images/trash.png" width="12">
+                    </span>                
+                    <span class="overlay delete-overlay">
+                        <span>
+                            <h5><%t Dropzone.DELETED 'deleted' %></h5>
+                            <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
+                            <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
                         </span>
-                    <% end_if %>
-                    <% if $Scope.CanDelete %>
-                        <span data-delete class="action delete"><img src="$Scope.DropzoneDir/images/trash.png" width="16"></span>
-                        <span class="overlay delete-overlay">
-                            <span>
-                                <h5><%t Dropzone.DELETED 'deleted' %></h5>
-                                <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
-                                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
-                            </span>
-                        </span>                    
-                    <% end_if %>
+                    </span>                    
+
                 <% end_if %>
                 <span class="file-icon" <% if $Scope.View == 'list' %>style="width:{$Scope.SelectedThumbnailWidth}px;"<% end_if %>>                                    
                         <img 

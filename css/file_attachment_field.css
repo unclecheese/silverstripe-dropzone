@@ -170,13 +170,13 @@ template, .unsupported {display:none;}
 
 }
 
-.fileattachment ul.file-attachment-field-previews.grid li .file-size {
-  border-top:0;
-}
 .fileattachment ul.file-attachment-field-previews li .file-size {
   border-top:0;
-  font-size:10px;
+  font-size:11px;
   color:#999;
+}
+.fileattachment ul.file-attachment-field-previews.grid li .file-size {
+  border-top:0;
 }
 
 
