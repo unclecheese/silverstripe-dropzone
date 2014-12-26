@@ -8,8 +8,8 @@ FileAttachmentField:
   upgrade_images: true
   list_thumbnail_width: 64
   list_thumbnail_height: 64
-  grid_thumbnail_width: 64
-  grid_thumbnail_height: 64
+  grid_thumbnail_width: 120
+  grid_thumbnail_height: 120
   defaults:
     method: POST
     parallel_uploads: 2

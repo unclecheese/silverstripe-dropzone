@@ -95,7 +95,8 @@ class FileAttachmentField extends FileField {
         $this->permissions['upload'] = true;
         $this->permissions['detach'] = true;
         $this->permissions['delete'] = function () use ($instance) {
-            Injector::inst()->get('File')->canDelete() && $instance->isCMS();
+            return true;
+            Injector::inst()->get('File')->canDelete();// && $instance->isCMS();
         };
         $this->permissions['attach'] = function () use ($instance) {
             return $instance->isCMS();
@@ -565,6 +566,16 @@ class FileAttachmentField extends FileField {
     public function ThumbnailsDir() {        
         return $this->RootThumbnailsDir().'/'.$this->TemplateThumbnailSize()."px";
     }
+
+
+    public function CSSSize() {
+        $w = $this->getSelectedThumbnailWidth();
+        if($w < 150) return "small";
+        if($w < 250) return "medium";
+
+        return "large";
+    }
+
 
     /**
      * The directory that the module is installed to. A template accessor

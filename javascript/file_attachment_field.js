@@ -66,6 +66,10 @@ UploadInterface.prototype = {
                     file.setDimensions();
                 }
             })
+
+            .on('error', function (file, msg) {
+                this.getFileByID(file.serverID).showError()
+            }.bind(this))
                     
             .on('success', function (file, response) {                
                 _this.persistFile(file, response);
@@ -379,6 +383,14 @@ DroppedFile.prototype = {
 
         this.getUI().classList.remove('removed','detached','deleted');        
     },
+
+
+    /**
+     * Shows the error overlay     
+     */
+    showError: function  () {
+        this.file.previewElement.querySelector('.error-overlay').style.display = 'block';
+    }
 
 };
 
