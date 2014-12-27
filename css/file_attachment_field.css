@@ -1,10 +1,9 @@
 /** main preview UI **/
 template, .unsupported {display:none;}
-
 .dropzone-holder {
   clear:both;
   border:1px dashed #999;  
-  background:transparent;
+  background:#fff;
   position:relative;
   padding: 1em;
   min-height: 150px;
@@ -12,12 +11,14 @@ template, .unsupported {display:none;}
   border-radius: 3px;
   max-width:600px;
   margin-bottom:20px;
+
 }
 .dropzone-holder * {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
+
 .dropzone-holder:after {
   content: ".";
   visibility: hidden;
@@ -89,11 +90,14 @@ template, .unsupported {display:none;}
 }
 
 
-
+.fileattachment ul.file-attachment-field-previews .file-icon {
+  line-height:0;
+}
 .fileattachment ul.file-attachment-field-previews .file-icon img {
   border:0;
   width:auto;
   height:auto;
+
 }
 
 
@@ -144,6 +148,7 @@ template, .unsupported {display:none;}
   font-size:11px;
   text-align:left;
   padding:0 12px;
+  font-family:Helvetica, Arial, sans-serif;
 }
 
 .fileattachment ul.file-attachment-field-previews.grid .file-meta {
@@ -156,9 +161,11 @@ template, .unsupported {display:none;}
 
 .fileattachment ul.file-attachment-field-previews.grid .medium .file-meta {
   font-size:12px;
+  line-height:12px;
 }
 .fileattachment ul.file-attachment-field-previews.grid .large .file-meta {
   font-size:13px;
+  line-height:13px;
 }
 
 .fileattachment ul.file-attachment-field-previews li .file-size {
@@ -169,14 +176,6 @@ template, .unsupported {display:none;}
 .fileattachment ul.file-attachment-field-previews.grid li .file-size {
   border-top:0;
 }
-
-.fileattachment ul.file-attachment-field-previews .file-size:after {
-  content: "]";
-}
-.fileattachment ul.file-attachment-field-previews .file-size:before {
-  content: "[";
-}
-
 
 /** file progress **/
 .fileattachment ul.file-attachment-field-previews .file-progress-wrap {
@@ -250,16 +249,18 @@ template, .unsupported {display:none;}
   text-align: center;
   background: white;
   top: 50%;
+  right:0;
+  left:0;
+  bottom:auto;
   padding: 0 4px;
-  position: relative;
-  top: 50%;
+  position: absolute;
   transform: translateY(-50%);  
+  max-height:150px;
 }
 .fileattachment ul.file-attachment-field-previews .overlay > span h5 {
   font-size:11px;
+  margin:0;
   text-transform:uppercase;
-  margin:2px 0;
-  line-height:100%;
   font-weight:normal;
 }
 .fileattachment ul.file-attachment-field-previews .overlay > span small {
@@ -279,8 +280,8 @@ template, .unsupported {display:none;}
   display:block;
   font-size:9px;
   position:absolute;
-  top:5px;
-  right:8px;
+  top:0;
+  right:3px;
 }
 .fileattachment ul.file-attachment-field-previews.list .overlay > span .revert {
   right:auto;
@@ -298,10 +299,13 @@ template, .unsupported {display:none;}
   cursor:pointer;
   text-align:right;
 }
+.fileattachment ul.file-attachment-field-previews .dropzone-action img {
+  vertical-align: -3px;
+}
 .fileattachment ul.file-attachment-field-previews .dual-perm .dropzone-action > span {
   display:inline;
 }
-.fileattachment ul.file-attachment-field-previews .dropzone-action > span {
+.fileattachment ul.file-attachment-field-previews li .dropzone-action > span {
   display:none;
 }
 .fileattachment ul.file-attachment-field-previews .dropzone-action.detach {
@@ -320,22 +324,29 @@ template, .unsupported {display:none;}
   position: absolute;
   background: #fff;
   height: 25px;
-  display: table;
   width: 100%;
   bottom: 0;
   top: auto;
   border-top: 1px solid #e7eaec;
   right: 0;
+  line-height:0;
 }
 .fileattachment ul.file-attachment-field-previews.grid .dropzone-actions > :nth-child(2) {
   border-left:1px solid #e7eaec;
 }
 .fileattachment ul.file-attachment-field-previews.grid .dropzone-action {
-  display:table-cell;
+  float:left;
   text-align:center;
   vertical-align:middle;
-  width:50%;
+  width:100%;
   padding:5px 0;
+  height:100%;
+  box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+}
+.fileattachment ul.file-attachment-field-previews.grid .dual-perm .dropzone-action {
+  width:50%;
 }
 .fileattachment ul.file-attachment-field-previews.grid .dropzone-action:hover {
   background:#f9f9f9;
@@ -343,18 +354,9 @@ template, .unsupported {display:none;}
 .fileattachment ul.file-attachment-field-previews.grid .small .dropzone-action > span {
   display:none;
 }
-.fileattachment ul.file-attachment-field-previews.grid .small .overlay > span small {
-  display:none;
-}
 .fileattachment ul.file-attachment-field-previews.grid .small .overlay > span .revert {
   position:static;
 }
-.fileattachment ul.file-attachment-field-previews.grid .medium .overlay > span {
-  height: 60px;
-  top: 50%;
-  margin-top: -30px;
-}
-
 
 /** error state **/
 .fileattachment ul.file-attachment-field-previews .error-overlay span {
@@ -366,16 +368,17 @@ template, .unsupported {display:none;}
 .fileattachment ul.file-attachment-field-previews .error-overlay span small {
   color:#fff;
 }
-.fileattachment ul.file-attachment-field-previews.grid .small .overlay > span h5 {
-  display:none;
-}
 .fileattachment ul.file-attachment-field-previews.grid .small .overlay > span small {
   font-size:9px;
   display:inline;
 }
 
 /** CMS only **/
-.fileattachment .backend ul.file-attachment-field-previews .file-name {
+.fileattachment ul.file-attachment-field-previews .file-size:after {
+  content: "]";
+}
+.fileattachment ul.file-attachment-field-previews .file-size:before {
+  content: "[";
 }
 .fileattachment .backend ul.file-attachment-field-previews li .file-name {
   max-width:450px;

@@ -2,7 +2,7 @@
                 style="height:{$Scope.SelectedThumbnailHeight}px;<% if $Scope.View == 'grid' %>width:{$Scope.SelectedThumbnailWidth}px;<% end_if %>"
             >
 
-                <span class="file-icon" <% if $Scope.View == 'list' %>style="width:{$Scope.SelectedThumbnailWidth}px;"<% end_if %>>                                    
+                <span class="file-icon" <% if $Scope.View == 'list' %>style="width:{$Scope.SelectedThumbnailWidth}px;"<% end_if %>>                                                            
                         <img 
                             <% if $Scope.SelectedThumbnailWidth > $Scope.SelectedThumbnailHeight %>
                                 style="height:{$Scope.SelectedThumbnailHeight}px"

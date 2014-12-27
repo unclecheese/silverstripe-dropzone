@@ -132,6 +132,13 @@ class FileAttachmentField extends FileField {
         // is attached to a record that has a multi relation, set that automatically.
         $this->settings['uploadMultiple'] = $this->IsMultiple();
 
+        // Auto filter images if assigned to an Image relation
+        if($class = $this->getFileClass()) {
+            if(Injector::inst()->get($class) instanceof Image) {
+                $this->imagesOnly();
+            }
+        }
+
         if($token = $this->getForm()->getSecurityToken()) {
             $this->addParam($token->getName(), $token->getSecurityID());
         }
@@ -318,6 +325,16 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * A helper method to only allow images files
+     * @return FileAttachmentField
+     */
+    public function imagesOnly() {
+        $this->setAcceptedFiles(array('.png','.gif','.jpeg','.jpg'));
+
+        return $this;
+    }
+
+    /**
      * Sets the allowed mime types
      * @param array $types
      * @return  FileAttachmentField
@@ -457,7 +474,7 @@ class FileAttachmentField extends FileField {
                 return $this->httpError(400, $tmpFile['error']);
             }
         
-            if($relationClass = $this->getFileClass($tmpFile['name'])) {          
+            if($relationClass = $this->getFileClass($tmpFile['name'])) {              
                 $fileObject = Object::create($relationClass);
             }
 
@@ -702,11 +719,11 @@ class FileAttachmentField extends FileField {
 
         if($filename) {
             $ext = pathinfo($filename, PATHINFO_EXTENSION);
-            $defaultClass = File::get_class_for_file_extension($ext);
-            if($defaultClass = "Image" && 
+            $defaultClass = File::get_class_for_file_extension($ext);            
+            if($defaultClass == "Image" && 
                $this->config()->upgrade_images && 
                !Injector::inst()->get($class) instanceof Image
-            ) {
+            ) {                
                 $class = "Image";
             }
         } 
