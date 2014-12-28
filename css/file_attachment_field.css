@@ -258,8 +258,10 @@ template, .unsupported {display:none;}
   max-height:150px;
 }
 .fileattachment ul.file-attachment-field-previews .overlay > span h5 {
+  font-family:Helvetica,Arial,sans-serif;
+  line-height:11px;
   font-size:11px;
-  margin:0;
+  margin:4px 0 0 0;
   text-transform:uppercase;
   font-weight:normal;
 }
@@ -272,7 +274,7 @@ template, .unsupported {display:none;}
   color:#b80000;
 }
 .fileattachment ul.file-attachment-field-previews .detach-overlay > span h5 {
-  color:#999;
+  color:#1A344B;
 }
 .fileattachment ul.file-attachment-field-previews .overlay > span .revert {
   text-transform:uppercase;
