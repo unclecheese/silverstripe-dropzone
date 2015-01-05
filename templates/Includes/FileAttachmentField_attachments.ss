@@ -1,8 +1,11 @@
-            <li data-id="$File.ID" class="<% if $Scope.CanDelete && $Scope.CanDetach %>dual-perm<% end_if %> $Scope.CSSSize"
+            <li data-id="$File.ID" 
+                class="<% if $Scope.CanDelete && $Scope.CanDetach %>dual-perm<% end_if %>
+                        $Scope.CSSSize
+                       <% if $File.Orientation > -1 %>dropzone-image<% else %>dropzone-file<% end_if %>"
                 style="height:{$Scope.SelectedThumbnailHeight}px;<% if $Scope.View == 'grid' %>width:{$Scope.SelectedThumbnailWidth}px;<% end_if %>"
             >
 
-                <span class="file-icon" <% if $Scope.View == 'list' %>style="width:{$Scope.SelectedThumbnailWidth}px;"<% end_if %>>                                                            
+                <span class="file-icon" style="width:{$Scope.SelectedThumbnailWidth}px;height:{$Scope.SelectedThumbnailHeight}px;">
                         <img 
                             <% if $Scope.SelectedThumbnailWidth > $Scope.SelectedThumbnailHeight %>
                                 style="height:{$Scope.SelectedThumbnailHeight}px"
@@ -12,12 +15,15 @@
                             <% if $File.Orientation > -1 %>
                                 src="$File.CroppedImage($Scope.SelectedThumbnailWidth, $Scope.SelectedThumbnailHeight).URL"
                             <% else %>
-                                src="$Scope.ThumbnailsDir/{$File.Extension.LowerCase}.png" onerror="this.src='$Scope.ThumbnailsDir/_blank.png'"
+                                src="$Scope.ThumbnailsDir/{$File.Extension.LowerCase}.png" onerror="this.src='$Scope.ThumbnailsDir/_blank.png'" onload="this.parentNode.style.backgroundImage='url('+this.src+')';this.style.display='none';"
                             <% end_if %>
                         >
                 </span>
-                <span class="file-meta file-name truncate" data-dz-name>$File.Title</span>
-                <span class="file-meta file-size" data-dz-size>$File.Size</span>
+                <span class="file-meta file-name truncate" data-dz-name>$File.Title</span>                
+                <span class="file-meta file-size">
+                        <%t Dropzone.ADDEDON 'Added on {date}' date=$File.Created.Format('j M Y') %>
+                    · <span data-dz-size>$File.Size</span>
+                </span>
                 <span class="dropzone-actions"> 
                     <% if $Scope.CanDetach %>
                         <span data-detach class="dropzone-action detach">                        

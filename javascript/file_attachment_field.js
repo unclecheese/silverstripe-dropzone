@@ -271,11 +271,15 @@ DroppedFile.prototype = {
             file.previewElement.classList.add('has-preview');
             q('[data-dz-thumbnail]', file.previewElement).forEach(function(img) {
                 var ext = file.name.split('.').pop();
+                img.style.display = 'none';
                 img.src = imageDir+"/"+ext+".png";
-                img.style.display = 'inline';
+                
                 img.onerror = function () {
-                    this.src = imageDir+"/_blank.png";
-                }            
+                    this.src= imageDir+"/_blank.png";
+                };
+                img.onload = function () {                    
+                    this.parentNode.style.backgroundImage = "url('"+this.src+"')";
+                };          
             });
 
             this.setDimensions();   
