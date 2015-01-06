@@ -73,13 +73,16 @@ UploadInterface.prototype = {
                     
             .on('success', function (file, response) {                
                 _this.persistFile(file, response);
+                console.log('persisted');
             })
             
             .on('successmultiple', function (files, response) {                
                 var ids = response.split(',');
                 for(var i = 0; i < files.length; i++) {
                     if(!files[i].uploaded) {
+                        console.log('file is not uploaded!');
                         _this.persistFile(files[i], ids[i]);
+                        console.log('persisted');
                     }
                 }
             }.bind(this));
@@ -215,8 +218,7 @@ UploadInterface.prototype = {
  */
 var DroppedFile = function (uploader, file) {
     this.uploader = uploader;
-    this.queued = false;
-    this.uploaded = false;
+    this.queued = false;    
     this.file = file;
 
     // If there is no ID yet, create one
@@ -316,7 +318,8 @@ DroppedFile.prototype = {
      */
     persist: function () {        
         this.createInput();
-        this.file.previewElement.classList.add('success');          
+        this.file.previewElement.classList.add('success');
+        this.file.uploaded = true;
     },
 
     /**
