@@ -72,17 +72,14 @@ UploadInterface.prototype = {
             }.bind(this))
                     
             .on('success', function (file, response) {                
-                _this.persistFile(file, response);
-                console.log('persisted');
+                _this.persistFile(file, response);                
             })
             
             .on('successmultiple', function (files, response) {                
                 var ids = response.split(',');
                 for(var i = 0; i < files.length; i++) {
-                    if(!files[i].uploaded) {
-                        console.log('file is not uploaded!');
-                        _this.persistFile(files[i], ids[i]);
-                        console.log('persisted');
+                    if(!files[i].uploaded) {                        
+                        _this.persistFile(files[i], ids[i]);                        
                     }
                 }
             }.bind(this));
