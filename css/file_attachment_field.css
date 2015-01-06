@@ -157,6 +157,10 @@ template, .unsupported {display:none;}
   height:20px;  
 }
 
+.fileattachment ul.file-attachment-field-previews.grid .small .file-meta {
+  height:15px;
+  padding: 2px 8px;
+}
 .fileattachment ul.file-attachment-field-previews.grid .medium .file-name {
   font-size:12px;
   line-height:12px;
