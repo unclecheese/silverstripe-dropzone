@@ -5,6 +5,7 @@
 The Dropzone module provides `FileAttachmentField`, a robust HTML5 uploading interfaces for SilverStripe, allowing forms to save file uploads to `DataObject` instances.
 
 ## Features
+* Upload on the frontend, or in the CMS, with one consistent interface
 * Drag-and-drop uploading
 * Automatic client-side thumbnailing
 * Grid view / List view
@@ -66,7 +67,7 @@ Default values for most settings can be found in the `config.yml` file included 
 
 ## Usage in the CMS
 
-While the field works as expected in the CMS as a replacement for `UploadField`, it lacks the ability to attach existing files. This feature will come in a future release.
+`FileAttachmentField` can be used as a replacement for `UploadField` in the CMS.
 
 ## Troubleshooting
 
