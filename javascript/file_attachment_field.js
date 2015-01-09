@@ -24,7 +24,10 @@ var UploadInterface = function (node, backend) {
 
     this.settings.previewsContainer = this.node.querySelector('[data-container]');
     this.settings.fallback = UploadInterface.prototype.fallback.bind(this);
-    this.backend = new backend(this.node, this.settings);
+    
+    if(this.node.classList.contains('uploadable')) {
+        this.backend = new backend(this.node, this.settings);
+    }
 
     this.initialize();
 
@@ -38,76 +41,59 @@ UploadInterface.prototype = {
      */
     initialize: function () {
         var _this = this;
-        
-        this.backend
-            .on('addedfile', function (file) {
-                if(!_this.settings.uploadMultiple) {
-                    _this.removeAttachedFiles();
-                }
-                _this.queueFile(file);
-            })
-
-            .on('removedfile', function (file) { 
-                if(droppedFile = _this.getFileByID(file.serverID)) {
-                    droppedFile.removeFromQueue()
-                }         
-            })
-            
-            .on('maxfilesexceeded', function(file) {
-                if(!this.options.uploadMultiple) {                
-                    this.removeAllFiles();                
-                    this.addFile(file);
-                }
-            })
-
-            .on('thumbnail', function (file) {
-                var file = _this.getFileByID(file.serverID);
-                if(file) {                
-                    file.setDimensions();
-                }
-            })
-
-            .on('error', function (file, msg) {
-                this.getFileByID(file.serverID).showError()
-            }.bind(this))
-                    
-            .on('success', function (file, response) {                
-                _this.persistFile(file, response);                
-            })
-            
-            .on('successmultiple', function (files, response) {                
-                var ids = response.split(',');
-                for(var i = 0; i < files.length; i++) {
-                    if(!files[i].uploaded) {                        
-                        _this.persistFile(files[i], ids[i]);                        
+        if(this.backend) {
+            this.backend
+                .on('addedfile', function (file) {
+                    if(!_this.settings.uploadMultiple) {
+                        _this.removeAttachedFiles();
                     }
-                }
-            }.bind(this));
+                    _this.queueFile(file);
+                })
+
+                .on('removedfile', function (file) { 
+                    if(droppedFile = _this.getFileByID(file.serverID)) {
+                        droppedFile.removeFromQueue()
+                    }         
+                })
+                
+                .on('maxfilesexceeded', function(file) {
+                    if(!this.options.uploadMultiple) {                
+                        this.removeAllFiles();                
+                        this.addFile(file);
+                    }
+                })
+
+                .on('thumbnail', function (file) {
+                    var file = _this.getFileByID(file.serverID);
+                    if(file) {                
+                        file.setDimensions();
+                    }
+                })
+
+                .on('error', function (file, msg) {
+                    this.getFileByID(file.serverID).showError()
+                }.bind(this))
+                        
+                .on('success', function (file, response) {                
+                    _this.persistFile(file, response);                
+                })
+                
+                .on('successmultiple', function (files, response) {                
+                    var ids = response.split(',');
+                    for(var i = 0; i < files.length; i++) {
+                        if(!files[i].uploaded) {                        
+                            _this.persistFile(files[i], ids[i]);                        
+                        }
+                    }
+                }.bind(this));
+        }
 
         
         q('[data-attachments] li', this.node).forEach(function(li) {
             var fileID = li.getAttribute('data-id');
-            _this.droppedFiles.push(new DroppedFile(_this, {serverID: fileID}));
-            
-            q('[data-delete-revert]', li).forEach(function (a) {
-                a.addEventListener('click', function(e) {
-                    _this.getFileByID(fileID).revertDeletion();
-                });
-            });
+            _this.droppedFiles.push(new DroppedFile(_this, {serverID: fileID, uploaded: true}));
 
-            q('[data-delete]', li).forEach(function (a) { 
-                a.addEventListener('click', function (e) {                
-                    e.preventDefault();                
-                    _this.getFileByID(fileID).markForDeletion();
-                });
-            });
-            q('[data-detach]', li).forEach(function (a) { 
-                a.addEventListener('click', function (e) {                
-                    e.preventDefault();                
-                    _this.getFileByID(fileID).markForDetachment();
-                });
-            })
-
+            _this.bindEvents(li, fileID);
         });
 
         q('[data-auto-process]', this.node).forEach(function (btn) {     
@@ -201,8 +187,47 @@ UploadInterface.prototype = {
         var div = this.node.parentNode.querySelector('.unsupported');
         this.node.style.display = 'none';
         div.style.display = 'block';
-    }
+    },
 
+    /**
+     * Binds events to an LI tag representing an attached file
+     * @param  {DOMElement} li 
+     * @param  {Int} fileID     
+     */
+    bindEvents: function (li, fileID) {
+        var _this = this;
+
+        q('[data-delete-revert]', li).forEach(function (a) {
+            a.addEventListener('click', function(e) {
+                _this.getFileByID(fileID).revertDeletion();
+            });
+        });
+
+        q('[data-delete]', li).forEach(function (a) { 
+            a.addEventListener('click', function (e) {                
+                e.preventDefault();                
+                _this.getFileByID(fileID).markForDeletion();
+            });
+        });
+
+        q('[data-detach]', li).forEach(function (a) {             
+            a.addEventListener('click', function (e) {              
+                e.preventDefault();                
+                _this.getFileByID(fileID).markForDetachment();
+            });
+        })
+    },
+
+    /**
+     * Reset the uploader. Remove all files.     
+     */
+    clear: function () {
+        this.droppedFiles.forEach(function(file) {
+            file.removeFromQueue();
+            this.removeDroppedFile(file);
+            file.removeUI();
+        }.bind(this));
+    }
 };
 
 
@@ -239,6 +264,13 @@ DroppedFile.prototype = {
      */
     getUI: function () {
         return this.uploader.node.querySelector('[data-id="'+this.getIdentifier()+'"]');
+    },
+
+    /**
+     * Removes the LI representing this file     
+     */
+    removeUI: function () {
+        this.getUI().parentNode.removeChild(this.getUI());
     },
 
     /**
@@ -335,8 +367,6 @@ DroppedFile.prototype = {
         if(input) {
             input.parentNode.removeChild(input);
         }
-
-        //this.uploader.removeDroppedFile(this);
     },
 
     /**
@@ -361,7 +391,12 @@ DroppedFile.prototype = {
      */
     markForDetachment: function () {
         this.removeFromQueue();
-        this.getUI().classList.add('removed','detached');         
+        if(this.file.uploaded) {
+            this.getUI().classList.add('removed','detached');         
+        }
+        else {
+            this.removeUI();
+        }
     },
 
     /**
@@ -440,6 +475,10 @@ if(typeof jQuery === 'function' && typeof jQuery.entwine === 'function') {
     jQuery('.dropzone-holder').entwine({
         onmatch: function () {
             var upload = new UploadInterface(this[0], Dropzone);
+            if(this.hasClass('backend')) {
+                this.data('dropzoneInterface', upload);
+                this.data('dropzoneFile', DroppedFile);
+            }
         }
     });
 }

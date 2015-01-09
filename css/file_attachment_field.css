@@ -2,15 +2,17 @@
 template, .unsupported {display:none;}
 .dropzone-holder {
   clear:both;
-  border:1px dashed #999;  
   background:#fff;
+  border:1px solid #999;    
   position:relative;
   padding: 1em;
   min-height: 150px;
   -webkit-border-radius: 12px;
   border-radius: 3px;
   margin-bottom:20px;
-
+}
+.dropzone-holder.uploadable {
+  border:1px dashed #999;  
 }
 .dropzone-holder * {
   -webkit-box-sizing: border-box;
@@ -58,6 +60,7 @@ template, .unsupported {display:none;}
 }
 .fileattachment ul.file-attachment-field-previews.list li {
   margin-bottom:12px;
+  max-width:600px;
 }
 
 .fileattachment ul.file-attachment-field-previews li span {
@@ -390,9 +393,6 @@ template, .unsupported {display:none;}
 /** CMS only **/
 .fileattachment .backend ul.file-attachment-field-previews li .file-name {
   max-width:450px;
-}
-.fileattachment .dropzone-holder.backend {
-  max-width: 600px;
 }
 
 
