@@ -69,6 +69,22 @@ Default values for most settings can be found in the `config.yml` file included 
 
 `FileAttachmentField` can be used as a replacement for `UploadField` in the CMS.
 
+## Interacting with the Dropzone interface programatically
+
+For custom integrations, you may want to access the `UploadInterface` object that manages the upload UI (see `file_attachment_field.js`). You can do that one of two ways:
+* If you have jQuery installed, simply access the `dropzoneInterface` data property of the `.dropzone` element
+```js
+$('#MyFileDropzone').data('dropzoneInterface').clear();
+```
+
+* If you are not using jQuery, the `UploadInterface` object is injected into the browser global `window.dropzones`, indexed by the id of your `.dropzone` element. 
+```js
+window.dropzones.MyFileDropzone.clear();
+```
+**NB**: The ID of the actual `.dropzone` element by default is the name of the form input, with 'Dropzone' appended to it, so `FileAttachmentField::create('MyFile')` creates a dropzone with an ID of 'MyFileDropzone'
+
+
+
 ## Troubleshooting
 
 Ring Uncle Cheese.
