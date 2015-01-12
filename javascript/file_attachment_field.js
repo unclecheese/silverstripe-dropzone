@@ -52,7 +52,7 @@ UploadInterface.prototype = {
 
                 .on('removedfile', function (file) { 
                     if(droppedFile = _this.getFileByID(file.serverID)) {
-                        droppedFile.removeFromQueue()
+                        droppedFile.destroy();                        
                     }         
                 })
                 
@@ -221,11 +221,12 @@ UploadInterface.prototype = {
     /**
      * Reset the uploader. Remove all files.     
      */
-    clear: function () {
+    clear: function (force) {
+        if(this.backend) {
+            this.backend.removeAllFiles(force);
+        }
         this.droppedFiles.forEach(function(file) {
-            file.removeFromQueue();
-            this.removeDroppedFile(file);
-            file.removeUI();
+            file.destroy();
         }.bind(this));
     }
 };
@@ -262,14 +263,14 @@ DroppedFile.prototype = {
      * Gets the DOM element that contains this file's UI (e.g. an LI tag)
      * @return {DOMElement}
      */
-    getUI: function () {
+    getUI: function () {        
         return this.uploader.node.querySelector('[data-id="'+this.getIdentifier()+'"]');
     },
 
     /**
      * Removes the LI representing this file     
      */
-    removeUI: function () {
+    removeUI: function () {        
         this.getUI().parentNode.removeChild(this.getUI());
     },
 
@@ -429,6 +430,14 @@ DroppedFile.prototype = {
      */
     showError: function  () {
         this.file.previewElement.querySelector('.error-overlay').style.display = 'block';
+    },
+
+    destroy: function () {
+        this.removeFromQueue();
+        this.uploader.removeDroppedFile(this);
+        if(this.getUI()) {            
+            this.removeUI();
+        }
     }
 
 };
@@ -487,9 +496,16 @@ else {
     document.addEventListener('DOMContentLoaded', function(){   
         q('.dropzone-holder').forEach(function(node) {
             var upload = new UploadInterface(node, Dropzone);
+            // If jQuery exists, use its data() method
+            if(typeof jQuery === 'function') {
+                jQuery(node).data('dropzoneInterface', upload);
+            }
+            // Otherwise, inject a browser global
+            else {
+                if(!window.dropzones) window.dropzones = {};
+                window.dropzones[node.id] = upload;
+            }
         });
-
     });
 }
-
 })();
