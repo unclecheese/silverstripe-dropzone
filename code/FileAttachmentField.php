@@ -214,7 +214,9 @@ class FileAttachmentField extends FileField {
      * @return  FileAttachmentField
      */
     public function setMultiple($bool) {
-        return $this->setUploadMultiple($bool);
+        $this->settings['uploadMultiple'] = $bool;
+        
+        return $this;
     }
 
     /**
