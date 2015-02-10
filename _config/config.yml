@@ -21,3 +21,5 @@ FileAttachmentField:
     auto_process_queue: true
     auto_queue: true
     add_remove_links: false    
+File:
+  extensions: [DropzoneFile]
