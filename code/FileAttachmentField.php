@@ -441,7 +441,7 @@ class FileAttachmentField extends FileField {
      * @return boolean
      */
     public function isCMS() {        
-        return $this->getForm() instanceof CMSForm;
+        return Controller::curr() instanceof LeftAndMain;
     }
 
     /**
