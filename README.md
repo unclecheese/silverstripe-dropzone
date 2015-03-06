@@ -17,20 +17,21 @@ The Dropzone module provides `FileAttachmentField`, a robust HTML5 uploading int
 ## Screenshots
 
 #### Grid view
-![Screenshot](https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen1.png)
+<img src="https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen1.png" width="66%">
+
 
 #### List view
-![Screenshot](https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen2.png)
+<img src="https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen2.png" width="66%">
 
 #### Remove/delete files
-![Screenshot](https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen3.png)
+<img src="https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen3.png" width="66%">
 
 #### Beautiful error handling
-![Screenshot](https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen4.png)
+<img src="https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen4.png" width="66%">
 
 #### Any thumbnail size you like
 
-![Screenshot](https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen5.png)
+<img src="https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen5.png" width="66%">
 
 ## Usage
 The API is the same as a `FileField`, only with more options.
