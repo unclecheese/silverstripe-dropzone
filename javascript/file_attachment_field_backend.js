@@ -6,14 +6,16 @@ $('.dropzone-holder.backend').entwine({
 		if(!dialog.length) dialog = jQuery('<div class="ss-uploadfield-dialog" id="' + dialogId + '" />');
 
 		// If user selected 'Choose another file', we need the ID of the file to replace
-		var iframeUrl = config['urlSelectDialog'];
+		var iParams = config['urlSelectDialog'].indexOf('?'),
+		    iframeUrl = config['urlSelectDialog'].substr(0, iParams),
+		    iframeParams = config['urlSelectDialog'].substr(iParams+1);
 		var uploadedFileId = null;
 		if (uploadedFile && uploadedFile.attr('data-fileid') > 0){
 			uploadedFileId = uploadedFile.attr('data-fileid');
 		}
 
 		// Show dialog
-		dialog.ssdialog({iframeUrl: iframeUrl, height: 550});
+		dialog.ssdialog({iframeUrl: iframeUrl + '?' + iframeParams, height: 550});
 
 		// TODO Allow single-select
 		dialog.find('iframe').bind('load', function(e) {
@@ -31,7 +33,7 @@ $('.dropzone-holder.backend').entwine({
 				var ids = $.map(gridField.find('.ss-gridfield-item.ui-selected'), function(el) {return $(el).data('id');});
 				if(ids && ids.length) {
 					$.ajax({
-						url: iframeUrl+'/filesbyid?ids='+ids.join(','),
+						url: iframeUrl+'/filesbyid?ids='+ids.join(',') + '&' + iframeParams,
 						dataType: 'JSON',
 						success: function (json) {
 							json.forEach(function(item) {
