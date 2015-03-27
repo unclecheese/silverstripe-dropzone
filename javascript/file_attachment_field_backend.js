@@ -4,16 +4,14 @@ $('.dropzone-holder.backend').entwine({
 		// Create dialog and load iframe
 		var uploadedFile, self = this, config = this.data('config'), dialogId = 'ss-uploadfield-dialog-' + this.attr('id'), dialog = jQuery('#' + dialogId);
 		if(!dialog.length) dialog = jQuery('<div class="ss-uploadfield-dialog" id="' + dialogId + '" />');
-
 		// If user selected 'Choose another file', we need the ID of the file to replace
-		var iParams = config['urlSelectDialog'].indexOf('?'),
-		    iframeUrl = config['urlSelectDialog'].substr(0, iParams),
+		var iParams = config['urlSelectDialog'].indexOf('?'), i
+		    iframeUrl = iParams > -1 ? config['urlSelectDialog'].substr(0, iParams) : config['urlSelectDialog'];
 		    iframeParams = config['urlSelectDialog'].substr(iParams+1);
 		var uploadedFileId = null;
 		if (uploadedFile && uploadedFile.attr('data-fileid') > 0){
 			uploadedFileId = uploadedFile.attr('data-fileid');
 		}
-
 		// Show dialog
 		dialog.ssdialog({iframeUrl: iframeUrl + '?' + iframeParams, height: 550});
 
