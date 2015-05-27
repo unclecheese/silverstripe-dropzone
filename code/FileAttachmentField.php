@@ -745,16 +745,17 @@ class FileAttachmentField extends FileField {
     public function getFileClass($filename = null) {        
         $name = $this->getName();
         $record = $this->getRecord();
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $defaultClass = File::get_class_for_file_extension($ext);            
+
         if(empty($name) || empty($record)) {
-            return "File";
+            return $defaultClass;
         }
 
         $class = $record->getRelationClass($name);
         if(!$class) $class = "File";
 
         if($filename) {
-            $ext = pathinfo($filename, PATHINFO_EXTENSION);
-            $defaultClass = File::get_class_for_file_extension($ext);            
             if($defaultClass == "Image" && 
                $this->config()->upgrade_images && 
                !Injector::inst()->get($class) instanceof Image
@@ -765,7 +766,7 @@ class FileAttachmentField extends FileField {
 
         return $class;       
     }
-
+    
     /**
      * Get the record that this form field is editing
      * @return DataObject
