@@ -50,7 +50,7 @@ Image-only uploads can be forced using the `imagesOnly()` method. If the form is
 ```php
 FileAttachmentField::create('MyFiles', 'Upload some  files')
   ->setThumbnailHeight(180)
-  ->setThumbanilWidth(180)
+  ->setThumbnailWidth(180)
   ->setAutoProcessQueue(false) // do not upload files until user clicks an upload button
   ->setMaxFilesize(10) // 10 megabytes. Defaults to PHP's upload_max_filesize ini setting
   ->setAcceptedFiles(array('.pdf','.doc','.docx'))
