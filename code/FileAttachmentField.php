@@ -383,6 +383,16 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * Sets the max resolution for images, in pixels
+     * @param int $pixels
+     */
+    public function setMaxResolution($pixels) {
+    	$this->settings['maxResolution'] = $pixels;
+
+    	return $this;
+    }
+
+    /**
      * Sets selector for the preview template
      * @param string $template
      * @return  FileAttachmentField

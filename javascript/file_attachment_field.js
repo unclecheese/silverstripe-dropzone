@@ -24,6 +24,7 @@ var UploadInterface = function (node, backend) {
 
     this.settings.previewsContainer = this.node.querySelector('[data-container]');
     this.settings.fallback = UploadInterface.prototype.fallback.bind(this);
+    this.settings.accept = UploadInterface.prototype.accept.bind(this);
     
     if(this.node.classList.contains('uploadable')) {
         this.backend = new backend(this.node, this.settings);
@@ -155,7 +156,7 @@ UploadInterface.prototype = {
     queueFile: function (file) {
         var droppedFile = new DroppedFile(this, file);
         this.droppedFiles.push(droppedFile);
-
+        
         droppedFile.queue();
     },
 
@@ -173,7 +174,6 @@ UploadInterface.prototype = {
 
     /**
      * Removes all files that are currently uploaded
-     * @return {[type]} [description]
      */
     removeAttachedFiles: function () {    
         q('[data-attachments] li', this.node).forEach(function(n) {     
@@ -183,10 +183,35 @@ UploadInterface.prototype = {
         });
     },
 
+    /**
+     * The fallback method invoked when HTML5 uploads are not available.
+     */
     fallback: function () {
         var div = this.node.parentNode.querySelector('.unsupported');
         this.node.style.display = 'none';
         div.style.display = 'block';
+    },
+
+    /**
+     * Custom validation of dropped files. Check max resolution, etc.
+     * @param  {File}   file 
+     * @param  {Function} done      
+     */
+    accept: function (file, done) {
+    	if(this.settings.maxResolution && file.type.match(/image.*/)) {
+			this.checkImageResolution(file, this.settings.maxResolution, function (result, width, height) {
+				var msg = null;
+				if(!result) {
+					msg = 'Resolution is too high. Please resize to ' + width + 'x' + height + ' or smaller';
+				}
+				try {				
+					done(msg);
+				}
+				// Because this check is asynchronous, the file has already been queued at this point
+				// and Dropzone throws an error for queuing a rejected file. Just ignore it.
+				catch (e) {}
+			});
+		}
     },
 
     /**
@@ -228,7 +253,39 @@ UploadInterface.prototype = {
         this.droppedFiles.forEach(function(file) {
             file.destroy();
         }.bind(this));
+    },
+
+    /**
+     * A utility method for checking the resolution of a dropped file.
+     * @param  {File}   file      
+     * @param  {int}   maxPixels The maximum resolution, in pixels
+     * @param  {Function} callback       
+     */
+    checkImageResolution: function (file, maxPixels, callback) {
+		var reader = new FileReader(),
+			image  = new Image();			
+
+		reader.readAsDataURL(file);  
+
+		reader.onload = function(file) {
+			image.src    = file.target.result;
+			image.onload = function() {
+				var imageW = this.width,
+					imageH = this.height,
+					pixels = imageW * imageH;					
+
+					if(pixels > maxPixels) {
+						var ratio = imageH / imageW,
+							maxWidth = Math.floor(Math.sqrt(maxPixels / ratio)),
+							maxHeight = Math.round(maxWidth * ratio);
+							callback(false, maxWidth, maxHeight);
+					}
+
+					callback(true);
+			};
+		};
     }
+
 };
 
 
@@ -281,7 +338,6 @@ DroppedFile.prototype = {
     getIdentifier: function () {
         return this.file.serverID;
     },
-
 
     /**
      * Get the name of this Dropzone, e.g. "MyFile"
@@ -382,8 +438,6 @@ DroppedFile.prototype = {
             this.removeFromQueue();
             this.getUI().classList.add('removed','deleted');            
         }
-
-        //this.uploader.removeDroppedFile(this);
     },
 
     /**
@@ -424,7 +478,6 @@ DroppedFile.prototype = {
         this.getUI().classList.remove('removed','detached','deleted');        
     },
 
-
     /**
      * Shows the error overlay     
      */
@@ -432,6 +485,9 @@ DroppedFile.prototype = {
         this.file.previewElement.querySelector('.error-overlay').style.display = 'block';
     },
 
+    /**
+     * Kills entire thing     
+     */
     destroy: function () {
         this.removeFromQueue();
         this.uploader.removeDroppedFile(this);
