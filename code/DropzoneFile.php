@@ -34,12 +34,20 @@ class DropzoneFile extends DataExtension {
 		if($this->IsImage()) {
 			return $this->owner->CroppedImage($w, $h);
 		}
+		
+		$sizes = Config::inst()->forClass('FileAttachmentField')->icon_sizes;
+		sort($sizes);
 
-        foreach(Config::inst()->forClass('FileAttachmentField')->icon_sizes as $size) {
+        foreach($sizes as $size) {
             if($w <= $size) {
-            	$file = $this->getFilenameForExtension($this->owner->getExtension(), $size);
+            	if($this->owner instanceof Folder) {
+            		$file = $this->getFilenameForType('_folder', $size);
+            	}
+            	else {
+            		$file = $this->getFilenameForType($this->owner->getExtension(), $size);
+            	}
 				if(!file_exists(BASE_PATH.'/'.$file)) {
-					$file = $this->getFilenameForExtension('_blank', $size);
+					$file = $this->getFilenameForType('_blank', $size);
 				}
 
 				return new Image_Cached(Director::makeRelative($file));
@@ -55,7 +63,7 @@ class DropzoneFile extends DataExtension {
 	 * @param  int $size The size of the image
 	 * @return string
 	 */
-	protected function getFilenameForExtension($ext, $size) {
+	protected function getFilenameForType($ext, $size) {
 		return sprintf(
 					'%s/images/file-icons/%spx/%s.png',
 					DROPZONE_DIR,
