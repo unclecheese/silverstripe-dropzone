@@ -90,6 +90,21 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * Looks at the php.ini and takes the lower of two values, translates it into
+     * an int representing the number of bytes allowed per upload
+     *    
+     * @return int
+     */
+    public static function get_filesize_from_ini() {
+        $bytes = min(array(
+            File::ini2bytes(ini_get('post_max_size') ?: '8M'),
+            File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
+        )); 
+        
+        return floor($bytes/(1000*1000));        
+    }
+
+    /**
      * Constructor. Sets some default permissions
      * @param string $name  
      * @param string $title 
@@ -131,11 +146,7 @@ class FileAttachmentField extends FileField {
         }
 
         if(!$this->getSetting('maxFilesize')) {            
-            $bytes = min(array(
-                File::ini2bytes(ini_get('post_max_size') ?: '8M'),
-                File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
-            )); 
-            $this->settings['maxFilesize'] = floor($bytes/(1024*1024));        
+            $this->settings['maxFilesize'] = static::get_filesize_from_ini();
         }
         // The user may not have opted into a multiple upload. If the form field
         // is attached to a record that has a multi relation, set that automatically.
@@ -466,8 +477,10 @@ class FileAttachmentField extends FileField {
             return $this->httpError(403);
         }
 
-        $token = $this->getForm()->getSecurityToken();
-        if(!$token->checkRequest($request)) return $this->httpError(400);
+        if($this->getForm()) {
+            $token = $this->getForm()->getSecurityToken();
+            if(!$token->checkRequest($request)) return $this->httpError(400);
+        }
                 
         $name = $this->getSetting('paramName');
         $files = $_FILES[$name];
@@ -489,13 +502,12 @@ class FileAttachmentField extends FileField {
         }
 
         $ids = array ();
-
+if(empty($tmpFiles)) die('wtf');
         foreach($tmpFiles as $tmpFile) {
             if($tmpFile['error']) {
                 return $this->httpError(400, $tmpFile['error']);
-            }
-        
-            if($relationClass = $this->getFileClass($tmpFile['name'])) {              
+            }        
+            if($relationClass = $this->getFileClass($tmpFile['name'])) {  
                 $fileObject = Object::create($relationClass);
             }
 
@@ -745,17 +757,31 @@ class FileAttachmentField extends FileField {
     public function getFileClass($filename = null) {        
         $name = $this->getName();
         $record = $this->getRecord();
+<<<<<<< HEAD
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         $defaultClass = File::get_class_for_file_extension($ext);            
 
         if(empty($name) || empty($record)) {
             return $defaultClass;
+=======
+        $class = "File";
+        if(empty($name)) {
+            return "File";
+>>>>>>> compatability updates that help use field as a public API
         }
 
-        $class = $record->getRelationClass($name);
-        if(!$class) $class = "File";
+        if($record) {
+    	    $class = $record->getRelationClass($name);
+        	if(!$class) $class = "File";
+    	}
 
         if($filename) {
+<<<<<<< HEAD
+=======
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            $defaultClass = File::get_class_for_file_extension($ext);  
+
+>>>>>>> compatability updates that help use field as a public API
             if($defaultClass == "Image" && 
                $this->config()->upgrade_images && 
                !Injector::inst()->get($class) instanceof Image
