@@ -90,6 +90,20 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * Gets the max filesize based on the php.ini configuration
+     * 	
+     * @return int
+     */
+    public static function get_filesize_from_ini() {
+		$bytes = min(array(
+            File::ini2bytes(ini_get('post_max_size') ?: '8M'),
+            File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
+        )); 
+
+        return floor($bytes/(1024*1024));            	
+    }
+
+    /**
      * Constructor. Sets some default permissions
      * @param string $name  
      * @param string $title 
@@ -131,11 +145,7 @@ class FileAttachmentField extends FileField {
         }
 
         if(!$this->getSetting('maxFilesize')) {            
-            $bytes = min(array(
-                File::ini2bytes(ini_get('post_max_size') ?: '8M'),
-                File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
-            )); 
-            $this->settings['maxFilesize'] = floor($bytes/(1024*1024));        
+            $this->settings['maxFilesize'] = self::get_filesize_from_ini();
         }
         // The user may not have opted into a multiple upload. If the form field
         // is attached to a record that has a multi relation, set that automatically.
