@@ -212,6 +212,9 @@ UploadInterface.prototype = {
 				catch (e) {}
 			});
 		}
+		else {
+			return done();
+		}
     },
 
     /**
