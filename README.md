@@ -34,7 +34,7 @@ The Dropzone module provides `FileAttachmentField`, a robust HTML5 uploading int
 <img src="https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen5.png" width="75%">
 
 ## Usage
-The API is the same as a `FileField`, only with more options.
+The field instantiates similarly to `UploadField`, taking the name of the file relationship and a label, as the first two arguments. Once instantiated, there are many ways to configure the UI.
 
 ```php
 FileAttachmentField::create('MyFile', 'Upload a file')
@@ -60,6 +60,14 @@ FileAttachmentField::create('MyFiles', 'Upload some  files')
       return Member::currentUser() && Member::currentUser()->inGroup('editors');
     }
   ));
+```
+
+Image uploads get a few extra options.
+
+```php
+FileAttachementField::create('MyImage','Upload an image')
+    ->imagesOnly() // If bound to a record, with a relation to 'Image', this isn't necessary.
+    ->setMaxResolution(50000000); // Do not accept images over 5 megapixels
 ```
 
 ### Default settings
