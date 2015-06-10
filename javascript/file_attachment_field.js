@@ -470,7 +470,8 @@ DroppedFile.prototype = {
      * Undoes a detach/delete state     
      */
     revertDeletion: function () {
-        var del = this.getHolder().querySelector('input.input-deleted-file[value="'+this.getIdentifier()+'"]');
+	var holder = this.uploader.node.querySelector('.attached-file-deletions');    
+	var del = holder.querySelector('input.input-deleted-file[value="'+this.getIdentifier()+'"]');
         if(del) {
             del.parentNode.removeChild(del);
         }
