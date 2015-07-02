@@ -188,11 +188,11 @@ class FileAttachmentField extends FileField {
 
         if($relation = $this->getRelation()) {            
             $relation->setByIDList($this->Value());            
-        }
-
-        elseif($record->has_one($fieldname)) {            
+        } elseif($record->has_one($fieldname)) {            
             $record->{"{$fieldname}ID"} = $this->Value() ?: 0;
-        }
+        } elseif($record->hasField($fieldname)) {
+			$record->$fieldname = is_array($this->Value()) ? implode(',', $this->Value()) : $this->Value();
+		}
 
         return $this;
     }
@@ -608,6 +608,21 @@ class FileAttachmentField extends FileField {
                 }
             }
         }
+		
+		if ($ids = $this->dataValue()) {
+			if (!is_array($ids)) {
+				$ids = explode(',', $ids);
+			}
+
+			$attachments = ArrayList::create();
+			foreach ($ids as $id) {
+				$file = File::get()->byID((int) $id);
+				if ($file && $file->canView()) {
+					$attachments->push($file);
+				}
+			}
+			return $attachments;
+		}
 
         return false;
     }
