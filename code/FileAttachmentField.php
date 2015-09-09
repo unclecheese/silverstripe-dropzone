@@ -8,7 +8,7 @@
  */
 class FileAttachmentField extends FileField {
 
-    /**
+	/**
      * The allowed actions for the RequestHandler
      * @var array
      */
@@ -22,7 +22,37 @@ class FileAttachmentField extends FileField {
         'select' => 'handleSelect',
     );
 
-    /**
+	/**
+	 * Configure alternate file path to dropzone javascript,
+	 *
+	 * -    if relative then DROPZONE_DIR will be the base path
+	 * -    if absolute then path will be built from '/'.
+	 *
+	 * by default DROPZONE_DIR/javascript/dropzone.js will be used.
+	 */
+	private static $dropzone_script_file = '';
+
+	/**
+	 * Configure alternate file path to dropzone front-end configuration settings file
+	 *
+	 * -    if relative then BASE_PATH/DROPZONE_DIR will be the base path
+	 * -    if absolute then path will be built from BASE_PATH.
+	 *
+	 * by default /BASE_PATH/DROPZONE_DIR/javascript/default_config.json will be used.
+	 */
+	private static $dropzone_config_file = '';
+
+	/**
+	 * Configure alternate directory path to module specific javascript, no trailing slash required,
+	 *
+	 * -    if relative then DROPZONE_DIR will be the base path
+	 * -    if absolute then path will be built from '/'.
+	 *
+	 * by default DROPZONE_DIR/javascript will be used and module script filenames appended.
+	 */
+	private static $module_scripts_dir = '';
+
+	/**
      * A list of settings for this instance
      * @var array
      */
@@ -78,45 +108,45 @@ class FileAttachmentField extends FileField {
 
     /**
      * Translate camelCase to underscore_case
-     * @param  string $str 
+     * @param  string $str
      * @return string
      */
     public static function underscorise($str) {
-        $str[0] = strtolower($str[0]);        
-        
+        $str[0] = strtolower($str[0]);
+
         return preg_replace_callback('/([A-Z])/', function ($c) {
             return "_" . strtolower($c[1]);
-        }, $str);        
+        }, $str);
     }
 
     /**
      * Looks at the php.ini and takes the lower of two values, translates it into
      * an int representing the number of bytes allowed per upload
-     *    
+     *
      * @return int
      */
     public static function get_filesize_from_ini() {
         $bytes = min(array(
             File::ini2bytes(ini_get('post_max_size') ?: '8M'),
             File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
-        )); 
-        
-        return floor($bytes/(1000*1000));        
+        ));
+
+        return floor($bytes/(1000*1000));
     }
 
     /**
      * Constructor. Sets some default permissions
-     * @param string $name  
-     * @param string $title 
-     * @param string $value 
-     * @param Form $form  
+     * @param string $name
+     * @param string $title
+     * @param string $value
+     * @param Form $form
      */
     public function __construct($name, $title = null, $value = null, $form = null) {
         $instance = $this;
 
         $this->permissions['upload'] = true;
         $this->permissions['detach'] = true;
-        $this->permissions['delete'] = function () use ($instance) {     
+        $this->permissions['delete'] = function () use ($instance) {
             return Injector::inst()->get('File')->canDelete() && $instance->isCMS();
         };
         $this->permissions['attach'] = function () use ($instance) {
@@ -129,15 +159,18 @@ class FileAttachmentField extends FileField {
     /**
      * Renders the form field, loads requirements. Sets file size based on php.ini
      * Adds the security token
-     * 
+     *
      * @param array $attributes [description]
      * @return  SSViewer
      */
-    public function FieldHolder($attributes = array ()) {                
-        Requirements::javascript(DROPZONE_DIR.'/javascript/dropzone.js');
-        Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field.js');
+    public function FieldHolder($attributes = array ()) {
+
+	    Requirements::javascript($this->filePath('dropzone_script_file'));
+	    $customScriptPath = $this->filePath('module_scripts_dir');
+
+        Requirements::javascript(Controller::join_links($customScriptPath, 'file_attachment_field.js'));
         if($this->isCMS()) {
-            Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field_backend.js');
+            Requirements::javascript(Controller::join_links($customScriptPath, 'file_attachment_field_backend.js'));
         }
         Requirements::css(DROPZONE_DIR.'/css/file_attachment_field.css');
 
@@ -145,7 +178,7 @@ class FileAttachmentField extends FileField {
             $this->settings['url'] = $this->Link('upload');
         }
 
-        if(!$this->getSetting('maxFilesize')) {            
+        if(!$this->getSetting('maxFilesize')) {
             $this->settings['maxFilesize'] = static::get_filesize_from_ini();
         }
         // The user may not have opted into a multiple upload. If the form field
@@ -162,7 +195,7 @@ class FileAttachmentField extends FileField {
         if($token = $this->getForm()->getSecurityToken()) {
             $this->addParam($token->getName(), $token->getSecurityID());
         }
-        
+
 
         return parent::FieldHolder($attributes);
     }
@@ -175,20 +208,20 @@ class FileAttachmentField extends FileField {
     public function saveInto(DataObjectInterface $record) {
         $fieldname = $this->getName();
         if(!$fieldname) return $this;
-        
+
         // Handle deletions. This is a bit of a hack. A workaround for having a single form field
         // post two params.
         $deletions = Controller::curr()->getRequest()->postVar('__deletion__'.$this->getName());
-        
+
         if($deletions) {
             foreach($deletions as $id) {
                 $this->deleteFileByID($id);
             }
         }
 
-        if($relation = $this->getRelation()) {            
-            $relation->setByIDList($this->Value());            
-        } elseif($record->has_one($fieldname)) {            
+        if($relation = $this->getRelation()) {
+            $relation->setByIDList($this->Value());
+        } elseif($record->has_one($fieldname)) {
             $record->{"{$fieldname}ID"} = $this->Value() ?: 0;
         } elseif($record->hasField($fieldname)) {
 			$record->$fieldname = is_array($this->Value()) ? implode(',', $this->Value()) : $this->Value();
@@ -211,7 +244,7 @@ class FileAttachmentField extends FileField {
     /**
      * Sets number of allowed parallel uploads
      * @param int $num
-     * @return  FileAttachmentField 
+     * @return  FileAttachmentField
      */
     public function setParallelUploads($num) {
         $this->settings['parallelUploads'] = $num;
@@ -226,7 +259,7 @@ class FileAttachmentField extends FileField {
      */
     public function setMultiple($bool) {
         $this->settings['uploadMultiple'] = $bool;
-        
+
         return $this;
     }
 
@@ -299,7 +332,7 @@ class FileAttachmentField extends FileField {
 
     /**
      * The layout of the uploader, either "grid" or "list"
-     * @param string $view 
+     * @param string $view
      * @return  FileAttachmentField
      */
     public function setView($view) {
@@ -374,7 +407,7 @@ class FileAttachmentField extends FileField {
      * Set auto-processing. If true, uploads happen on addition to the queue
      * @param boolean $bool
      * @return  FileAttachmentField
-     */ 
+     */
     public function setAutoProcessQueue($bool) {
         $this->settings['autoProcessQueue'] = $bool;
 
@@ -461,13 +494,13 @@ class FileAttachmentField extends FileField {
      * Returns true if the uploader is being used in CMS context
      * @return boolean
      */
-    public function isCMS() {        
+    public function isCMS() {
         return Controller::curr() instanceof LeftAndMain;
     }
 
     /**
      * Action to handle upload of a single file
-     * 
+     *
      * @param SS_HTTPRequest $request
      * @return SS_HTTPResponse
      * @return SS_HTTPResponse
@@ -481,14 +514,14 @@ class FileAttachmentField extends FileField {
             $token = $this->getForm()->getSecurityToken();
             if(!$token->checkRequest($request)) return $this->httpError(400);
         }
-                
+
         $name = $this->getSetting('paramName');
         $files = $_FILES[$name];
         $tmpFiles = array();
 
         // Sort the files out into a list of arrays containing each property
         if(!empty($files['tmp_name']) && is_array($files['tmp_name'])) {
-            for($i = 0; $i < count($files['tmp_name']); $i++) {                
+            for($i = 0; $i < count($files['tmp_name']); $i++) {
                 if(empty($files['tmp_name'][$i])) continue;
                 $tmpFile = array();
                 foreach(array('name', 'type', 'tmp_name', 'error', 'size') as $field) {
@@ -496,8 +529,8 @@ class FileAttachmentField extends FileField {
                 }
                 $tmpFiles[] = $tmpFile;
             }
-        } 
-        elseif(!empty($files['tmp_name'])) {            
+        }
+        elseif(!empty($files['tmp_name'])) {
             $tmpFiles[] = $files;
         }
 
@@ -505,8 +538,8 @@ class FileAttachmentField extends FileField {
         foreach($tmpFiles as $tmpFile) {
             if($tmpFile['error']) {
                 return $this->httpError(400, $tmpFile['error']);
-            }        
-            if($relationClass = $this->getFileClass($tmpFile['name'])) {  
+            }
+            if($relationClass = $this->getFileClass($tmpFile['name'])) {
                 $fileObject = Object::create($relationClass);
             }
 
@@ -514,14 +547,14 @@ class FileAttachmentField extends FileField {
                 $this->upload->loadIntoFile($tmpFile, $fileObject, $this->getFolderName());
                 $ids[] = $fileObject->ID;
             } catch (Exception $e) {
-                return $this->httpError(400, $e->getMessage());            
+                return $this->httpError(400, $e->getMessage());
             }
 
             if ($this->upload->isError()) {
                 return $this->httpError(400, implode(' ' . PHP_EOL, $this->upload->getErrors()));
             }
         }
-        
+
         return new SS_HTTPResponse(implode(',', $ids), 200);
     }
 
@@ -542,17 +575,17 @@ class FileAttachmentField extends FileField {
     /**
      * Deletes a file. Ensures user has permissions and the file is part
      * of the current record, so as not to allow arbitrary deletion of files
-     *    
+     *
      * @param  int $id
      * @return boolean
      */
     protected function deleteFileByID($id) {
         if($this->CanDelete() && $record = $this->getRecord()) {
-            if($relation = $this->getRelation()) {                
+            if($relation = $this->getRelation()) {
                 $file = $relation->byID($id);
             }
             else if($record->has_one($this->getName())) {
-                $file = $record->{$this->getName()}();                
+                $file = $record->{$this->getName()}();
             }
 
             if($file && $file->canDelete()) {
@@ -608,7 +641,7 @@ class FileAttachmentField extends FileField {
                 }
             }
         }
-		
+
 		if ($ids = $this->dataValue()) {
 			if (!is_array($ids)) {
 				$ids = explode(',', $ids);
@@ -641,7 +674,7 @@ class FileAttachmentField extends FileField {
      *
      * @return  string
      */
-    public function ThumbnailsDir() {        
+    public function ThumbnailsDir() {
         return $this->RootThumbnailsDir().'/'.$this->TemplateThumbnailSize()."px";
     }
 
@@ -728,7 +761,7 @@ class FileAttachmentField extends FileField {
         $w = $this->getSelectedThumbnailWidth();
 
         foreach($this->config()->icon_sizes as $size) {
-            if($w <= $size) return $size;    
+            if($w <= $size) return $size;
         }
     }
 
@@ -737,7 +770,7 @@ class FileAttachmentField extends FileField {
      *
      * @return  boolean
      */
-    public function AutoProcess() {                
+    public function AutoProcess() {
         $result = (bool) $this->getSetting('autoProcessQueue');
 
         return $result;
@@ -745,12 +778,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * Checks for a given permission. If it is a closure, invoke the method
-     * @param  string $perm 
+     * @param  string $perm
      * @return boolean
      */
     protected function checkPerm($perm) {
         if(!isset($this->permissions[$perm])) return false;
-        
+
         if(is_callable($this->permissions[$perm])) {
             return $this->permissions[$perm]();
         }
@@ -764,16 +797,16 @@ class FileAttachmentField extends FileField {
      *
      * If given a filename, look at the extension and upgrade it
      * to an Image if necessary.
-     * 
-     * @param  string $filename 
+     *
+     * @param  string $filename
      * @return string
      */
-    public function getFileClass($filename = null) {        
+    public function getFileClass($filename = null) {
         $name = $this->getName();
         $record = $this->getRecord();
 
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        $defaultClass = File::get_class_for_file_extension($ext);            
+        $defaultClass = File::get_class_for_file_extension($ext);
 
         if(empty($name) || empty($record)) {
             return $defaultClass;
@@ -785,17 +818,17 @@ class FileAttachmentField extends FileField {
     	}
 
         if($filename) {
-            if($defaultClass == "Image" && 
-               $this->config()->upgrade_images && 
+            if($defaultClass == "Image" &&
+               $this->config()->upgrade_images &&
                !Injector::inst()->get($class) instanceof Image
-            ) {                
+            ) {
                 $class = "Image";
             }
-        } 
+        }
 
-        return $class;       
+        return $class;
     }
-    
+
     /**
      * Get the record that this form field is editing
      * @return DataObject
@@ -804,9 +837,9 @@ class FileAttachmentField extends FileField {
         if (!$this->record && $this->form) {
             if (($record = $this->form->getRecord()) && ($record instanceof DataObject)) {
                 $this->record = $record;
-            } 
+            }
             elseif (($controller = $this->form->Controller())
-                && $controller->hasMethod('data') 
+                && $controller->hasMethod('data')
                 && ($record = $controller->data())
                 && ($record instanceof DataObject)
             ) {
@@ -824,11 +857,11 @@ class FileAttachmentField extends FileField {
     protected function getRelation() {
         if($record = $this->getRecord()) {
             $fieldname = $this->getName();
-            $relation = $record->hasMethod($fieldname) ? $record->$fieldname() : null;        
-            
+            $relation = $record->hasMethod($fieldname) ? $record->$fieldname() : null;
+
             return ($relation && ($relation instanceof RelationList || $relation instanceof UnsavedRelationList)) ? $relation : false;
         }
-        
+
         return false;
     }
 
@@ -836,14 +869,14 @@ class FileAttachmentField extends FileField {
      * Gets a given setting. Falls back on Config defaults
      *
      * Note: config settings are in underscore_case
-     * 
+     *
      * @param  string $setting
      * @return mixed
      */
-    protected function getSetting($setting) {        
-        if(isset($this->settings[$setting])) {             
+    protected function getSetting($setting) {
+        if(isset($this->settings[$setting])) {
             return $this->settings[$setting];
-        }        
+        }
 
         $config = Config::inst()->get(__CLASS__, "defaults");
         $configName = static::underscorise($setting);
@@ -852,25 +885,25 @@ class FileAttachmentField extends FileField {
     }
 
     /**
-     * Gets the default settings in the actual Javascript object so that 
+     * Gets the default settings in the actual Javascript object so that
      * the config JSON doesn't get polluted with default settings
-     * 
+     *
      * @return array
      */
     protected function getDefaults() {
-        $file_path = BASE_PATH.'/'.DROPZONE_DIR.'/'.$this->config()->default_config_path;
+	    $file_path = $this->filePath('dropzone_config_file', BASE_PATH);
         if(!file_exists($file_path)) {
             throw new Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
         }
 
-        return Convert::json2array(file_get_contents($file_path));        
+        return Convert::json2array(file_get_contents($file_path));
     }
 
     /**
      * Gets the thumbnail width given the current view type
      * @return int
      */
-    public function getSelectedThumbnailWidth() {  
+    public function getSelectedThumbnailWidth() {
         if($w = $this->getSetting('thumbnailWidth')) {
             return $w;
         }
@@ -888,7 +921,7 @@ class FileAttachmentField extends FileField {
         if($h = $this->getSetting('thumbnailHeight')) {
             return $h;
         }
-        
+
         $setting = $this->view == "grid" ? 'grid_thumbnail_height' : 'list_thumbnail_height';
 
         return $this->config()->$setting;
@@ -897,7 +930,7 @@ class FileAttachmentField extends FileField {
     /**
      * Creates a JSON representation of the settings. Augments the list with various
      * parameters calculated at run time.
-     *    
+     *
      * @return string
      */
     public function getConfigJSON() {
@@ -908,7 +941,7 @@ class FileAttachmentField extends FileField {
 
             // If the setting has been set on the instance, use that value
             if(isset($data[$js_name])) {
-                continue;            
+                continue;
             }
 
             // Only include the setting in the JSON if it differs from the core default value
@@ -932,6 +965,19 @@ class FileAttachmentField extends FileField {
 
         return Convert::array2json($data);
     }
+
+	/**
+	 * Return path from config.$configName relative to DROPZONE_DIR if relative, or site root if absolute.
+	 * @param string $configName configuration variable to use for path
+	 * @param string $base path to build from, required for e.g. 'file_exists' to work loading front-end config.
+	 * @return string
+	 */
+	protected function filePath($configName, $base = '') {
+		$path = $this->config()->get($configName);
+		return (substr($path, 0, 1) == '/')
+			? Controller::join_links($base, substr($path, 1))
+			: Controller::join_links($base, DROPZONE_DIR, $path);
+	}
 }
 
 class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
@@ -949,7 +995,7 @@ class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
         // Generate the folder selection field.
         $folderField = new TreeDropdownField('ParentID', _t('HtmlEditorField.FOLDER', 'Folder'), 'Folder');
         $folderField->setValue($folderID);
-        
+
         // Generate the file list field.
         $config = GridFieldConfig::create();
         $config->addComponent(new GridFieldSortableHeader());
@@ -1003,5 +1049,6 @@ class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
 
         return Convert::array2json($json);
     }
+
 
 }
