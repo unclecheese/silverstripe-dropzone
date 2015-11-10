@@ -3,7 +3,9 @@ Name: dropzone
 After: 'framework/*','cms/*'
 ---
 FileAttachmentField:
-  default_config_path: 'javascript/default_config.json'
+  module_scripts_dir: 'javascript/'
+  dropzone_script_file: 'javascript/dropzone.js'
+  dropzone_config_file: 'javascript/default_config.json'
   icon_sizes: [16, 32, 48, 64, 128, 512]
   upgrade_images: true
   list_thumbnail_width: 64
@@ -20,6 +22,6 @@ FileAttachmentField:
     clickable: '.dropzone-select'
     auto_process_queue: true
     auto_queue: true
-    add_remove_links: false    
+    add_remove_links: false
 File:
   extensions: [DropzoneFile]

@@ -1,5 +1,5 @@
 {
-    "name": "unclecheese/dropzone",
+    "name": "wakes/silverstripe-dropzone",
     "description": "An HTML5 upload field for the CMS and frontend forms.",
     "type": "silverstripe-module",
     "keywords": ["silverstripe", "upload", "uploader", "files", "forms", "cms"],
