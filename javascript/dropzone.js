@@ -857,6 +857,7 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
       } else {
         totalUploadProgress = 100;
       }
+
       return this.emit("totaluploadprogress", totalUploadProgress, totalBytes, totalBytesSent);
     };
 
@@ -1004,6 +1005,7 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
     };
 
     Dropzone.prototype.drop = function(e) {
+    	
       var files, items;
       if (!e.dataTransfer) {
         return;
@@ -1043,6 +1045,7 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
     };
 
     Dropzone.prototype._addFilesFromItems = function(items) {
+
       var entry, item, _i, _len, _results;
       _results = [];
       for (_i = 0, _len = items.length; _i < _len; _i++) {
@@ -1069,6 +1072,7 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
     };
 
     Dropzone.prototype._addFilesFromDirectory = function(directory, path) {
+    	
       var dirReader, entriesReader;
       dirReader = directory.createReader();
       entriesReader = (function(_this) {
@@ -1109,6 +1113,9 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
     };
 
     Dropzone.prototype.addFile = function(file) {
+    	
+      jQuery("button").fadeOut();
+    	
       file.upload = {
         progress: 0,
         total: file.size,
@@ -1484,6 +1491,9 @@ require.register("dropzone/lib/dropzone.js", function (exports, module) {
     };
 
     Dropzone.prototype._finished = function(files, responseText, e) {
+    	
+    	jQuery("button").fadeIn(); 
+    	
       var file, _i, _len;
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];

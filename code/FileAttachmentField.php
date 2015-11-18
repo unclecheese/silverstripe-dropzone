@@ -66,13 +66,6 @@ class FileAttachmentField extends FileField {
     protected $previewTemplate = 'FileAttachmentField_preview';
 
     /**
-     * UploadField compatability. Used for the select handler, when KickAssets
-     * is not installed
-     * @var string
-     */
-    protected $displayFolderName;
-
-    /**
      * Helper function to translate underscore_case to camelCase
      * @param  string $str
      * @return string
@@ -406,7 +399,15 @@ class FileAttachmentField extends FileField {
      */
     public function setMaxResolution($pixels) {
     	$this->settings['maxResolution'] = $pixels;
-
+    	return $this;
+    }
+    
+	/**
+     * Sets the min resolution for images, in pixels
+     * @param int $pixels
+     */
+    public function setMinResolution($pixels) {
+    	$this->settings['minResolution'] = $pixels;
     	return $this;
     }
 
@@ -463,21 +464,6 @@ class FileAttachmentField extends FileField {
             $perm => $val
         ));
     }
-
-	/**
-	 * @param String
-	 */
-	public function setDisplayFolderName($name) {
-		$this->displayFolderName = $name;
-		return $this;
-	}
-
-	/**
-	 * @return String
-	 */
-	public function getDisplayFolderName() {
-		return $this->displayFolderName;
-	}
 
     /**
      * Returns true if the uploader is being used in CMS context
@@ -942,7 +928,7 @@ class FileAttachmentField extends FileField {
         $data['params'] = $this->params;
         $data['thumbnailsDir'] = $this->ThumbnailsDir();
         $data['thumbnailWidth'] = $this->getSelectedThumbnailWidth();
-        $data['thumbnailHeight'] = $this->getSelectedThumbnailHeight();        
+        $data['thumbnailHeight'] = $this->getSelectedThumbnailHeight();
 
         if(!$this->IsMultiple()) {
             $data['maxFiles'] = 1;
@@ -950,9 +936,6 @@ class FileAttachmentField extends FileField {
 
         if($this->isCMS()) {
             $data['urlSelectDialog'] = $this->Link('select');
-            if($this->getFolderName()) {
-            	$data['folderID'] = Folder::find_or_make($this->getFolderName())->ID;
-            }
         }
 
         return Convert::array2json($data);

@@ -198,11 +198,15 @@ UploadInterface.prototype = {
      * @param  {Function} done      
      */
     accept: function (file, done) {
-    	if(this.settings.maxResolution && file.type.match(/image.*/)) {
-			this.checkImageResolution(file, this.settings.maxResolution, function (result, width, height) {
+    	if((this.settings.maxResolution || this.settings.minResolution) && file.type.match(/image.*/)) {
+			this.checkImageResolution(file, this.settings.maxResolution, this.settings.minResolution, function (result, errorType, width, height) {
 				var msg = null;
 				if(!result) {
-					msg = 'Resolution is too high. Please resize to ' + width + 'x' + height + ' or smaller';
+					if(errorType == "big"){
+						msg = 'Resolution is too high. Please resize to ' + width + 'x' + height + ' or smaller';
+					}else{
+						msg = 'Resolution is too small. Please resize to ' + width + 'x' + height + ' or bigger';
+					}
 				}
 				try {				
 					done(msg);
@@ -264,7 +268,7 @@ UploadInterface.prototype = {
      * @param  {int}   maxPixels The maximum resolution, in pixels
      * @param  {Function} callback       
      */
-    checkImageResolution: function (file, maxPixels, callback) {
+    checkImageResolution: function (file, maxPixels, minPixels, callback) {
 		var reader = new FileReader(),
 			image  = new Image();			
 
@@ -275,13 +279,21 @@ UploadInterface.prototype = {
 			image.onload = function() {
 				var imageW = this.width,
 					imageH = this.height,
-					pixels = imageW * imageH;					
+					pixels = imageW * imageH,
+					ratio;			
 
 					if(pixels > maxPixels) {
-						var ratio = imageH / imageW,
-							maxWidth = Math.floor(Math.sqrt(maxPixels / ratio)),
-							maxHeight = Math.round(maxWidth * ratio);
-							callback(false, maxWidth, maxHeight);
+						ratio = imageH / imageW,
+						maxWidth = Math.floor(Math.sqrt(maxPixels / ratio)),
+						maxHeight = Math.round(maxWidth * ratio);
+						callback(false, "big", maxWidth, maxHeight);
+					}
+					
+					if(pixels < minPixels) {
+						ratio = imageH / imageW,
+						minWidth = Math.floor(Math.sqrt(minPixels / ratio)),
+						minHeight = Math.round(minWidth * ratio);
+						callback(false, "small", minWidth, minHeight);
 					}
 
 					callback(true);

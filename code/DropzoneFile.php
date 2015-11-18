@@ -31,7 +31,7 @@ class DropzoneFile extends DataExtension {
 		if(!$w) $w = $this->owner->config()->grid_thumbnail_width;
 		if(!$h) $h = $this->owner->config()->grid_thumbnail_height;
 
-		if($this->IsImage() && Director::fileExists($this->owner->Filename)) {
+		if($this->IsImage()) {
 			return $this->owner->CroppedImage($w, $h);
 		}
 		
