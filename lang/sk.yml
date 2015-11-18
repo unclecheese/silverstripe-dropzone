@@ -1,0 +1,15 @@
+sk:
+  Dropzone:
+    ADDEDNOW: "Pridaný práve teraz"
+    ADDEDON: "Pridaný {date}"
+    ATTACHFILESHERE_OR: "Potiahnite súbory do tohto poľa alebo"
+    ATTACHFILEHERE_OR: "Potiahnite súbor do tohto poľa alebo"
+    BROWSEYOURCOMPUTER: "prehliadať súbory vo vašom počítači"
+    DELETED: "Na zmazanie"
+    DETACHFILE: "odstrániť prepojenie"
+    CHANGEAFTERSAVE: "Zmena sa prejaví po uložení."
+    MARKFORDELETION: "vymazať súbor"
+    NOTSUPPORTED: "Váš prehliadač nepodporuje HTML5 uploads. Prosím, aktualizujte ho na novšiu verziu."
+    REMOVED: "Na odstránenie"
+    UPLOADFILES: "Nahrať súbor(y)"
+    YOUCANALSO: "tiež môžete"
