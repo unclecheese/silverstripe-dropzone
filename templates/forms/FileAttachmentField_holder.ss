@@ -3,7 +3,7 @@
     <div id="{$Name}Dropzone" class="dropzone-holder <% if $isCMS %>backend<% end_if %> <% if $CanUpload %>uploadable<% end_if %>" data-config='$ConfigJSON'>
         <p>
             <% if $IsMultiple && $CanUpload %>
-                <%t Dropzone.ATTACHFILESHERE_OR "Attach files by dropping them in here." %>            
+                <%t Dropzone.ATTACHFILESHERE_OR "Attach files by dropping them in here." %>
             <% else_if $CanUpload %>
                 <%t Dropzone.ATTACHFILEHERE_OR "Attach a file by dropping it in here." %>
             <% end_if %>
@@ -39,8 +39,8 @@
         </div>
         <div class="attached-file-deletions" data-input-name="$InputName"></div>
         <div style="clear:both;"></div>
-        
-        <% if not $AutoProcess %>        
+
+        <% if not $AutoProcess %>
             <button class="process" data-auto-process><%t Dropzone.UPLOADFILES "Upload file(s)" %></button>
         <% end_if %>
 

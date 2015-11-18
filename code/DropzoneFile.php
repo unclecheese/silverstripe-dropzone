@@ -34,7 +34,7 @@ class DropzoneFile extends DataExtension {
 		if($this->IsImage() && Director::fileExists($this->owner->Filename)) {
 			return $this->owner->CroppedImage($w, $h);
 		}
-		
+
 		$sizes = Config::inst()->forClass('FileAttachmentField')->icon_sizes;
 		sort($sizes);
 
@@ -53,12 +53,12 @@ class DropzoneFile extends DataExtension {
 				return new Image_Cached(Director::makeRelative($file));
             }
         }
-	}	
+	}
 
 
 	/**
 	 * Gets a filename based on the extension and the size
-	 * 
+	 *
 	 * @param  string $ext  The extension of the file, e.g. "pdf"
 	 * @param  int $size The size of the image
 	 * @return string
