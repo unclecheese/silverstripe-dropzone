@@ -14,7 +14,7 @@ $('.dropzone-holder.backend').entwine({
 	openKickAssets: function () {
 		var self = this;
 		var config = this.getConfig();
-		var method = this.data('dropzoneInterface').uploadMultiple ? 'requestFiles' : 'requestFile';		
+		var method = this.data('dropzoneInterface').settings.uploadMultiple ? 'requestFiles' : 'requestFile';		
 		var perms = {
 			canDelete: false,
 			canUpload: false,
