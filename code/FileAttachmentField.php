@@ -170,6 +170,7 @@ class FileAttachmentField extends FileField {
             $this->addParam($token->getName(), $token->getSecurityID());
         }
 
+        $this->extend('onBeforeRender', $this);
 
         return parent::FieldHolder($attributes);
     }
@@ -623,28 +624,32 @@ class FileAttachmentField extends FileField {
             if($record->hasMethod($this->getName())) {
                 $result = $record->{$this->getName()}();
                 if($result instanceof SS_List) {
+                    $this->extend('updateAttachedFiles', $result);
                     return $result;
                 }
                 else if($result->exists()) {
-                    return ArrayList::create(array($result));
+                    $result = ArrayList::create(array($result));
+                    $this->extend('updateAttachedFiles', $result);
+                    return $result;
                 }
             }
         }
 
-		if ($ids = $this->dataValue()) {
-			if (!is_array($ids)) {
-				$ids = explode(',', $ids);
-			}
+        if ($ids = $this->dataValue()) {
+            if (!is_array($ids)) {
+                $ids = explode(',', $ids);
+            }
 
-			$attachments = ArrayList::create();
-			foreach ($ids as $id) {
-				$file = File::get()->byID((int) $id);
-				if ($file && $file->canView()) {
-					$attachments->push($file);
-				}
-			}
-			return $attachments;
-		}
+            $attachments = ArrayList::create();
+            foreach ($ids as $id) {
+                $file = File::get()->byID((int) $id);
+                if ($file && $file->canView()) {
+                    $attachments->push($file);
+                }
+            }
+            $this->extend('updateAttachedFiles', $attachments);
+            return $attachments;
+        }
 
         return false;
     }
@@ -862,7 +867,7 @@ class FileAttachmentField extends FileField {
      * @param  string $setting
      * @return mixed
      */
-    protected function getSetting($setting) {
+    public function getSetting($setting) {
         if(isset($this->settings[$setting])) {
             return $this->settings[$setting];
         }
@@ -871,6 +876,20 @@ class FileAttachmentField extends FileField {
         $configName = static::underscorise($setting);
 
         return isset($config[$configName]) ? $config[$configName] : null;
+    }
+    
+    /**
+     * Sets a given setting.
+     *
+     * Note: config settings are in underscore_case
+     *
+     * @param  string $setting
+     * @param  string $value
+     */
+    public function setSetting($setting, $value) {
+    	$this->settings[static::underscorise($setting)] = $value;
+    	
+    	return $this;
     }
 
     /**
