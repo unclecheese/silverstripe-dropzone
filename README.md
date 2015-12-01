@@ -65,7 +65,7 @@ FileAttachmentField::create('MyFiles', 'Upload some  files')
 Image uploads get a few extra options.
 
 ```php
-FileAttachementField::create('MyImage','Upload an image')
+FileAttachmentField::create('MyImage','Upload an image')
     ->imagesOnly() // If bound to a record, with a relation to 'Image', this isn't necessary.
     ->setMaxResolution(50000000); // Do not accept images over 5 megapixels
 ```
