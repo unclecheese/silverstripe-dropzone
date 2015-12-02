@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Adds helper methods to the core {@link File} object
+ * Adds helper methods to the core {@link File} object 
  *
  * @package  unclecheese/dropzone
  * @author  Uncle Cheese <unclecheese@leftandmain.com>
