@@ -197,24 +197,28 @@ UploadInterface.prototype = {
      * @param  {File}   file 
      * @param  {Function} done      
      */
-    accept: function (file, done) {
-    	if(this.settings.maxResolution && file.type.match(/image.*/)) {
-			this.checkImageResolution(file, this.settings.maxResolution, function (result, width, height) {
-				var msg = null;
-				if(!result) {
+	accept: function (file, done) {
+    	if((this.settings.maxResolution || this.settings.minResolution) && file.type.match(/image.*/)) {
+		this.checkImageResolution(file, this.settings.maxResolution, this.settings.minResolution, function (result, errorType, width, height) {
+			var msg = null;
+			if(!result) {
+				if(errorType == "big"){
 					msg = 'Resolution is too high. Please resize to ' + width + 'x' + height + ' or smaller';
+				}else{
+					msg = 'Resolution is too small. Please resize to ' + width + 'x' + height + ' or bigger';
 				}
-				try {				
-					done(msg);
-				}
-				// Because this check is asynchronous, the file has already been queued at this point
-				// and Dropzone throws an error for queuing a rejected file. Just ignore it.
-				catch (e) {}
-			});
-		}
-		else {
-			return done();
-		}
+			}
+			try {				
+				done(msg);
+			}
+			// Because this check is asynchronous, the file has already been queued at this point
+			// and Dropzone throws an error for queuing a rejected file. Just ignore it.
+			catch (e) {}
+		});
+	}
+	else {
+		return done();
+	}
     },
 
     /**
