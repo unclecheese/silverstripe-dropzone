@@ -409,6 +409,15 @@ class FileAttachmentField extends FileField {
 
     	return $this;
     }
+    
+    /**
+     * Sets the min resolution for images, in pixels
+     * @param int $pixels
+     */
+    public function setMinResolution($pixels) {
+    	$this->settings['minResolution'] = $pixels;
+    	return $this;
+    }
 
     /**
      * Sets selector for the preview template
