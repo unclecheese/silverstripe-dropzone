@@ -108,7 +108,7 @@ class FileAttachmentField extends FileField {
             File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
         ));
 
-        return floor($bytes/(1000*1000));
+        return floor($bytes/(1024*1024));
     }
 
     /**
