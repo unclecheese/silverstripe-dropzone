@@ -96,4 +96,6 @@ window.dropzones.MyFileDropzone.clear();
 
 ## Troubleshooting
 
+ * When using `FileAttachmentField` with `BootstrapForm` be sure to [ignore it from the bootstrap transformation](https://github.com/unclecheese/silverstripe-bootstrap-forms/blob/master/code/BootstrapFieldList.php#L74).
+
 Ring Uncle Cheese.
