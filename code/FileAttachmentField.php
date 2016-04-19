@@ -154,7 +154,7 @@ class FileAttachmentField extends FileField {
      */
     public function SmallFieldHolder($attributes = array ()) {
         $this->defineFieldHolderRequirements();
-        return parent::FieldHolder($attributes);
+        return parent::SmallFieldHolder($attributes);
     }
 
     /**
