@@ -137,10 +137,30 @@ class FileAttachmentField extends FileField {
      * Renders the form field, loads requirements. Sets file size based on php.ini
      * Adds the security token
      *
-     * @param array $attributes [description]
+     * @param array $attributes
      * @return  SSViewer
      */
     public function FieldHolder($attributes = array ()) {
+        $this->defineFieldHolderRequirements();
+        return parent::FieldHolder($attributes);
+    }
+
+    /**
+     * Renders the small form field holder, loads requirements. Sets file size based on php.ini
+     * Adds the security token
+     *
+     * @param array $attributes
+     * @return  SSViewer
+     */
+    public function SmallFieldHolder($attributes = array ()) {
+        $this->defineFieldHolderRequirements();
+        return parent::FieldHolder($attributes);
+    }
+
+    /**
+     * Define some requirements and settings just before rendering the Field Holder.
+     */
+    protected function defineFieldHolderRequirements() {
         Requirements::javascript(DROPZONE_DIR.'/javascript/dropzone.js');
         Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field.js');
         if($this->isCMS()) {
@@ -169,9 +189,6 @@ class FileAttachmentField extends FileField {
         if($token = $this->getForm()->getSecurityToken()) {
             $this->addParam($token->getName(), $token->getSecurityID());
         }
-
-
-        return parent::FieldHolder($attributes);
     }
 
     /**
@@ -409,7 +426,7 @@ class FileAttachmentField extends FileField {
 
     	return $this;
     }
-    
+
     /**
      * Sets the min resolution for images, in pixels
      * @param int $pixels
@@ -951,7 +968,7 @@ class FileAttachmentField extends FileField {
         $data['params'] = $this->params;
         $data['thumbnailsDir'] = $this->ThumbnailsDir();
         $data['thumbnailWidth'] = $this->getSelectedThumbnailWidth();
-        $data['thumbnailHeight'] = $this->getSelectedThumbnailHeight();        
+        $data['thumbnailHeight'] = $this->getSelectedThumbnailHeight();
 
         if(!$this->IsMultiple()) {
             $data['maxFiles'] = 1;
