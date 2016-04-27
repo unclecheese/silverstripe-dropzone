@@ -539,6 +539,9 @@ function q(selector, context) {
     return [].slice.call(node.querySelectorAll(selector));
 }
 
+// Expose UploadInterface as a browser global
+window.UploadInterface = UploadInterface;
+
 // If entwine is available, i.e. CMS, use it.
 if(typeof jQuery === 'function' && typeof jQuery.entwine === 'function') {
     jQuery('.dropzone-holder').entwine({
