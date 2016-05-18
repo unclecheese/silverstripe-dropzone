@@ -210,7 +210,7 @@ class FileAttachmentField extends FileField {
             }
         }
 
-        if($relation = $this->getRelation()) {
+        if(($relation = $this->getRelation()) && is_array($this->Value())) {
             $relation->setByIDList($this->Value());
         } elseif($record->has_one($fieldname)) {
             $record->{"{$fieldname}ID"} = $this->Value() ?: 0;
