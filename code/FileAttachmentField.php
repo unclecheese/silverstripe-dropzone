@@ -210,7 +210,7 @@ class FileAttachmentField extends FileField {
             }
         }
 
-        if(($relation = $this->getRelation())) {
+        if(($relation = $this->getRelation($record))) {
             $relation->setByIDList((array) $this->Value());
         } elseif($record->has_one($fieldname)) {
             $record->{"{$fieldname}ID"} = $this->Value() ?: 0;
@@ -869,8 +869,10 @@ class FileAttachmentField extends FileField {
      * Gets the name of the relation, if attached to a record
      * @return string
      */
-    protected function getRelation() {
-        if($record = $this->getRecord()) {
+    protected function getRelation($record = null) {
+        if(!$record) $record = $this->getRecord();
+
+        if($record) {
             $fieldname = $this->getName();
             $relation = $record->hasMethod($fieldname) ? $record->$fieldname() : null;
 
