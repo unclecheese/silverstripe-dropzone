@@ -267,6 +267,17 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * Maximum number of files allowed to be attached
+     * @param int $num
+     * @return $this
+     */
+    public function setMaxFiles($num){
+        $this->settings['maxFiles'] = $num;
+
+        return $this;
+    }
+
+    /**
      * Sets the name of the upload parameter, e.g. "Files"
      * @param string $name
      * @return  FileAttachmentField
