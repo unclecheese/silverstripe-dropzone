@@ -73,6 +73,12 @@ class FileAttachmentField extends FileField {
     protected $displayFolderName;
 
     /**
+     * Set to true if detected invalid file ID
+     * @var boolean
+     */
+    protected $hasInvalidFileID;
+
+    /**
      * Helper function to translate underscore_case to camelCase
      * @param  string $str
      * @return string
@@ -308,6 +314,91 @@ class FileAttachmentField extends FileField {
         $this->settings['thumbnailFilesize'] = $num;
 
         return $this;
+    }
+
+    /**
+     * Get an associative array of File IDs uploaded through this field
+     * during this session.
+     *
+     * @return array
+     */
+    public function getValidFileIDs() {
+        $validIDs = Session::get('FileAttachmentField.validFileIDs');
+        if ($validIDs && is_array($validIDs)) {
+            return $validIDs;
+        }
+        return array();
+    }
+
+    /**
+     * Check that the user is submitting the file IDs that they uploaded.
+     *
+     * @return boolean
+     */
+    public function validate($validator) {
+        if ($this->hasInvalidFileID) {
+            // If detected invalid file during 'Form::loadDataFrom'
+            // (Below validation isn't triggered as setValue() removes the invalid ID
+            //  to prevent the CMS from loading something it shouldn't, also stops the
+            //  validator from realizing there's an invalid ID.)
+            $validator->validationError(
+                $this->name,
+                _t(
+                    'FileAttachmentField.VALIDATION',
+                    'Invalid file ID sent.',
+                    array('id' => $id)
+                ),
+                "validation"
+            );
+            return false;
+        }
+
+        if ($value && is_array($value)) {
+            // Prevent a malicious user from inspecting element and changing
+            // one of the <input type="hidden"> fields to use an invalid File ID.
+            $validIDs = $this->getValidFileIDs();
+            foreach ($value as $id) {
+                if (!isset($validIDs[$id])) {
+                    if ($validator) {
+                        $validator->validationError(
+                            $this->name,
+                            _t(
+                                'FileAttachmentField.VALIDATION',
+                                'Invalid file ID sent.',
+                                array('id' => $id)
+                            ),
+                            "validation"
+                        );
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setValue($val, $data = array()) {
+        if ($data && isset($data[$this->getName()])) {
+            // Prevent Form::loadDataFrom() from loading invalid File IDs
+            $isInvalid = false;
+            $validIDs = $this->getValidFileIDs();
+            $ids = &$data[$this->getName()];
+            foreach ($ids as $i => $id) {
+                if ($validIDs && !isset($validIDs[$id])) {
+                    unset($ids[$i]);
+                    $isInvalid = true;
+                }
+            }
+            if ($isInvalid) {
+                $ids = array_values($ids);
+                $val = $ids;
+                $this->hasInvalidFileID = true;
+            }
+        }
+        return parent::setValue($val, $data);
     }
 
     /**
@@ -581,6 +672,16 @@ class FileAttachmentField extends FileField {
             }
         }
 
+        if ($ids) {
+            $validIDs = Session::get('FileAttachmentField.validFileIDs');
+            if (!$validIDs) {
+                $validIDs = array();
+            }
+            foreach ($ids as $id) {
+                $validIDs[$id] = $id;
+            }
+            Session::set('FileAttachmentField.validFileIDs', $validIDs);
+        }
         return new SS_HTTPResponse(implode(',', $ids), 200);
     }
 
