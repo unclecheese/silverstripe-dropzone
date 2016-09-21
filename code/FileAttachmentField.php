@@ -317,6 +317,22 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * Add an array of IDs
+     *
+     * @return void
+     */
+    public function addValidFileIDs(array $ids) {
+        $validIDs = Session::get('FileAttachmentField.validFileIDs');
+        if (!$validIDs) {
+            $validIDs = array();
+        }
+        foreach ($ids as $id) {
+            $validIDs[$id] = $id;
+        }
+        Session::set('FileAttachmentField.validFileIDs', $validIDs);
+    }
+
+    /**
      * Get an associative array of File IDs uploaded through this field
      * during this session.
      *
@@ -345,14 +361,14 @@ class FileAttachmentField extends FileField {
                 $this->name,
                 _t(
                     'FileAttachmentField.VALIDATION',
-                    'Invalid file ID sent.',
-                    array('id' => $id)
+                    'Invalid file ID sent.'
                 ),
                 "validation"
             );
             return false;
         }
 
+        $value = $this->dataValue();
         if ($value && is_array($value)) {
             // Prevent a malicious user from inspecting element and changing
             // one of the <input type="hidden"> fields to use an invalid File ID.
@@ -381,21 +397,26 @@ class FileAttachmentField extends FileField {
      * @return $this
      */
     public function setValue($val, $data = array()) {
-        if ($data && isset($data[$this->getName()])) {
+        if ($data && is_array($data) && isset($data[$this->getName()])) {
             // Prevent Form::loadDataFrom() from loading invalid File IDs
             $isInvalid = false;
             $validIDs = $this->getValidFileIDs();
-            $ids = &$data[$this->getName()];
-            foreach ($ids as $i => $id) {
-                if ($validIDs && !isset($validIDs[$id])) {
-                    unset($ids[$i]);
-                    $isInvalid = true;
+            // NOTE(Jake): If the $data[$name] is an array, its coming from 'loadDataFrom'
+            //             If its a single value, its just re-populating the ID on DB data most likely.
+            if (is_array($data[$this->getName()])) {
+                $ids = &$data[$this->getName()];
+                foreach ($ids as $i => $id) {
+                    if ($validIDs && !isset($validIDs[$id])) {
+                        unset($ids[$i]);
+                        $isInvalid = true;
+                    }
                 }
-            }
-            if ($isInvalid) {
-                $ids = array_values($ids);
-                $val = $ids;
-                $this->hasInvalidFileID = true;
+                if ($isInvalid) {
+                    $ids = array_values($ids);
+                    $val = $ids;
+                    $this->hasInvalidFileID = true;
+                }
+                unset($ids); // stop $ids variable from modifying to $data array.
             }
         }
         return parent::setValue($val, $data);
@@ -672,16 +693,7 @@ class FileAttachmentField extends FileField {
             }
         }
 
-        if ($ids) {
-            $validIDs = Session::get('FileAttachmentField.validFileIDs');
-            if (!$validIDs) {
-                $validIDs = array();
-            }
-            foreach ($ids as $id) {
-                $validIDs[$id] = $id;
-            }
-            Session::set('FileAttachmentField.validFileIDs', $validIDs);
-        }
+        $this->addValidFileIDs($ids);
         return new SS_HTTPResponse(implode(',', $ids), 200);
     }
 
@@ -1105,7 +1117,6 @@ class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
         'filesbyid',
     );
 
-
     /**
      * @param $folderID The ID of the folder to display.
      * @return FormField
@@ -1152,6 +1163,7 @@ class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
         $ids = $r->getVar('ids');
         $files = File::get()->byIDs(explode(',',$ids));
 
+        $validIDs = array();
         $json = array ();
         foreach($files as $file) {
             $template = new SSViewer('FileAttachmentField_attachments');
@@ -1160,12 +1172,14 @@ class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
                 'Scope' => $this->parent
             )));
 
+            $validIDs[$file->ID] = $file->ID;
             $json[] = array (
                 'id' => $file->ID,
                 'html' => $html->forTemplate()
             );
         }
 
+        $this->parent->addValidFileIDs($validIDs);
         return Convert::array2json($json);
     }
 
