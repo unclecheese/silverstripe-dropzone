@@ -510,7 +510,7 @@ class FileAttachmentField extends FileField {
      */
     public function setAcceptedMimeTypes($types = array ()) {
         if(is_array($types)) {
-            $types = explode(',', $types);
+            $types = implode(',', $types);
         }
         $this->settings['acceptedMimeTypes'] = $types;
 
