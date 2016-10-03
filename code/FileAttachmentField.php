@@ -23,6 +23,14 @@ class FileAttachmentField extends FileField {
     );
 
     /**
+     * Track files that are uploaded and remove the tracked files when
+     * they are saved into a record.
+     *
+     * @var boolean
+     */
+    private static $track_files = false;
+
+    /**
      * A list of settings for this instance
      * @var array
      */
@@ -224,6 +232,14 @@ class FileAttachmentField extends FileField {
 			$record->$fieldname = is_array($this->Value()) ? implode(',', $this->Value()) : $this->Value();
 		}
 
+        if ($this->getTrackFiles()) {
+            $fileIDs = (array)$this->Value();
+            $trackRecords = FileAttachmentFieldTrack::get()->filter(array('FileID' => $fileIDs));
+            foreach ($trackRecords as $trackRecord) {
+                $trackRecord->delete();
+            }
+        }
+
         return $this;
     }
 
@@ -235,6 +251,27 @@ class FileAttachmentField extends FileField {
     public function setMethod($method) {
         $this->settings['method'] = $method;
 
+        return $this;
+    }
+
+    /**
+     * Return whether files are tracked or not.
+     * @return boolean
+     */
+    public function getTrackFiles() {
+        if (isset($this->settings['trackFiles']) && $this->settings['trackFiles'] !== null) {
+            return $this->settings['trackFiles'];
+        }
+        return $this->config()->track_files;
+    }
+
+    /**
+     * Enable/disable file tracking on uploads
+     * @param boolean $bool
+     * @return  FileAttachmentField
+     */
+    public function setTrackFiles($bool) {
+        $this->settings['trackFiles'] = $bool;
         return $this;
     }
 
@@ -648,8 +685,11 @@ class FileAttachmentField extends FileField {
             return $this->httpError(403);
         }
 
-        if($this->getForm()) {
-            $token = $this->getForm()->getSecurityToken();
+        $form = $this->getForm();
+        $formClass = '';
+        if($form) {
+            $formClass = get_class($form);
+            $token = $form->getSecurityToken();
             if(!$token->checkRequest($request)) return $this->httpError(400);
         }
 
@@ -690,6 +730,13 @@ class FileAttachmentField extends FileField {
 
             if ($this->upload->isError()) {
                 return $this->httpError(400, implode(' ' . PHP_EOL, $this->upload->getErrors()));
+            }
+
+            if ($this->getTrackFiles()) {
+                $trackFile = FileAttachmentFieldTrack::create();
+                $trackFile->FormClass = $formClass;
+                $trackFile->FileID = $fileObject->ID;
+                $trackFile->write();
             }
         }
 
