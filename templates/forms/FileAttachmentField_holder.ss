@@ -39,7 +39,6 @@
         </div>
         <div class="attached-file-deletions" data-input-name="$InputName"></div>
         <div style="clear:both;"></div>
-
         <% if not $AutoProcess %>
             <button class="process" data-auto-process><%t Dropzone.UPLOADFILES "Upload file(s)" %></button>
         <% end_if %>
@@ -50,4 +49,5 @@
         <p><strong><%t Dropzone.NOTSUPPORTED "Your browser does not support HTML5 uploads. Please update to a newer version." %></strong></p>
     </div>
 
+    <% if $Message %><span class="message $MessageType">$Message</span><% end_if %>
 </div>

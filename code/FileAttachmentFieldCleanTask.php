@@ -3,12 +3,15 @@
 /**
  * Delete all files being tracked that weren't saved against anything.
  *
+ * WARNING: You must call 'FileAttachmentFieldTrack::untrack' against IDs on custom-built forms or you
+ *          -will- remove files accidentally.
+ *
  * @package  unclecheese/silverstripe-dropzone
  */
 class FileAttachmentFieldCleanTask extends BuildTask {
-    protected $title = "File Attachment Field - Clear tracked files";
+    protected $title = "File Attachment Field - Clear all tracked files that are older than 1 hour";
     
-    protected $description = 'Delete files uploaded via FileAttachmentField that aren\'t attached to anything';
+    protected $description = 'Delete files uploaded via FileAttachmentField that aren\'t attached to anything.';
     
     public function run($request) {
         $files = FileAttachmentFieldTrack::get()->filter(array('Created:LessThanOrEqual' => date('Y-m-d H:i:s', time()-3600)));
@@ -17,8 +20,10 @@ class FileAttachmentFieldCleanTask extends BuildTask {
             foreach ($files as $trackRecord) {
                 $file = $trackRecord->File();
                 if ($file && $file->exists()) {
-                    DB::alteration_message('Remove File #'.$file->ID.' from "'.$trackRecord->FormClass.'" on Page #'.$trackRecord->PageID, 'changed');
+                    DB::alteration_message('Remove File #'.$file->ID.' from "'.$trackRecord->ControllerClass.'" on '.$trackRecord->RecordClass.' #'.$trackRecord->RecordID, 'error');
                     $file->delete();
+                } else {
+                    DB::alteration_message('Untrack missing File #'.$file->ID.' from "'.$trackRecord->ControllerClass.'" on '.$trackRecord->RecordClass.' #'.$trackRecord->RecordID, 'error');
                 }
                 $trackRecord->delete();
             }

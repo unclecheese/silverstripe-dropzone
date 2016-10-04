@@ -234,10 +234,7 @@ class FileAttachmentField extends FileField {
 
         if ($this->getTrackFiles()) {
             $fileIDs = (array)$this->Value();
-            $trackRecords = FileAttachmentFieldTrack::get()->filter(array('FileID' => $fileIDs));
-            foreach ($trackRecords as $trackRecord) {
-                $trackRecord->delete();
-            }
+            FileAttachmentFieldTrack::untrack($fileIDs);
         }
 
         return $this;
@@ -321,6 +318,16 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * Maximum number of files allowed to be attached
+     * (Keeps API consistent with UploadField)
+     * @param int $num
+     * @return $this
+     */
+    public function setAllowedMaxFileNumber($num) {
+        return $this->setMaxFiles($num);
+    }
+
+    /**
      * Sets the name of the upload parameter, e.g. "Files"
      * @param string $name
      * @return  FileAttachmentField
@@ -389,6 +396,26 @@ class FileAttachmentField extends FileField {
      * @return boolean
      */
     public function validate($validator) {
+        $result = true;
+
+        // Detect if files have been removed between AJAX uploads and form submission
+        $value = $this->dataValue();
+        if ($value) {
+            $ids = (array)$value;
+            $fileCount = (int)File::get()->filter(array('ID' => $ids))->count();
+            if (count($ids) !== $fileCount) {
+                $validator->validationError(
+                    $this->name,
+                    _t(
+                        'FileAttachmentField.MISSINGFILE',
+                        'Files sent with form have since been removed from the server.'
+                    ),
+                    "validation"
+                );
+                $result = false;
+            }
+        }
+
         if ($this->hasInvalidFileID) {
             // If detected invalid file during 'Form::loadDataFrom'
             // (Below validation isn't triggered as setValue() removes the invalid ID
@@ -402,11 +429,8 @@ class FileAttachmentField extends FileField {
                 ),
                 "validation"
             );
-            return false;
-        }
-
-        $value = $this->dataValue();
-        if ($value && is_array($value)) {
+            $result = false;
+        } else if ($value && is_array($value)) {
             // Prevent a malicious user from inspecting element and changing
             // one of the <input type="hidden"> fields to use an invalid File ID.
             $validIDs = $this->getValidFileIDs();
@@ -423,11 +447,12 @@ class FileAttachmentField extends FileField {
                             "validation"
                         );
                     }
-                    return false;
+                    $result = false;
                 }
             }
         }
-        return true;
+
+        return $result;
     }
 
     /**
@@ -686,9 +711,7 @@ class FileAttachmentField extends FileField {
         }
 
         $form = $this->getForm();
-        $formClass = '';
         if($form) {
-            $formClass = get_class($form);
             $token = $form->getSecurityToken();
             if(!$token->checkRequest($request)) return $this->httpError(400);
         }
@@ -733,8 +756,23 @@ class FileAttachmentField extends FileField {
             }
 
             if ($this->getTrackFiles()) {
+                $controller = Controller::has_curr() ? Controller::curr() : null;
+                $formClass = ($form) ? get_class($form) : '';
+
                 $trackFile = FileAttachmentFieldTrack::create();
-                $trackFile->FormClass = $formClass;
+                if ($controller instanceof LeftAndMain) {
+                    // If in CMS (store DataObject or Page)
+                    $formController = $form->getController();
+                    $trackFile->ControllerClass = $formController->class;
+                    if (!$formController instanceof LeftAndMain) {
+                        $trackFile->setRecord($formController->getRecord());
+                    }
+                } else if ($formClass !== 'Form') {
+                    $trackFile->ControllerClass = $formClass;
+                } else {
+                    // If using generic 'Form' instance, get controller
+                    $trackFile->ControllerClass = $controller->class;
+                }
                 $trackFile->FileID = $fileObject->ID;
                 $trackFile->write();
             }

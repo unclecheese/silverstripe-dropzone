@@ -2,36 +2,68 @@
 
 /**
  * Track files as they're uploaded and remove when they've been saved.
- * NOTE: Run task to cleanup leftover files.
  *
  * @package  unclecheese/silverstripe-dropzone
  */
 class FileAttachmentFieldTrack extends DataObject {
     private static $db = array(
         'SessionID' => 'Varchar(255)',
-        'FormClass' => 'Varchar(60)',
+        'ControllerClass' => 'Varchar(60)',
+        'RecordID' => 'Int',
+        'RecordClass' => 'Varchar(60)',
     );
 
     private static $has_one = array(
         'File' => 'File',
-        'Page' => 'SiteTree',
     );
+
+    public static function untrack($fileIDs) {
+        if (!$fileIDs) {
+            return;
+        }
+        $fileIDs = (array)$fileIDs;
+        $trackRecords = FileAttachmentFieldTrack::get()->filter(array('FileID' => $fileIDs));
+        foreach ($trackRecords as $trackRecord) {
+            $trackRecord->delete();
+        }
+    }
 
     public function onBeforeWrite() {
         parent::onBeforeWrite();
         if (!$this->exists()) {
             $this->SessionID = session_id();
 
-            // Store page this file was tracked on.
-            if (Controller::has_curr()) {
+            // Store record this file was tracked on.
+            if (!$this->RecordID && Controller::has_curr()) {
                 $controller = Controller::curr();
+                $pageRecord = null;
                 if ($controller->hasMethod('data')) {
+                    // Store page visiting on frontend (ContentController)
                     $pageRecord = $controller->data();
-                    if ($pageRecord && $pageRecord instanceof DataObjectInterface) {
-                        $this->PageID = $pageRecord->ID;
-                    }
+                } else if ($controller->hasMethod('currentPageID')) {
+                    // Store editing page in CMS (LeftAndMain)
+                    $id = $controller->currentPageID();
+                    $pageRecord = $controller->getRecord($id);
+                } else if ($controller->hasMethod('getRecord')) {
+                    $pageRecord = $controller->getRecord();
+                }
+
+                if ($pageRecord && $pageRecord instanceof DataObjectInterface) {
+                    $this->RecordID = $pageRecord->ID;
+                    $this->RecordClass = $pageRecord->ClassName;
                 }
             }
+        }
+    }
+
+    public function setRecord($record) {
+        $this->RecordID = $record->ID;
+        $this->RecordClass = $record->ClassName;
+    }
+
+    public function Record() {
+        if ($this->RecordClass && $this->RecordID) {
+            return DataObject::get_one($this->RecordClass, "ID = ".(int)$this->RecordID);
         }
     }
 }
