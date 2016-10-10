@@ -7,7 +7,6 @@
  */
 class FileAttachmentFieldTrack extends DataObject {
     private static $db = array(
-        'SessionID' => 'Varchar(255)',
         'ControllerClass' => 'Varchar(60)',
         'RecordID' => 'Int',
         'RecordClass' => 'Varchar(60)',
@@ -31,8 +30,6 @@ class FileAttachmentFieldTrack extends DataObject {
     public function onBeforeWrite() {
         parent::onBeforeWrite();
         if (!$this->exists()) {
-            $this->SessionID = session_id();
-
             // Store record this file was tracked on.
             if (!$this->RecordID && Controller::has_curr()) {
                 $controller = Controller::curr();

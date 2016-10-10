@@ -3,8 +3,8 @@
 /**
  * Delete all files being tracked that weren't saved against anything.
  *
- * WARNING: You must call 'FileAttachmentFieldTrack::untrack' against IDs on custom-built forms or you
- *          -will- remove files accidentally.
+ * WARNING: You must call Form::saveInto or 'FileAttachmentFieldTrack::untrack' against IDs on custom-built forms or you
+ *          -will- remove files accidentally with this task.
  *
  * @package  unclecheese/silverstripe-dropzone
  */
@@ -19,7 +19,7 @@ class FileAttachmentFieldCleanTask extends BuildTask {
         if ($files) {
             foreach ($files as $trackRecord) {
                 $file = $trackRecord->File();
-                if ($file && $file->exists()) {
+                if ($file->exists()) {
                     DB::alteration_message('Remove File #'.$file->ID.' from "'.$trackRecord->ControllerClass.'" on '.$trackRecord->RecordClass.' #'.$trackRecord->RecordID, 'error');
                     $file->delete();
                 } else {
