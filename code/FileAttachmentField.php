@@ -23,6 +23,14 @@ class FileAttachmentField extends FileField {
     );
 
     /**
+     * Track files that are uploaded and remove the tracked files when
+     * they are saved into a record.
+     *
+     * @var boolean
+     */
+    private static $track_files = false;
+
+    /**
      * A list of settings for this instance
      * @var array
      */
@@ -224,6 +232,11 @@ class FileAttachmentField extends FileField {
 			$record->$fieldname = is_array($this->Value()) ? implode(',', $this->Value()) : $this->Value();
 		}
 
+        if ($this->getTrackFiles()) {
+            $fileIDs = (array)$this->Value();
+            FileAttachmentFieldTrack::untrack($fileIDs);
+        }
+
         return $this;
     }
 
@@ -235,6 +248,27 @@ class FileAttachmentField extends FileField {
     public function setMethod($method) {
         $this->settings['method'] = $method;
 
+        return $this;
+    }
+
+    /**
+     * Return whether files are tracked or not.
+     * @return boolean
+     */
+    public function getTrackFiles() {
+        if (isset($this->settings['trackFiles']) && $this->settings['trackFiles'] !== null) {
+            return $this->settings['trackFiles'];
+        }
+        return $this->config()->track_files;
+    }
+
+    /**
+     * Enable/disable file tracking on uploads
+     * @param boolean $bool
+     * @return  FileAttachmentField
+     */
+    public function setTrackFiles($bool) {
+        $this->settings['trackFiles'] = $bool;
         return $this;
     }
 
@@ -281,6 +315,16 @@ class FileAttachmentField extends FileField {
         $this->settings['maxFiles'] = $num;
 
         return $this;
+    }
+
+    /**
+     * Maximum number of files allowed to be attached
+     * (Keeps API consistent with UploadField)
+     * @param int $num
+     * @return $this
+     */
+    public function setAllowedMaxFileNumber($num) {
+        return $this->setMaxFiles($num);
     }
 
     /**
@@ -352,6 +396,26 @@ class FileAttachmentField extends FileField {
      * @return boolean
      */
     public function validate($validator) {
+        $result = true;
+
+        // Detect if files have been removed between AJAX uploads and form submission
+        $value = $this->dataValue();
+        if ($value) {
+            $ids = (array)$value;
+            $fileCount = (int)File::get()->filter(array('ID' => $ids))->count();
+            if (count($ids) !== $fileCount) {
+                $validator->validationError(
+                    $this->name,
+                    _t(
+                        'FileAttachmentField.MISSINGFILE',
+                        'Files sent with form have since been removed from the server.'
+                    ),
+                    "validation"
+                );
+                $result = false;
+            }
+        }
+
         if ($this->hasInvalidFileID) {
             // If detected invalid file during 'Form::loadDataFrom'
             // (Below validation isn't triggered as setValue() removes the invalid ID
@@ -365,11 +429,8 @@ class FileAttachmentField extends FileField {
                 ),
                 "validation"
             );
-            return false;
-        }
-
-        $value = $this->dataValue();
-        if ($value && is_array($value)) {
+            $result = false;
+        } else if ($value && is_array($value)) {
             // Prevent a malicious user from inspecting element and changing
             // one of the <input type="hidden"> fields to use an invalid File ID.
             $validIDs = $this->getValidFileIDs();
@@ -386,11 +447,12 @@ class FileAttachmentField extends FileField {
                             "validation"
                         );
                     }
-                    return false;
+                    $result = false;
                 }
             }
         }
-        return true;
+
+        return $result;
     }
 
     /**
@@ -648,8 +710,9 @@ class FileAttachmentField extends FileField {
             return $this->httpError(403);
         }
 
-        if($this->getForm()) {
-            $token = $this->getForm()->getSecurityToken();
+        $form = $this->getForm();
+        if($form) {
+            $token = $form->getSecurityToken();
             if(!$token->checkRequest($request)) return $this->httpError(400);
         }
 
@@ -690,6 +753,28 @@ class FileAttachmentField extends FileField {
 
             if ($this->upload->isError()) {
                 return $this->httpError(400, implode(' ' . PHP_EOL, $this->upload->getErrors()));
+            }
+
+            if ($this->getTrackFiles()) {
+                $controller = Controller::has_curr() ? Controller::curr() : null;
+                $formClass = ($form) ? get_class($form) : '';
+
+                $trackFile = FileAttachmentFieldTrack::create();
+                if ($controller instanceof LeftAndMain) {
+                    // If in CMS (store DataObject or Page)
+                    $formController = $form->getController();
+                    $trackFile->ControllerClass = $formController->class;
+                    if (!$formController instanceof LeftAndMain) {
+                        $trackFile->setRecord($formController->getRecord());
+                    }
+                } else if ($formClass !== 'Form') {
+                    $trackFile->ControllerClass = $formClass;
+                } else {
+                    // If using generic 'Form' instance, get controller
+                    $trackFile->ControllerClass = $controller->class;
+                }
+                $trackFile->FileID = $fileObject->ID;
+                $trackFile->write();
             }
         }
 
