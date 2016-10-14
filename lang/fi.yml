@@ -1,0 +1,16 @@
+fi:
+  Dropzone:
+    ATTACHFILESHERE_OR: "Liitä tiedostoja pudottamalla ne tähän, tai"
+    ATTACHFILEHERE_OF: "Liitä tiedosto pudottamalla se tähän, tai"
+    YOUCANALSO: "voit myös"
+    CHOOSEEXISTING: "valita jo olemassaolevista"
+    OR: " tai "
+    BROWSEYOURCOMPUTER: "selata tietokonettasi"
+    UPLOADFILES: "Lähetä tiedosto(t)"
+    NOTSUPPORTED: "Selaimesi ei tue HTML5 lähetystä. Päivitä uudempaan versioon."
+    DETACHFILE: "irrota"
+    REMOVED: "irrotettu"
+    MARKFORDELETION: "poista"
+    DELETED: "poistettu"
+    CHANGEAFTERSAVE: "Muutos tulee voimaan tallennuksen jälkeen."
+    ADDEDON: "Lisätty {date}"
