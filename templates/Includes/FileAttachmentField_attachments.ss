@@ -33,7 +33,7 @@
                     <% end_if %>
                     <% if $Scope.CanDelete %>
                         <span data-delete class="dropzone-action delete">
-                            <span><%t Dropzone.MARKFORDELEION 'delete' %></span>
+                            <span><%t Dropzone.MARKFORDELETION 'delete' %></span>
                             <img src="$Scope.DropzoneDir/images/trash.png" width="16">
                         </span>
                     <% end_if %>
