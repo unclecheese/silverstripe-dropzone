@@ -1,0 +1,9 @@
+it:
+  Dropzone:
+    ATTACHFILESHERE_OR: "Allega files trascinandoli qui, o"
+    ATTACHFILEHERE_OF: "Allega un file trascinandolo qui, o"
+    BROWSEYOURCOMPUTER: "sfoglia dal tuo computer"
+    UPLOADFILES: "Carica file(s)"
+    NOTSUPPORTED: "Il tuo browser non supporta gli upload HTML5. Per piacere aggiorna ad una versione più recente."
+    DETACHFILE: "rimuovi"
+    MARKFORDELETION: "elimina"
