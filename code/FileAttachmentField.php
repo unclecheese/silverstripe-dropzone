@@ -867,6 +867,10 @@ class FileAttachmentField extends FileField {
         }
 
 		if ($ids = $this->dataValue()) {
+			if($ids instanceof ManyManyList) {
+				$ids = array_keys($ids->map()->toArray());
+			}
+
 			if (!is_array($ids)) {
 				$ids = explode(',', $ids);
 			}
