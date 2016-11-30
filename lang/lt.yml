@@ -1,0 +1,9 @@
+lt:
+  Dropzone:
+    ATTACHFILESHERE_OR: "Prisekite failus keliant juos čia, arba"
+    ATTACHFILEHERE_OF: "Prisekite failą keliant jį čia, arba"
+    BROWSEYOURCOMPUTER: "pasirinkti iš kompiuterio"
+    UPLOADFILES: "Įkelti failą(-us)"
+    NOTSUPPORTED: "Jūsų naršyklė nepalaiko HTML5 failų įkėlimo. Prašome atnaujinti savo naršyklę."
+    DETACHFILE: "pašalinti"
+    MARKFORDELETION: "panaikinti"
