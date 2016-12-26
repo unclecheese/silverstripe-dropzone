@@ -1,0 +1,9 @@
+hr:
+  Dropzone:
+    ATTACHFILESHERE_OR: "Dodajte datoteke ispuštajući ih ovdje, ili"
+    ATTACHFILEHERE_OF: "Dodajte datoteku ispuštajući je ovdje, ili"
+    BROWSEYOURCOMPUTER: "pretraži svoje računalo"
+    UPLOADFILES: "Prenesi datoteku(e)"
+    NOTSUPPORTED: "Vaš Internet preglednik ne podržava HTML5 prijenose. Molimo instalirajte novu verziju."
+    DETACHFILE: "ukloni"
+    MARKFORDELETION: "obriši"
