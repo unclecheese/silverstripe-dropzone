@@ -266,9 +266,10 @@ UploadInterface.prototype = {
      * A utility method for checking the resolution of a dropped file.
      * @param  {File}   file      
      * @param  {int}   maxPixels The maximum resolution, in pixels
+     * @param  {int}   minPixels The minimum resolution, in pixels
      * @param  {Function} callback       
      */
-    checkImageResolution: function (file, maxPixels, callback) {
+    checkImageResolution: function (file, maxPixels, minPixels, callback) {
 		var reader = new FileReader(),
 			image  = new Image();			
 
@@ -286,6 +287,13 @@ UploadInterface.prototype = {
 							maxWidth = Math.floor(Math.sqrt(maxPixels / ratio)),
 							maxHeight = Math.round(maxWidth * ratio);
 							callback(false, maxWidth, maxHeight);
+					}
+				        if (pixels < minPixels) {
+						var ratio = imageH / imageW,
+							minWidth = Math.floor(Math.sqrt(minPixels / ratio)),
+							minHeight = Math.round(minWidth * ratio);
+							callback(false, minWidth, minHeight);
+
 					}
 
 					callback(true);
