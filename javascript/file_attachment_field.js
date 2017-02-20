@@ -286,13 +286,13 @@ UploadInterface.prototype = {
 						var ratio = imageH / imageW,
 							maxWidth = Math.floor(Math.sqrt(maxPixels / ratio)),
 							maxHeight = Math.round(maxWidth * ratio);
-							callback(false, maxWidth, maxHeight);
+							callback(false, 'big', maxWidth, maxHeight);
 					}
 				        if (pixels < minPixels) {
 						var ratio = imageH / imageW,
 							minWidth = Math.floor(Math.sqrt(minPixels / ratio)),
 							minHeight = Math.round(minWidth * ratio);
-							callback(false, minWidth, minHeight);
+							callback(false, 'small', minWidth, minHeight);
 
 					}
 
