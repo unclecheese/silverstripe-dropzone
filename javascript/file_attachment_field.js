@@ -13,6 +13,20 @@ var UploadInterface = function (node, backend) {
     this.settings = JSON.parse(node.getAttribute('data-config'));
     this.node = node;
     this.droppedFiles = [];
+    if (!this.settings.params) {
+        this.settings.params = {};
+    }
+
+    if (!this.settings.params.SecurityID) {
+        var formNode = this.node;
+        do {
+            formNode = formNode.parentNode;
+        } while (formNode && formNode.tagName !== 'FORM' && formNode.nodeType !== 11);
+        var securityIDNode = formNode.querySelector("input[name=\"SecurityID\"]");
+        if (securityIDNode) {
+            this.settings.params.SecurityID = securityIDNode.value;
+        }
+    }
     
     if(template) {
         this.settings.previewTemplate = template.innerHTML;
