@@ -199,10 +199,6 @@ class FileAttachmentField extends FileField {
                 $this->imagesOnly();
             }
         }
-
-        if($token = $this->getForm()->getSecurityToken()) {
-            $this->addParam($token->getName(), $token->getSecurityID());
-        }
     }
 
     /**
@@ -1180,7 +1176,7 @@ class FileAttachmentField extends FileField {
             }
         }
 
-        $data['params'] = $this->params;
+        $data['params'] = ($this->params) ? $this->params : null;
         $data['thumbnailsDir'] = $this->ThumbnailsDir();
         $data['thumbnailWidth'] = $this->getSelectedThumbnailWidth();
         $data['thumbnailHeight'] = $this->getSelectedThumbnailHeight();
