@@ -40,7 +40,9 @@ var UploadInterface = function (node, backend) {
     this.settings.fallback = UploadInterface.prototype.fallback.bind(this);
     this.settings.accept = UploadInterface.prototype.accept.bind(this);
     
-    if(this.node.classList.contains('uploadable')) {
+    if (document.documentElement.classList && this.node.classList.contains('uploadable')) {
+        this.backend = new backend(this.node, this.settings);
+    } else if (this.node.className.indexOf('uploadable') !== -1) {
         this.backend = new backend(this.node, this.settings);
     }
 
