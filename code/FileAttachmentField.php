@@ -1,5 +1,24 @@
 <?php
 
+use SilverStripe\Forms\FileField;
+use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\View\Requirements;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Assets\File;
+use SilverStripe\Assets\Folder;
+use SilverStripe\Assets\Image;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Core\Convert;
+use SilverStripe\Core\Object;
+use SilverStripe\Control\Session;
+use SilverStripe\ORM\ManyManyList;
+use SilverStripe\ORM\SS_List;
+use SilverStripe\ORM\ArrayList;
+
 /**
  * Defines the FileAttachementField form field type
  *
@@ -71,7 +90,7 @@ class FileAttachmentField extends FileField {
      * that have been attached to the uploader client side
      * @var string
      */
-    protected $previewTemplate = 'FileAttachmentField_preview';
+    protected $previewTemplate = 'Includes\\FileAttachmentField_preview';
 
     /**
      * UploadField compatability. Used for the select handler, when KickAssets
@@ -143,6 +162,9 @@ class FileAttachmentField extends FileField {
         $this->permissions['attach'] = function () use ($instance) {
             return $instance->isCMS();
         };
+
+        $this->setFieldHolderTemplate('forms\\FileAttachmentField_holder');
+        $this->setSmallFieldHolderTemplate('forms\\FileAttachmentField_holder_small');
 
         parent::__construct($name, $title, $value, $form);
     }
@@ -220,9 +242,11 @@ class FileAttachmentField extends FileField {
             }
         }
 
+        $ones = $record->hasOne();
+
         if(($relation = $this->getRelation($record))) {
             $relation->setByIDList((array) $this->Value());
-        } elseif($record->has_one($fieldname)) {
+        } else if(isset($ones[$fieldname])) {
             $record->{"{$fieldname}ID"} = $this->Value() ?: 0;
         } elseif($record->hasField($fieldname)) {
 			$record->$fieldname = is_array($this->Value()) ? implode(',', $this->Value()) : $this->Value();
@@ -697,11 +721,11 @@ class FileAttachmentField extends FileField {
     /**
      * Action to handle upload of a single file
      *
-     * @param SS_HTTPRequest $request
-     * @return SS_HTTPResponse
-     * @return SS_HTTPResponse
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     * @return HTTPResponse
      */
-    public function upload(SS_HTTPRequest $request) {
+    public function upload(HTTPRequest $request) {
         if($this->isDisabled() || $this->isReadonly() || !$this->CanUpload()) {
             return $this->httpError(403);
         }
@@ -775,15 +799,15 @@ class FileAttachmentField extends FileField {
         }
 
         $this->addValidFileIDs($ids);
-        return new SS_HTTPResponse(implode(',', $ids), 200);
+        return new HTTPResponse(implode(',', $ids), 200);
     }
 
 
     /**
-     * @param SS_HTTPRequest $request
+     * @param HTTPRequest $request
      * @return UploadField_ItemHandler
      */
-    public function handleSelect(SS_HTTPRequest $request) {
+    public function handleSelect(HTTPRequest $request) {
         if($this->isDisabled() || $this->isReadonly() || !$this->CanAttach()) {
             return $this->httpError(403);
         }
@@ -801,10 +825,12 @@ class FileAttachmentField extends FileField {
      */
     protected function deleteFileByID($id) {
         if($this->CanDelete() && $record = $this->getRecord()) {
+            $ones = $record->hasOne();
+
             if($relation = $this->getRelation()) {
                 $file = $relation->byID($id);
             }
-            else if($record->has_one($this->getName())) {
+            else if(isset($ones[$this->getName()])) {
                 $file = $record->{$this->getName()}();
             }
 
@@ -829,7 +855,17 @@ class FileAttachmentField extends FileField {
         }
 
         if($record = $this->getRecord()) {
-            return ($record->many_many($this->getName()) || $record->has_many($this->getName()));
+            $manyMany = $record->manyMany();
+
+            if(isset($manyMany[$this->getName()])) {
+                return true;
+            }
+
+            $hasMany = $record->hasMany();
+
+            if(isset($hasMany[$this->getName()])) {
+                return true;
+            }
         }
 
         return false;
@@ -1062,12 +1098,17 @@ class FileAttachmentField extends FileField {
             if (($record = $this->form->getRecord()) && ($record instanceof DataObject)) {
                 $this->record = $record;
             }
-            elseif (($controller = $this->form->Controller())
-                && $controller->hasMethod('data')
-                && ($record = $controller->data())
-                && ($record instanceof DataObject)
-            ) {
-                $this->record = $record;
+            else if ($controller = $this->form->getController()) {
+                if($controller->hasMethod('data') 
+                    && ($record = $controller->data()) 
+                    && ($record instanceof DataObject)) 
+                {
+                    $this->record = $record;
+                } else if($controller->hasMethod('getRecord')) {
+                    if($record = $controller->getRecord($controller->currentPageID())) {
+                        $this->record = $record;
+                    }
+                }
             }
         }
 
@@ -1194,78 +1235,4 @@ class FileAttachmentField extends FileField {
 
         return Convert::array2json($data);
     }
-}
-
-class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
-
-    private static $allowed_actions = array (
-        'filesbyid',
-    );
-
-    /**
-     * @param $folderID The ID of the folder to display.
-     * @return FormField
-     */
-    protected function getListField($folderID) {
-        // Generate the folder selection field.
-        $folderField = new TreeDropdownField('ParentID', _t('HtmlEditorField.FOLDER', 'Folder'), 'Folder');
-        $folderField->setValue($folderID);
-
-        // Generate the file list field.
-        $config = GridFieldConfig::create();
-        $config->addComponent(new GridFieldSortableHeader());
-        $config->addComponent(new GridFieldFilterHeader());
-        $config->addComponent($columns = new GridFieldDataColumns());
-        $columns->setDisplayFields(array(
-            'StripThumbnail' => '',
-            'Name' => 'Name',
-            'Title' => 'Title'
-        ));
-        $config->addComponent(new GridFieldPaginator(8));
-
-        // If relation is to be autoset, we need to make sure we only list compatible objects.
-        $baseClass = $this->parent->getFileClass();
-
-        // Create the data source for the list of files within the current directory.
-        $files = DataList::create($baseClass)->filter('ParentID', $folderID);
-
-        $fileField = new GridField('Files', false, $files, $config);
-        $fileField->setAttribute('data-selectable', true);
-        if($this->parent->IsMultiple()) {
-            $fileField->setAttribute('data-multiselect', true);
-        }
-
-        $selectComposite = new CompositeField(
-            $folderField,
-            $fileField
-        );
-
-        return $selectComposite;
-    }
-
-
-    public function filesbyid(SS_HTTPRequest $r) {
-        $ids = $r->getVar('ids');
-        $files = File::get()->byIDs(explode(',',$ids));
-
-        $validIDs = array();
-        $json = array ();
-        foreach($files as $file) {
-            $template = new SSViewer('FileAttachmentField_attachments');
-            $html = $template->process(ArrayData::create(array(
-                'File' => $file,
-                'Scope' => $this->parent
-            )));
-
-            $validIDs[$file->ID] = $file->ID;
-            $json[] = array (
-                'id' => $file->ID,
-                'html' => $html->forTemplate()
-            );
-        }
-
-        $this->parent->addValidFileIDs($validIDs);
-        return Convert::array2json($json);
-    }
-
 }

@@ -1,6 +1,6 @@
 ---
 Name: dropzone
-After: 'framework/*','cms/*'
+After: 'framework/*'
 ---
 FileAttachmentField:
   default_config_path: 'javascript/default_config.json'
@@ -21,5 +21,6 @@ FileAttachmentField:
     auto_process_queue: true
     auto_queue: true
     add_remove_links: false    
-File:
-  extensions: [DropzoneFile]
+SilverStripe\Assets\File:
+  extensions: 
+    - DropzoneFile

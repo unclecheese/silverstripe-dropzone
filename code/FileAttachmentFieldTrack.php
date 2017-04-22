@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\ORM\DataObject;
+
 /**
  * Track files as they're uploaded and remove when they've been saved.
  *
