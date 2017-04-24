@@ -1,4 +1,4 @@
-<li data-id="$File.ID"
+<li data-id="$File.ID" data-file-link="$File.Link"
     class="<% if $Scope.CanDelete && $Scope.CanDetach %>dual-perm<% end_if %>
             $Scope.CSSSize
            <% if $File.Orientation > -1 %>dropzone-image<% else %>dropzone-file<% end_if %>"
@@ -12,8 +12,8 @@
                 <% else %>
                     style="width:{$Scope.SelectedThumbnailWidth}px"
                 <% end_if %>
-                <% if $File.Orientation > -1 %>
-                    src="$File.CroppedImage($Scope.SelectedThumbnailWidth, $Scope.SelectedThumbnailHeight).URL"
+                <% if $File.IsImage && $File.Orientation > -1 %>
+                    src="$File.Fill($Scope.SelectedThumbnailWidth, $Scope.SelectedThumbnailHeight).URL"
                 <% else %>
                     src="$Scope.ThumbnailsDir/{$File.Extension.LowerCase}.png" onerror="this.src='$Scope.ThumbnailsDir/_blank.png'" onload="this.parentNode.style.backgroundImage='url('+this.src+')';this.style.display='none';"
                 <% end_if %>

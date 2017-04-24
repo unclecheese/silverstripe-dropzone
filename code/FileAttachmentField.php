@@ -1099,14 +1099,18 @@ class FileAttachmentField extends FileField {
                 $this->record = $record;
             }
             else if ($controller = $this->form->getController()) {
-                if($controller->hasMethod('data') 
-                    && ($record = $controller->data()) 
-                    && ($record instanceof DataObject)) 
+                if($controller->hasMethod('data')
+                    && ($record = $controller->data())
+                    && ($record instanceof DataObject))
                 {
                     $this->record = $record;
                 } else if($controller->hasMethod('getRecord')) {
-                    if($record = $controller->getRecord($controller->currentPageID())) {
-                        $this->record = $record;
+                    if($controller->hasMethod('currentPageID')) {
+                        if($record = $controller->getRecord($controller->currentPageID())) {
+                            $this->record = $record;
+                        }
+                    } else {
+                        $this->record = $controller->getRecord();
                     }
                 }
             }
