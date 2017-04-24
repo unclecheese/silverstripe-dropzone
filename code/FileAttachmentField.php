@@ -1239,4 +1239,19 @@ class FileAttachmentField extends FileField {
 
         return Convert::array2json($data);
     }
+
+    public function performReadonlyTransformation() {
+        $readonly = clone $this;
+        $readonly->setPermissions([
+            'attach' => false,
+            'detach' => false,
+            'upload' => false,
+            'delete' => false
+        ]);
+
+        //$readonly->setReadonly(true);
+        $readonly->addExtraClass('readonly');
+
+        return $readonly;
+    }
 }
