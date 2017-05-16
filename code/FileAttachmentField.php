@@ -157,7 +157,7 @@ class FileAttachmentField extends FileField {
         $this->permissions['upload'] = true;
         $this->permissions['detach'] = true;
         $this->permissions['delete'] = function () use ($instance) {
-            return Injector::inst()->get('File')->canDelete() && $instance->isCMS();
+            return Injector::inst()->get(File::class)->canDelete() && $instance->isCMS();
         };
         $this->permissions['attach'] = function () use ($instance) {
             return $instance->isCMS();
@@ -1074,7 +1074,7 @@ class FileAttachmentField extends FileField {
 
         if($record) {
     	    $class = $record->getRelationClass($name);
-        	if(!$class) $class = "File";
+        	if(!$class) $class = File::class;
     	}
 
         if($filename) {
@@ -1082,7 +1082,7 @@ class FileAttachmentField extends FileField {
                $this->config()->upgrade_images &&
                !Injector::inst()->get($class) instanceof Image
             ) {
-                $class = "Image";
+                $class = Image::class;
             }
         }
 
