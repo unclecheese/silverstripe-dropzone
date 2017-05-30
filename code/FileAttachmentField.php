@@ -452,11 +452,39 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * @param int|array $val
+     * @param array|DataObject $data
      * @return $this
      */
     public function setValue($val, $data = array()) {
+        if (!$val && $data && $data instanceof DataObject && $data->exists()) {
+            // NOTE: This stops validation errors from occuring when editing
+            //       an already saved DataObject.
+            $fieldName = $this->getName();
+            $ids = array();
+            if ($data->hasOneComponent($fieldName)) {
+                $id = $data->{$fieldName.'ID'};
+                if ($id) {
+                   $ids[] = $id; 
+                }
+            } else if ($data->hasManyComponent($fieldName) || $data->manyManyComponent($fieldName)) {
+                $files = $data->{$fieldName}();
+                if ($files) {
+                    foreach ($files as $file) {
+                        if (!$file->exists()) {
+                            continue;
+                        }
+                        $ids[] = $file->ID; 
+                    }
+                }
+            }
+            if ($ids) {
+                $this->addValidFileIDs($ids);
+            }
+        }
         if ($data && is_array($data) && isset($data[$this->getName()])) {
             // Prevent Form::loadDataFrom() from loading invalid File IDs
+            // that may have been passed.
             $isInvalid = false;
             $validIDs = $this->getValidFileIDs();
             // NOTE(Jake): If the $data[$name] is an array, its coming from 'loadDataFrom'
