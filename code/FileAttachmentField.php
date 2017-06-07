@@ -13,7 +13,6 @@ use SilverStripe\Assets\Image;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Core\Convert;
-use SilverStripe\Core\Object;
 use SilverStripe\Control\Session;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\ORM\SS_List;
@@ -761,7 +760,7 @@ class FileAttachmentField extends FileField {
                 return $this->httpError(400, $tmpFile['error']);
             }
             if($relationClass = $this->getFileClass($tmpFile['name'])) {
-                $fileObject = Object::create($relationClass);
+                $fileObject = Injector::inst()->create($relationClass);
             }
 
             try {
