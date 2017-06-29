@@ -13,7 +13,6 @@ use SilverStripe\Assets\Image;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Core\Convert;
-use SilverStripe\Control\Session;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\ORM\ArrayList;
@@ -385,14 +384,18 @@ class FileAttachmentField extends FileField {
      * @return void
      */
     public function addValidFileIDs(array $ids) {
-        $validIDs = Session::get('FileAttachmentField.validFileIDs');
+        $session = Controller::curr()->getRequest()->getSession();
+
+        $validIDs = $session->get('FileAttachmentField.validFileIDs');
+
         if (!$validIDs) {
             $validIDs = array();
         }
         foreach ($ids as $id) {
             $validIDs[$id] = $id;
         }
-        Session::set('FileAttachmentField.validFileIDs', $validIDs);
+
+        $session->set('FileAttachmentField.validFileIDs', $validIDs);
     }
 
     /**
@@ -402,10 +405,14 @@ class FileAttachmentField extends FileField {
      * @return array
      */
     public function getValidFileIDs() {
-        $validIDs = Session::get('FileAttachmentField.validFileIDs');
+        $session = Controller::curr()->getRequest()->getSession();
+
+        $validIDs = $session->get('FileAttachmentField.validFileIDs');
+
         if ($validIDs && is_array($validIDs)) {
             return $validIDs;
         }
+
         return array();
     }
 
