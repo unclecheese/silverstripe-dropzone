@@ -309,6 +309,11 @@ class FileAttachmentField extends FileField {
      */
     public function setMaxFiles($num){
         $this->settings['maxFiles'] = $num;
+        if ($num > 1) {
+            $this->setMultiple(true);
+        } else {
+            $this->setMultiple(false);
+        }
 
         return $this;
     }
