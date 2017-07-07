@@ -574,7 +574,23 @@ class FileAttachmentField extends FileField {
         if(is_array($files)) {
             $files = implode(',', $files);
         }
-        $this->settings['acceptedFiles'] = str_replace(' ', '', $files);
+        $files = str_replace(' ', '', $files);
+        $this->settings['acceptedFiles'] = $files;
+
+        // Update validator
+        $validator = $this->getValidator();
+        if ($validator) {
+            $fileExts = explode(',', $files);
+
+            $validatorExts = array();
+            foreach ($fileExts as $fileExt) {
+                if ($fileExt && isset($fileExt[0]) && $fileExt[0] === '.') {
+                    $fileExt = substr($fileExt, 1);
+                }
+                $validatorExts[] = $fileExt;
+            }
+            $validator->setAllowedExtensions($validatorExts);
+        }
 
         return $this;
     }
