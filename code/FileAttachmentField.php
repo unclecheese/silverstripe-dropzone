@@ -298,7 +298,10 @@ class FileAttachmentField extends FileField {
      */
     public function setMaxFilesize($num) {
         $this->settings['maxFilesize'] = $num;
-
+        $validator = $this->getValidator();
+        if ($validator) {
+            $validator->setAllowedMaxFileSize($num.'m');
+        }
         return $this;
     }
 
