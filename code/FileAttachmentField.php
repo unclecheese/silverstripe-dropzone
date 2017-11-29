@@ -429,10 +429,13 @@ class FileAttachmentField extends FileField {
                 "validation"
             );
             $result = false;
-        } else if ($value && is_array($value)) {
+        } else if ($value) {
             // Prevent a malicious user from inspecting element and changing
             // one of the <input type="hidden"> fields to use an invalid File ID.
             $validIDs = $this->getValidFileIDs();
+            if (!is_array($value)) {
+                $value = array($value);
+            }
             foreach ($value as $id) {
                 if (!isset($validIDs[$id])) {
                     if ($validator) {
