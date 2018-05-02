@@ -801,7 +801,8 @@ class FileAttachmentField extends FileField {
         }
         
         // No files detected in the upload, this can occur if post_max_size is < the upload size
-        if(empty($files) || empty($request->postVar($name))) {
+        $value = $request->postVar($name);
+        if(empty($files) || empty($value)) {
           $error_message = _t('FileAttachmentField.NOFILESUPLOADED', 'No files were detected in your upload. Please try again later.');
           return $this->httpError(400, $error_message);
         }
