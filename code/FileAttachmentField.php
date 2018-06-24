@@ -209,12 +209,12 @@ class FileAttachmentField extends FileField {
      * Define some requirements and settings just before rendering the Field Holder.
      */
     protected function defineFieldHolderRequirements() {
-        Requirements::javascript(DROPZONE_DIR.'/javascript/dropzone.js');
-        Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field.js');
+        Requirements::javascript('unclecheese/dropzone:/javascript/dropzone.js');
+        Requirements::javascript('unclecheese/dropzone:/javascript/file_attachment_field.js');
         if($this->isCMS()) {
-            Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field_backend.js');
+            Requirements::javascript('unclecheese/dropzone:/javascript/file_attachment_field_backend.js');
         }
-        Requirements::css(DROPZONE_DIR.'/css/file_attachment_field.css');
+        Requirements::css('unclecheese/dropzone:/css/file_attachment_field.css');
 
         if(!$this->getSetting('url')) {
             $this->settings['url'] = $this->Link('upload');
@@ -1028,7 +1028,7 @@ class FileAttachmentField extends FileField {
      * @return  string
      */
     public function RootThumbnailsDir() {
-        return $this->getSetting('thumbnailsDir') ?: DROPZONE_DIR.'/images/file-icons';
+        return $this->getSetting('thumbnailsDir') ?: 'unclecheese/dropzone:/images/file-icons';
     }
 
     /**
@@ -1255,7 +1255,7 @@ class FileAttachmentField extends FileField {
      * @return array
      */
     protected function getDefaults() {
-        $file_path = BASE_PATH.'/'.DROPZONE_DIR.'/'.$this->config()->default_config_path;
+        $file_path = BASE_PATH.'/'.'unclecheese/dropzone:/'.$this->config()->default_config_path;
         if(!file_exists($file_path)) {
             throw new Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
         }
