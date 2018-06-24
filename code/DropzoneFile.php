@@ -1,5 +1,7 @@
 <?php
 
+namespace UncleCheese\DropZone;
+
 use SilverStripe\Assets\Image;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;

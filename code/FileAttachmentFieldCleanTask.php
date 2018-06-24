@@ -1,4 +1,5 @@
 <?php
+namespace UncleCheese\DropZone;
 
 use SilverStripe\ORM\DB;
 use SilverStripe\Dev\BuildTask;

@@ -1,4 +1,5 @@
 <?php
+namespace UncleCheese\DropZone;
 
 use SilverStripe\Assets\File;
 use SilverStripe\Core\Injector\Injector;
