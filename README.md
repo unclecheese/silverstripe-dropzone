@@ -35,16 +35,20 @@ The Dropzone module provides `FileAttachmentField`, a robust HTML5 uploading int
 <img src="https://raw.githubusercontent.com/unclecheese/silverstripe-dropzone/master/images/screenshots/screen5.png" width="75%">
 
 ## Usage
-The field instantiates similarly to `UploadField`, taking the name of the file relationship and a label, as the first two arguments. Once instantiated, there are many ways to configure the UI.
+The field instantiates similarly to `UploadField`, taking the name of the file relationship and a label, as the first 
+two arguments. Once instantiated, there are many ways to configure the UI.
 
 ```php
 FileAttachmentField::create('MyFile', 'Upload a file')
   ->setView('grid')
 ```
 
-If the form holding the upload field is bound to a record, (i.e. with `loadDataFrom()`), the upload field will automatically allow multiple files if the relation is a `has_many` or `many_many`. If the form is not bound to a record, you can use `setMultiple(true)`.
+If the form holding the upload field is bound to a record, (i.e. with `loadDataFrom()`), the upload field will 
+automatically allow multiple files if the relation is a `has_many` or `many_many`. If the form is not bound to a record,
+you can use `setMultiple(true)`.
 
-Image-only uploads can be forced using the `imagesOnly()` method. If the form is bound to a record, and the relation points to an `Image` class, this will be automatically set.
+Image-only uploads can be forced using the `imagesOnly()` method. If the form is bound to a record, and the relation 
+points to an `Image` class, this will be automatically set.
 
 ### More advanced options
 
