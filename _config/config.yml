@@ -1,6 +1,5 @@
 ---
 Name: dropzone
-After: 'framework/*','cms/*'
 ---
 FileAttachmentField:
   default_config_path: javascript/default_config.json
@@ -29,4 +28,4 @@ FileAttachmentField:
     add_remove_links: false
 SilverStripe\Assets\File:
   extensions:
-    - DropzoneFile
+    - UncleCheese\DropZone\DropzoneFile
