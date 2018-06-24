@@ -3,8 +3,14 @@ Name: dropzone
 After: 'framework/*','cms/*'
 ---
 FileAttachmentField:
-  default_config_path: 'javascript/default_config.json'
-  icon_sizes: [16, 32, 48, 64, 128, 512]
+  default_config_path: javascript/default_config.json
+  icon_sizes:
+    - 16
+    - 32
+    - 48
+    - 64
+    - 128
+    - 512
   upgrade_images: true
   list_thumbnail_width: 64
   list_thumbnail_height: 64
@@ -17,9 +23,10 @@ FileAttachmentField:
     param_name: file
     create_image_thumbnails: true
     max_thumbnail_filesize: 10
-    clickable: '.dropzone-select'
+    clickable: .dropzone-select
     auto_process_queue: true
     auto_queue: true
-    add_remove_links: false    
-File:
-  extensions: [DropzoneFile]
+    add_remove_links: false
+SilverStripe\Assets\File:
+  extensions:
+    - DropzoneFile

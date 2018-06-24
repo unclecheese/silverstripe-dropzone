@@ -1,5 +1,38 @@
 <?php
 
+use SilverStripe\Assets\File;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\View\Requirements;
+use SilverStripe\Assets\Image;
+use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Session;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Forms\Form;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\ORM\SS_List;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\ManyManyList;
+use SilverStripe\ORM\RelationList;
+use SilverStripe\ORM\UnsavedRelationList;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Convert;
+use SilverStripe\Assets\Folder;
+use SilverStripe\Forms\FileField;
+use SilverStripe\Forms\TreeDropdownField;
+use SilverStripe\Forms\GridField\GridFieldConfig;
+use SilverStripe\Forms\GridField\GridFieldSortableHeader;
+use SilverStripe\Forms\GridField\GridFieldFilterHeader;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
+use SilverStripe\Forms\GridField\GridFieldPaginator;
+use SilverStripe\ORM\DataList;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\CompositeField;
+use SilverStripe\View\SSViewer;
+use SilverStripe\View\ArrayData;
+
 /**
  * Defines the FileAttachementField form field type
  *
@@ -138,7 +171,7 @@ class FileAttachmentField extends FileField {
         $this->permissions['upload'] = true;
         $this->permissions['detach'] = true;
         $this->permissions['delete'] = function () use ($instance) {
-            return Injector::inst()->get('File')->canDelete() && $instance->isCMS();
+            return Injector::inst()->get(File::class)->canDelete() && $instance->isCMS();
         };
         $this->permissions['attach'] = function () use ($instance) {
             return $instance->isCMS();
@@ -788,7 +821,7 @@ class FileAttachmentField extends FileField {
      * @return SS_HTTPResponse
      * @return SS_HTTPResponse
      */
-    public function upload(SS_HTTPRequest $request) {
+    public function upload(HTTPRequest $request) {
       
         $name = $this->getSetting('paramName');
         $files = (!empty($_FILES[$name]) ? $_FILES[$name] : array());
@@ -867,7 +900,7 @@ class FileAttachmentField extends FileField {
                     if (!$formController instanceof LeftAndMain) {
                         $trackFile->setRecord($formController->getRecord());
                     }
-                } else if ($formClass !== 'Form') {
+                } else if ($formClass !== Form::class) {
                     $trackFile->ControllerClass = $formClass;
                 } else {
                     // If using generic 'Form' instance, get controller
@@ -879,7 +912,7 @@ class FileAttachmentField extends FileField {
         }
 
         $this->addValidFileIDs($ids);
-        return new SS_HTTPResponse(implode(',', $ids), 200);
+        return new HTTPResponse(implode(',', $ids), 200);
     }
 
 
@@ -887,7 +920,7 @@ class FileAttachmentField extends FileField {
      * @param SS_HTTPRequest $request
      * @return UploadField_ItemHandler
      */
-    public function handleSelect(SS_HTTPRequest $request) {
+    public function handleSelect(HTTPRequest $request) {
         if($this->isDisabled() || $this->isReadonly() || !$this->CanAttach()) {
             return $this->httpError(403);
         }
@@ -1142,15 +1175,15 @@ class FileAttachmentField extends FileField {
 
         if($record) {
     	    $class = $record->getRelationClass($name);
-        	if(!$class) $class = "File";
+        	if(!$class) $class = File::class;
     	}
 
         if($filename) {
-            if($defaultClass == "Image" &&
+            if($defaultClass == Image::class &&
                $this->config()->upgrade_images &&
                !Injector::inst()->get($class) instanceof Image
             ) {
-                $class = "Image";
+                $class = Image::class;
             }
         }
 
@@ -1312,7 +1345,7 @@ class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
      */
     protected function getListField($folderID) {
         // Generate the folder selection field.
-        $folderField = new TreeDropdownField('ParentID', _t('HtmlEditorField.FOLDER', 'Folder'), 'Folder');
+        $folderField = new TreeDropdownField('ParentID', _t('HtmlEditorField.FOLDER', Folder::class), Folder::class);
         $folderField->setValue($folderID);
 
         // Generate the file list field.
@@ -1348,7 +1381,7 @@ class FileAttachmentField_SelectHandler extends UploadField_SelectHandler {
     }
 
 
-    public function filesbyid(SS_HTTPRequest $r) {
+    public function filesbyid(HTTPRequest $r) {
         $ids = $r->getVar('ids');
         $files = File::get()->byIDs(explode(',',$ids));
 

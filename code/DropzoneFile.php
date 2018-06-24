@@ -1,5 +1,11 @@
 <?php
 
+use SilverStripe\Assets\Image;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Assets\Folder;
+use SilverStripe\ORM\DataExtension;
+
 /**
  * Adds helper methods to the core {@link File} object
  *
