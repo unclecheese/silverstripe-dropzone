@@ -419,7 +419,9 @@ class FileAttachmentField extends FileField {
      * @return array
      */
     public function getValidFileIDs() {
-        $validIDs = Session::get('FileAttachmentField.validFileIDs');
+        $request = Injector::inst()->get(HTTPRequest::class);
+        $session = $request->getSession();
+        $validIDs = $session->get('FileAttachmentField.validFileIDs');
         if ($validIDs && is_array($validIDs)) {
             return $validIDs;
         }
@@ -916,6 +918,7 @@ class FileAttachmentField extends FileField {
         }
 
         $this->addValidFileIDs($ids);
+        $this->extend('onAfterUploadFiles', $ids);
         return new HTTPResponse(implode(',', $ids), 200);
     }
 
