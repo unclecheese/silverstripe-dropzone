@@ -105,7 +105,7 @@ class FileAttachmentField extends FileField {
      * that have been attached to the uploader client side
      * @var string
      */
-    protected $previewTemplate = 'FileAttachmentField_preview';
+    protected $previewTemplate = 'UncleCheese\DropZone\Includes\FileAttachmentField_preview';
 
     /**
      * UploadField compatability. Used for the select handler, when KickAssets
@@ -399,14 +399,17 @@ class FileAttachmentField extends FileField {
      * @return void
      */
     public function addValidFileIDs(array $ids) {
-        $validIDs = Session::get('FileAttachmentField.validFileIDs');
+        $request = Injector::inst()->get(HTTPRequest::class);
+        $session = $request->getSession();
+
+        $validIDs = $session->get('FileAttachmentField.validFileIDs');
         if (!$validIDs) {
             $validIDs = array();
         }
         foreach ($ids as $id) {
             $validIDs[$id] = $id;
         }
-        Session::set('FileAttachmentField.validFileIDs', $validIDs);
+        $session->set('FileAttachmentField.validFileIDs', $validIDs);
     }
 
     /**
@@ -874,7 +877,10 @@ class FileAttachmentField extends FileField {
               return $this->httpError(400, $user_message);
             }
             if($relationClass = $this->getFileClass($tmpFile['name'])) {
-                $fileObject = Object::create($relationClass);
+                // this was Object
+                error_log('Relation class: ' . $relationClass);
+                //$fileObject = DataObject::create($relationClass);
+                $fileObject = new $relationClass();
             }
 
             try {
@@ -1255,9 +1261,10 @@ class FileAttachmentField extends FileField {
      * @return array
      */
     protected function getDefaults() {
-        $file_path = BASE_PATH.'/'.'unclecheese/dropzone:/'.$this->config()->default_config_path;
+        $file_path = BASE_PATH.'/'.'dropzone/'.$this->config()->default_config_path;
+        error_log('FILE PATH: ' . $file_path);
         if(!file_exists($file_path)) {
-            throw new Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
+            throw new \Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
         }
 
         return Convert::json2array(file_get_contents($file_path));
