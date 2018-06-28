@@ -1,7 +1,7 @@
 ---
 Name: dropzone
 ---
-UncleCheese\Dropzone\FileAttachmentField:
+UncleCheese\DropZone\FileAttachmentField:
   default_config_path: javascript/default_config.json
   icon_sizes:
     - 16
