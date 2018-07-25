@@ -234,7 +234,7 @@ class FileAttachmentField extends FileField {
         // post two params.
         $deletions = Controller::curr()->getRequest()->postVar('__deletion__'.$this->getName());
 
-        if($deletions) {
+        if ($deletions && is_array($deletions)) {
             foreach($deletions as $id) {
                 $this->deleteFileByID($id);
             }
