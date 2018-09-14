@@ -426,9 +426,11 @@ class FileAttachmentField extends FileField {
 
         // Detect if files have been removed between AJAX uploads and form submission
         $value = $this->dataValue();
-        if ($value) {
+
+        if ($value && !$this->isReadonly()) {
             $ids = (array)$value;
             $fileCount = (int)File::get()->filter(array('ID' => $ids))->count();
+
             if (count($ids) !== $fileCount) {
                 $validator->validationError(
                     $this->name,
