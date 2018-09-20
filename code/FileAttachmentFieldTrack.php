@@ -1,4 +1,10 @@
 <?php
+namespace UncleCheese\DropZone;
+
+use SilverStripe\Assets\File;
+use SilverStripe\Control\Controller;
+use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\ORM\DataObject;
 
 /**
  * Track files as they're uploaded and remove when they've been saved.
@@ -13,7 +19,7 @@ class FileAttachmentFieldTrack extends DataObject {
     );
 
     private static $has_one = array(
-        'File' => 'File',
+        'File' => File::class,
     );
 
     public static function untrack($fileIDs) {

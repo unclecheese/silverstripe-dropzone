@@ -12,9 +12,21 @@
     ],
     "require":
     {
-        "silverstripe/framework": "3.*"
+        "silverstripe/framework": "4.*"
     },
+    "autoload": {
+        "psr-4": {
+            "UncleCheese\\DropZone\\": "code/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "extra": {
-	   "installer-name": "dropzone"
+	   "installer-name": "dropzone",
+        "expose": [
+            "css",
+            "javascript",
+            "images"
+        ]
     }
 }
