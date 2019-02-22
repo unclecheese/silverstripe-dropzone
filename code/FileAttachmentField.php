@@ -429,23 +429,6 @@ class FileAttachmentField extends FileField {
         // Detect if files have been removed between AJAX uploads and form submission
         $value = $this->dataValue();
 
-        if ($value && !$this->isReadonly()) {
-            $ids = (array)$value;
-            $fileCount = (int)File::get()->filter(array('ID' => $ids))->count();
-
-            if (count($ids) !== $fileCount) {
-                $validator->validationError(
-                    $this->name,
-                    _t(
-                        'FileAttachmentField.MISSINGFILE',
-                        'Files sent with form have since been removed from the server.'
-                    ),
-                    "validation"
-                );
-                $result = false;
-            }
-        }
-
         if ($this->hasInvalidFileID) {
             // If detected invalid file during 'Form::loadDataFrom'
             // (Below validation isn't triggered as setValue() removes the invalid ID
