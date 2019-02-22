@@ -16,6 +16,8 @@ use SilverStripe\Core\Convert;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\RelationList;
+use SilverStripe\ORM\UnsavedRelationList;
 
 /**
  * Defines the FileAttachementField form field type
@@ -243,12 +245,12 @@ class FileAttachmentField extends FileField {
         $ones = $record->hasOne();
 
         if(($relation = $this->getRelation($record))) {
-            $relation->setByIDList((array) $this->Value());
+            $relation->setByIDList($this->Value());
         } else if(isset($ones[$fieldname])) {
             $record->{"{$fieldname}ID"} = $this->Value() ?: 0;
         } elseif($record->hasField($fieldname)) {
-			$record->$fieldname = is_array($this->Value()) ? implode(',', $this->Value()) : $this->Value();
-		}
+            $record->$fieldname = is_array($this->Value()) ? implode(',', $this->Value()) : $this->Value();
+        }
 
         if ($this->getTrackFiles()) {
             $fileIDs = (array)$this->Value();
@@ -635,9 +637,9 @@ class FileAttachmentField extends FileField {
      * @param int $pixels
      */
     public function setMaxResolution($pixels) {
-    	$this->settings['maxResolution'] = $pixels;
+        $this->settings['maxResolution'] = $pixels;
 
-    	return $this;
+        return $this;
     }
 
     /**
@@ -645,8 +647,8 @@ class FileAttachmentField extends FileField {
      * @param int $pixels
      */
     public function setMinResolution($pixels) {
-    	$this->settings['minResolution'] = $pixels;
-    	return $this;
+        $this->settings['minResolution'] = $pixels;
+        return $this;
     }
 
     /**
@@ -703,20 +705,20 @@ class FileAttachmentField extends FileField {
         ));
     }
 
-	/**
-	 * @param String
-	 */
-	public function setDisplayFolderName($name) {
-		$this->displayFolderName = $name;
-		return $this;
-	}
+    /**
+     * @param String
+     */
+    public function setDisplayFolderName($name) {
+        $this->displayFolderName = $name;
+        return $this;
+    }
 
-	/**
-	 * @return String
-	 */
-	public function getDisplayFolderName() {
-		return $this->displayFolderName;
-	}
+    /**
+     * @return String
+     */
+    public function getDisplayFolderName() {
+        return $this->displayFolderName;
+    }
 
     /**
      * Returns true if the uploader is being used in CMS context
@@ -897,6 +899,7 @@ class FileAttachmentField extends FileField {
         if($record = $this->getRecord()) {
             if($record->hasMethod($this->getName())) {
                 $result = $record->{$this->getName()}();
+
                 if($result instanceof SS_List) {
                     return $result;
                 }
@@ -906,24 +909,24 @@ class FileAttachmentField extends FileField {
             }
         }
 
-		if ($ids = $this->dataValue()) {
-			if($ids instanceof ManyManyList) {
-				$ids = array_keys($ids->map()->toArray());
-			}
+        if ($ids = $this->dataValue()) {
+            if($ids instanceof ManyManyList) {
+                $ids = array_keys($ids->map()->toArray());
+            }
 
-			if (!is_array($ids)) {
-				$ids = explode(',', $ids);
-			}
+            if (!is_array($ids)) {
+                $ids = explode(',', $ids);
+            }
 
-			$attachments = ArrayList::create();
-			foreach ($ids as $id) {
-				$file = File::get()->byID((int) $id);
-				if ($file && $file->canView()) {
-					$attachments->push($file);
-				}
-			}
-			return $attachments;
-		}
+            $attachments = ArrayList::create();
+            foreach ($ids as $id) {
+                $file = File::get()->byID((int) $id);
+                if ($file && $file->canView()) {
+                    $attachments->push($file);
+                }
+            }
+            return $attachments;
+        }
 
         return false;
     }
@@ -1081,9 +1084,9 @@ class FileAttachmentField extends FileField {
         }
 
         if($record) {
-    	    $class = $record->getRelationClass($name);
-        	if(!$class) $class = File::class;
-    	}
+            $class = $record->getRelationClass($name);
+            if(!$class) $class = File::class;
+        }
 
         if($filename) {
             if($defaultClass == "Image" &&
@@ -1241,7 +1244,7 @@ class FileAttachmentField extends FileField {
         if($this->isCMS()) {
             $data['urlSelectDialog'] = $this->Link('select');
             if($this->getFolderName()) {
-            	$data['folderID'] = Folder::find_or_make($this->getFolderName())->ID;
+                $data['folderID'] = Folder::find_or_make($this->getFolderName())->ID;
             }
         }
 
@@ -1257,7 +1260,7 @@ class FileAttachmentField extends FileField {
             'delete' => false
         ]);
 
-        //$readonly->setReadonly(true);
+        $readonly->setReadonly(true);
         $readonly->addExtraClass('readonly');
 
         return $readonly;
