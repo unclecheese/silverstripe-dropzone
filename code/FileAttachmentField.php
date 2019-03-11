@@ -402,7 +402,7 @@ class FileAttachmentField extends FileField {
 
     /**
      * Get an associative array of File IDs uploaded through this field
-     * during this session.
+     * during this session or attached to the file field.
      *
      * @return array
      */
@@ -411,11 +411,16 @@ class FileAttachmentField extends FileField {
 
         $validIDs = $session->get('FileAttachmentField.validFileIDs');
 
-        if ($validIDs && is_array($validIDs)) {
-            return $validIDs;
+        if (!$validIDs || !is_array($validIDs)) {
+            $validIDs = [];
         }
 
-        return array();
+        $all = array_merge(
+            $validIDs,
+            $this->AttachedFiles()->column('ID')
+        );
+
+        return array_combine($all, $all);
     }
 
     /**
@@ -447,6 +452,7 @@ class FileAttachmentField extends FileField {
             // Prevent a malicious user from inspecting element and changing
             // one of the <input type="hidden"> fields to use an invalid File ID.
             $validIDs = $this->getValidFileIDs();
+
             foreach ($value as $id) {
                 if (!isset($validIDs[$id])) {
                     if ($validator) {
@@ -454,7 +460,7 @@ class FileAttachmentField extends FileField {
                             $this->name,
                             _t(
                                 'FileAttachmentField.VALIDATION',
-                                'Invalid file ID sent.',
+                                'Invalid file ID sent %s.',
                                 array('id' => $id)
                             ),
                             "validation"
@@ -478,6 +484,7 @@ class FileAttachmentField extends FileField {
             $validIDs = $this->getValidFileIDs();
             // NOTE(Jake): If the $data[$name] is an array, its coming from 'loadDataFrom'
             //             If its a single value, its just re-populating the ID on DB data most likely.
+
             if (is_array($data[$this->getName()])) {
                 $ids = &$data[$this->getName()];
                 foreach ($ids as $i => $id) {
