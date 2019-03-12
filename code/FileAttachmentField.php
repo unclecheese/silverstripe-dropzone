@@ -918,7 +918,7 @@ class FileAttachmentField extends FileField {
             return $attachments;
         }
 
-        return false;
+        return new ArrayList();
     }
 
     /**
