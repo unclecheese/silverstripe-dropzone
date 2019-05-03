@@ -1,13 +1,16 @@
 <?php
 
+namespace UncleCheese\Dropzone;
+
 use SilverStripe\ORM\DataObject;
 
 /**
  * Track files as they're uploaded and remove when they've been saved.
  *
- * @package  unclecheese/silverstripe-dropzone
+ * @package unclecheese/silverstripe-dropzone
  */
-class FileAttachmentFieldTrack extends DataObject {
+class FileAttachmentFieldTrack extends DataObject
+{
     private static $db = array(
         'ControllerClass' => 'Varchar(60)',
         'RecordID' => 'Int',
@@ -18,7 +21,8 @@ class FileAttachmentFieldTrack extends DataObject {
         'File' => 'File',
     );
 
-    public static function untrack($fileIDs) {
+    public static function untrack($fileIDs)
+    {
         if (!$fileIDs) {
             return;
         }
@@ -29,7 +33,8 @@ class FileAttachmentFieldTrack extends DataObject {
         }
     }
 
-    public function onBeforeWrite() {
+    public function onBeforeWrite()
+    {
         parent::onBeforeWrite();
         if (!$this->exists()) {
             // Store record this file was tracked on.
@@ -55,12 +60,14 @@ class FileAttachmentFieldTrack extends DataObject {
         }
     }
 
-    public function setRecord($record) {
+    public function setRecord($record)
+    {
         $this->RecordID = $record->ID;
         $this->RecordClass = $record->ClassName;
     }
 
-    public function Record() {
+    public function Record()
+    {
         if ($this->RecordClass && $this->RecordID) {
             return DataObject::get_one($this->RecordClass, "ID = ".(int)$this->RecordID);
         }

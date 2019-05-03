@@ -1,7 +1,7 @@
 {
     "name": "unclecheese/dropzone",
     "description": "An HTML5 upload field for the CMS and frontend forms.",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "keywords": ["silverstripe", "upload", "uploader", "files", "forms", "cms"],
     "license": "BSD-3-Clause",
     "authors": [{
@@ -12,6 +12,16 @@
         "silverstripe/framework": "4.*"
     },
     "extra": {
-        "installer-name": "dropzone"
-    }
+        "installer-name": "dropzone",
+        "expose": [
+            "javascript",
+            "css",
+            "images"
+        ]        
+    },
+    "autoload": {
+        "psr-4": {
+            "UncleCheese\\Dropzone\\": "src/"
+        }
+    }    
 }

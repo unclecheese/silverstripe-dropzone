@@ -1,5 +1,7 @@
 <?php
 
+namespace UncleCheese\Dropzone;
+
 use SilverStripe\Forms\FileField;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\View\Requirements;
@@ -22,13 +24,15 @@ use SilverStripe\ORM\UnsavedRelationList;
 /**
  * Defines the FileAttachementField form field type
  *
- * @package  unclecheese/silverstripe-dropzone
+ * @package unclecheese/silverstripe-dropzone
  * @author  Uncle Cheese <unclecheese@leftandmain.com>
  */
-class FileAttachmentField extends FileField {
+class FileAttachmentField extends FileField
+{
 
     /**
      * The allowed actions for the RequestHandler
+     *
      * @var array
      */
     private static $allowed_actions = array (
@@ -51,18 +55,21 @@ class FileAttachmentField extends FileField {
 
     /**
      * A list of settings for this instance
+     *
      * @var array
      */
     protected $settings = array ();
 
     /**
      * Extra params to send to the server with the POST request
+     *
      * @var array
      */
     protected $params = array ();
 
     /**
      * The record that this FormField is editing
+     *
      * @var DataObject
      */
     protected $record = null;
@@ -74,12 +81,14 @@ class FileAttachmentField extends FileField {
      *  - attach (select from existing)
      *  - detach (remove from record, but don't delete)
      *  -delete (delete from files)
+     *
      * @var array
      */
     protected $permissions = array ();
 
     /**
      * The style of uploader. Options: "grid", "list"
+     *
      * @var string
      */
     protected $view = 'list';
@@ -88,6 +97,7 @@ class FileAttachmentField extends FileField {
      * The preview template for uploaded files. Does not necessarily apply
      * to files that were on the record at load time, but rather to files
      * that have been attached to the uploader client side
+     *
      * @var string
      */
     protected $previewTemplate = 'Includes\\FileAttachmentField_preview';
@@ -95,38 +105,48 @@ class FileAttachmentField extends FileField {
     /**
      * UploadField compatability. Used for the select handler, when KickAssets
      * is not installed
+     *
      * @var string
      */
     protected $displayFolderName;
 
     /**
      * Set to true if detected invalid file ID
+     *
      * @var boolean
      */
     protected $hasInvalidFileID;
 
     /**
      * Helper function to translate underscore_case to camelCase
+     *
      * @param  string $str
      * @return string
      */
-    public static function camelise($str) {
-        return preg_replace_callback('/_([a-z])/', function ($c) {
+    public static function camelise($str)
+    {
+        return preg_replace_callback(
+            '/_([a-z])/', function ($c) {
                 return strtoupper($c[1]);
-        }, $str);
+            }, $str
+        );
     }
 
     /**
      * Translate camelCase to underscore_case
+     *
      * @param  string $str
      * @return string
      */
-    public static function underscorise($str) {
+    public static function underscorise($str)
+    {
         $str[0] = strtolower($str[0]);
 
-        return preg_replace_callback('/([A-Z])/', function ($c) {
-            return "_" . strtolower($c[1]);
-        }, $str);
+        return preg_replace_callback(
+            '/([A-Z])/', function ($c) {
+                return "_" . strtolower($c[1]);
+            }, $str
+        );
     }
 
     /**
@@ -135,23 +155,28 @@ class FileAttachmentField extends FileField {
      *
      * @return int
      */
-    public static function get_filesize_from_ini() {
-        $bytes = min(array(
+    public static function get_filesize_from_ini()
+    {
+        $bytes = min(
+            array(
             File::ini2bytes(ini_get('post_max_size') ?: '8M'),
             File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
-        ));
+            )
+        );
 
         return floor($bytes/(1024*1024));
     }
 
     /**
      * Constructor. Sets some default permissions
+     *
      * @param string $name
      * @param string $title
      * @param string $value
-     * @param Form $form
+     * @param Form   $form
      */
-    public function __construct($name, $title = null, $value = null, $form = null) {
+    public function __construct($name, $title = null, $value = null, $form = null)
+    {
         $instance = $this;
 
         $this->permissions['upload'] = true;
@@ -173,10 +198,11 @@ class FileAttachmentField extends FileField {
      * Renders the form field, loads requirements. Sets file size based on php.ini
      * Adds the security token
      *
-     * @param array $attributes
-     * @return  SSViewer
+     * @param  array $attributes
+     * @return SSViewer
      */
-    public function FieldHolder($attributes = array ()) {
+    public function FieldHolder($attributes = array ())
+    {
         $this->defineFieldHolderRequirements();
         return parent::FieldHolder($attributes);
     }
@@ -185,10 +211,11 @@ class FileAttachmentField extends FileField {
      * Renders the small form field holder, loads requirements. Sets file size based on php.ini
      * Adds the security token
      *
-     * @param array $attributes
-     * @return  SSViewer
+     * @param  array $attributes
+     * @return SSViewer
      */
-    public function SmallFieldHolder($attributes = array ()) {
+    public function SmallFieldHolder($attributes = array ())
+    {
         $this->defineFieldHolderRequirements();
         return parent::SmallFieldHolder($attributes);
     }
@@ -196,7 +223,8 @@ class FileAttachmentField extends FileField {
     /**
      * Define some requirements and settings just before rendering the Field Holder.
      */
-    protected function defineFieldHolderRequirements() {
+    protected function defineFieldHolderRequirements()
+    {
         Requirements::javascript(DROPZONE_DIR.'/javascript/dropzone.js');
         Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field.js');
         if($this->isCMS()) {
@@ -225,12 +253,15 @@ class FileAttachmentField extends FileField {
 
     /**
      * Saves the field into a record
+     *
      * @param  DataObjectInterface $record
      * @return FileAttachmentField
      */
-    public function saveInto(DataObjectInterface $record) {
+    public function saveInto(DataObjectInterface $record)
+    {
         $fieldname = $this->getName();
-        if(!$fieldname) return $this;
+        if(!$fieldname) { return $this;
+        }
 
         // Handle deletions. This is a bit of a hack. A workaround for having a single form field
         // post two params.
@@ -262,10 +293,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * Set the form method, e.g. PUT
-     * @param string $method
-     * @return  FileAttachmentField
+     *
+     * @param  string $method
+     * @return FileAttachmentField
      */
-    public function setMethod($method) {
+    public function setMethod($method)
+    {
         $this->settings['method'] = $method;
 
         return $this;
@@ -273,9 +306,11 @@ class FileAttachmentField extends FileField {
 
     /**
      * Return whether files are tracked or not.
+     *
      * @return boolean
      */
-    public function getTrackFiles() {
+    public function getTrackFiles()
+    {
         if (isset($this->settings['trackFiles']) && $this->settings['trackFiles'] !== null) {
             return $this->settings['trackFiles'];
         }
@@ -284,20 +319,24 @@ class FileAttachmentField extends FileField {
 
     /**
      * Enable/disable file tracking on uploads
-     * @param boolean $bool
-     * @return  FileAttachmentField
+     *
+     * @param  boolean $bool
+     * @return FileAttachmentField
      */
-    public function setTrackFiles($bool) {
+    public function setTrackFiles($bool)
+    {
         $this->settings['trackFiles'] = $bool;
         return $this;
     }
 
     /**
      * Sets number of allowed parallel uploads
-     * @param int $num
-     * @return  FileAttachmentField
+     *
+     * @param  int $num
+     * @return FileAttachmentField
      */
-    public function setParallelUploads($num) {
+    public function setParallelUploads($num)
+    {
         $this->settings['parallelUploads'] = $num;
 
         return $this;
@@ -305,10 +344,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * Allow multiple files
-     * @param boolean $bool
-     * @return  FileAttachmentField
+     *
+     * @param  boolean $bool
+     * @return FileAttachmentField
      */
-    public function setMultiple($bool) {
+    public function setMultiple($bool)
+    {
         $this->settings['uploadMultiple'] = $bool;
 
         return $this;
@@ -317,10 +358,12 @@ class FileAttachmentField extends FileField {
     /**
      * Max filesize for uploads, in megabytes.
      * Defaults to upload_max_filesize
-     * @param string $num
-     * @return  FileAttachmentField
+     *
+     * @param  string $num
+     * @return FileAttachmentField
      */
-    public function setMaxFilesize($num) {
+    public function setMaxFilesize($num)
+    {
         $this->settings['maxFilesize'] = $num;
         $validator = $this->getValidator();
         if ($validator) {
@@ -331,10 +374,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * Maximum number of files allowed to be attached
-     * @param int $num
+     *
+     * @param  int $num
      * @return $this
      */
-    public function setMaxFiles($num){
+    public function setMaxFiles($num)
+    {
         $this->settings['maxFiles'] = $num;
 
         return $this;
@@ -343,19 +388,23 @@ class FileAttachmentField extends FileField {
     /**
      * Maximum number of files allowed to be attached
      * (Keeps API consistent with UploadField)
-     * @param int $num
+     *
+     * @param  int $num
      * @return $this
      */
-    public function setAllowedMaxFileNumber($num) {
+    public function setAllowedMaxFileNumber($num)
+    {
         return $this->setMaxFiles($num);
     }
 
     /**
      * Sets the name of the upload parameter, e.g. "Files"
-     * @param string $name
-     * @return  FileAttachmentField
+     *
+     * @param  string $name
+     * @return FileAttachmentField
      */
-    public function setParamName($name) {
+    public function setParamName($name)
+    {
         $this->settings['paramName'] = $name;
 
         return $this;
@@ -363,10 +412,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * Allow or disallow image thumbnails created client side
-     * @param boolean $bool
-     * @return  FileAttachmentField
+     *
+     * @param  boolean $bool
+     * @return FileAttachmentField
      */
-    public function setCreateImageThumbnails($bool) {
+    public function setCreateImageThumbnails($bool)
+    {
         $this->settings['createImageThumbnails'] = $bool;
 
         return $this;
@@ -374,10 +425,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * Set the threshold at which to not create an image thumbnail
-     * @param int $num
-     * @return  FileAttachmentField
+     *
+     * @param  int $num
+     * @return FileAttachmentField
      */
-    public function setMaxThumbnailFilesize($num) {
+    public function setMaxThumbnailFilesize($num)
+    {
         $this->settings['thumbnailFilesize'] = $num;
 
         return $this;
@@ -388,7 +441,8 @@ class FileAttachmentField extends FileField {
      *
      * @return void
      */
-    public function addValidFileIDs(array $ids) {
+    public function addValidFileIDs(array $ids)
+    {
         $session = Controller::curr()->getRequest()->getSession();
 
         $validIDs = $session->get('FileAttachmentField.validFileIDs');
@@ -409,7 +463,8 @@ class FileAttachmentField extends FileField {
      *
      * @return array
      */
-    public function getValidFileIDs() {
+    public function getValidFileIDs()
+    {
         $session = Controller::curr()->getRequest()->getSession();
 
         $validIDs = $session->get('FileAttachmentField.validFileIDs');
@@ -431,7 +486,8 @@ class FileAttachmentField extends FileField {
      *
      * @return boolean
      */
-    public function validate($validator) {
+    public function validate($validator)
+    {
         $result = true;
 
         // Detect if files have been removed between AJAX uploads and form submission
@@ -478,11 +534,12 @@ class FileAttachmentField extends FileField {
     }
 
     /**
-     * @param int|array $val
-     * @param array|DataObject $data
+     * @param  int|array        $val
+     * @param  array|DataObject $data
      * @return $this
      */
-    public function setValue($val, $data = array()) {
+    public function setValue($val, $data = array())
+    {
         if (!$val && $data && $data instanceof DataObject && $data->exists()) {
             // NOTE: This stops validation errors from occuring when editing
             //       an already saved DataObject.
@@ -491,7 +548,7 @@ class FileAttachmentField extends FileField {
             if ($data->hasOneComponent($fieldName)) {
                 $id = $data->{$fieldName.'ID'};
                 if ($id) {
-                   $ids[] = $id; 
+                    $ids[] = $id; 
                 }
             } else if ($data->hasManyComponent($fieldName) || $data->manyManyComponent($fieldName)) {
                 $files = $data->{$fieldName}();
@@ -537,10 +594,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * The thumbnail width
-     * @param int $num
-     * @return  FileAttachmentField
+     *
+     * @param  int $num
+     * @return FileAttachmentField
      */
-    public function setThumbnailWidth($num) {
+    public function setThumbnailWidth($num)
+    {
         $this->settings['thumbnailWidth'] = $num;
 
         return $this;
@@ -548,10 +607,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * The thumbnail height
-     * @param int $num
-     * @return  FileAttachmentField
+     *
+     * @param  int $num
+     * @return FileAttachmentField
      */
-    public function setThumbnailHeight($num) {
+    public function setThumbnailHeight($num)
+    {
         $this->settings['thumbnailHeight'] = $num;
 
         return $this;
@@ -559,10 +620,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * The layout of the uploader, either "grid" or "list"
-     * @param string $view
-     * @return  FileAttachmentField
+     *
+     * @param  string $view
+     * @return FileAttachmentField
      */
-    public function setView($view) {
+    public function setView($view)
+    {
         if(!in_array($view, array ('grid','list'))) {
             throw new Exception("FileAttachmentField::setView - View must be one of 'grid' or 'list'");
         }
@@ -574,19 +637,23 @@ class FileAttachmentField extends FileField {
 
     /**
      * Gets the current view
+     *
      * @return string
      */
-    public function getView() {
+    public function getView()
+    {
         return $this->view;
     }
 
     /**
      * Set the selector for the clickable element. Use a boolean for the
      * entire dropzone.
-     * @param string|bool $val
-     * @return  FileAttachmentField
+     *
+     * @param  string|bool $val
+     * @return FileAttachmentField
      */
-    public function setClickable($val) {
+    public function setClickable($val)
+    {
         $this->settings['clickable'] = $val;
 
         return $this;
@@ -594,10 +661,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * A list of accepted file extensions
-     * @param array $files
-     * @return  FileAttachmentField
+     *
+     * @param  array $files
+     * @return FileAttachmentField
      */
-    public function setAcceptedFiles($files = array ()) {
+    public function setAcceptedFiles($files = array ())
+    {
         if(is_array($files)) {
             $files = implode(',', $files);
         }
@@ -624,9 +693,11 @@ class FileAttachmentField extends FileField {
 
     /**
      * A helper method to only allow images files
+     *
      * @return FileAttachmentField
      */
-    public function imagesOnly() {
+    public function imagesOnly()
+    {
         $this->setAcceptedFiles(array('.png','.gif','.jpeg','.jpg'));
 
         return $this;
@@ -634,10 +705,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * Sets the allowed mime types
-     * @param array $types
-     * @return  FileAttachmentField
+     *
+     * @param  array $types
+     * @return FileAttachmentField
      */
-    public function setAcceptedMimeTypes($types = array ()) {
+    public function setAcceptedMimeTypes($types = array ())
+    {
         if(is_array($types)) {
             $types = implode(',', $types);
         }
@@ -648,10 +721,12 @@ class FileAttachmentField extends FileField {
 
     /**
      * Set auto-processing. If true, uploads happen on addition to the queue
-     * @param boolean $bool
-     * @return  FileAttachmentField
+     *
+     * @param  boolean $bool
+     * @return FileAttachmentField
      */
-    public function setAutoProcessQueue($bool) {
+    public function setAutoProcessQueue($bool)
+    {
         $this->settings['autoProcessQueue'] = $bool;
 
         return $this;
@@ -660,10 +735,12 @@ class FileAttachmentField extends FileField {
     /**
      * Set the selector for the container element that holds all of the
      * uploaded files
-     * @param string $val
-     * @return  FileAttachmentField
+     *
+     * @param  string $val
+     * @return FileAttachmentField
      */
-    public function setPreviewsContainer($val) {
+    public function setPreviewsContainer($val)
+    {
         $this->settings['previewsContainer'] = $val;
 
         return $this;
@@ -671,9 +748,11 @@ class FileAttachmentField extends FileField {
 
     /**
      * Sets the max resolution for images, in pixels
+     *
      * @param int $pixels
      */
-    public function setMaxResolution($pixels) {
+    public function setMaxResolution($pixels)
+    {
         $this->settings['maxResolution'] = $pixels;
 
         return $this;
@@ -681,19 +760,23 @@ class FileAttachmentField extends FileField {
 
     /**
      * Sets the min resolution for images, in pixels
+     *
      * @param int $pixels
      */
-    public function setMinResolution($pixels) {
+    public function setMinResolution($pixels)
+    {
         $this->settings['minResolution'] = $pixels;
         return $this;
     }
 
     /**
      * Sets selector for the preview template
-     * @param string $template
-     * @return  FileAttachmentField
+     *
+     * @param  string $template
+     * @return FileAttachmentField
      */
-    public function setPreviewTemplate($template) {
+    public function setPreviewTemplate($template)
+    {
         $this->previewTemplate = $template;
 
         return $this;
@@ -701,11 +784,13 @@ class FileAttachmentField extends FileField {
 
     /**
      * Adds an arbitrary key/val params to send to the server with the upload
-     * @param string $key
-     * @param mixed $val
-     * @return  FileAttachmentField
+     *
+     * @param  string $key
+     * @param  mixed  $val
+     * @return FileAttachmentField
      */
-    public function addParam($key, $val) {
+    public function addParam($key, $val)
+    {
         $this->params[$key] = $val;
 
         return $this;
@@ -714,10 +799,12 @@ class FileAttachmentField extends FileField {
     /**
      * Sets permissions for this uploader: "detach", "upload", "delete", "attach"
      * Permissions can be boolean or Callable
-     * @param array $perms
-     * @return  FileAttachmentField
+     *
+     * @param  array $perms
+     * @return FileAttachmentField
      */
-    public function setPermissions($perms) {
+    public function setPermissions($perms)
+    {
         foreach($perms as $perm => $val) {
             if(!isset($this->permissions[$perm])) {
                 throw new Exception("FileAttachmentField::setPermissions - Permission $perm is not allowed");
@@ -732,20 +819,24 @@ class FileAttachmentField extends FileField {
      * Sets a specific permission for this uploader: "detach", "upload", "delete", "attach"
      * Permissions can be boolean or Callable
      *
-     * @param string $perm
-     * @param boolean|Callable $val
-     * @return  FileAttachmentField
+     * @param  string           $perm
+     * @param  boolean|Callable $val
+     * @return FileAttachmentField
      */
-    public function setPermission($perm, $val) {
-        return $this->setPermissions(array(
+    public function setPermission($perm, $val)
+    {
+        return $this->setPermissions(
+            array(
             $perm => $val
-        ));
+            )
+        );
     }
 
     /**
      * @param String
      */
-    public function setDisplayFolderName($name) {
+    public function setDisplayFolderName($name)
+    {
         $this->displayFolderName = $name;
         return $this;
     }
@@ -753,54 +844,59 @@ class FileAttachmentField extends FileField {
     /**
      * @return String
      */
-    public function getDisplayFolderName() {
+    public function getDisplayFolderName()
+    {
         return $this->displayFolderName;
     }
 
     /**
      * Returns true if the uploader is being used in CMS context
+     *
      * @return boolean
      */
-    public function isCMS() {
+    public function isCMS()
+    {
         return Controller::curr() instanceof LeftAndMain;
     }
     
     /**
-     * @note these are user-friendlier versions of internal PHP errors reported back in the ['error'] value of an upload
+     * @note   these are user-friendlier versions of internal PHP errors reported back in the ['error'] value of an upload
      * @return string
      */
-    private function getUploadUserError($code) {
-      $error_message = "";
-      switch($code) {
+    private function getUploadUserError($code)
+    {
+        $error_message = "";
+        switch($code) {
         case UPLOAD_ERR_OK:
-          // no error - 0
-          return "";
+            // no error - 0
+            return "";
           break;
         case UPLOAD_ERR_INI_SIZE:
         case UPLOAD_ERR_FORM_SIZE:
-          $error_message = _t('FileAttachmentField.ERRFILESIZE', 'The file is too large, please try again with a smaller version of the file.');
-          break;
+            $error_message = _t('FileAttachmentField.ERRFILESIZE', 'The file is too large, please try again with a smaller version of the file.');
+            break;
         case UPLOAD_ERR_PARTIAL:
-          $error_message = _t('FileAttachmentField.ERRPARTIALUPLOAD', 'The file was only partially uploaded, did you cancel the upload? Please try again.');
-          break;
+            $error_message = _t('FileAttachmentField.ERRPARTIALUPLOAD', 'The file was only partially uploaded, did you cancel the upload? Please try again.');
+            break;
         case UPLOAD_ERR_NO_FILE:
-          $error_message = _t('FileAttachmentField.ERRNOFILE', 'No file upload was detected.');
-          break;
+            $error_message = _t('FileAttachmentField.ERRNOFILE', 'No file upload was detected.');
+            break;
         case UPLOAD_ERR_NO_TMP_DIR:
         case UPLOAD_ERR_CANT_WRITE:
         case UPLOAD_ERR_EXTENSION:
-          $error_message = _t('FileAttachmentField.ERRSYSTEMFAIL', 'Sorry, the system is not allowing file uploads at this time.');
-          break;
+            $error_message = _t('FileAttachmentField.ERRSYSTEMFAIL', 'Sorry, the system is not allowing file uploads at this time.');
+            break;
         default:
-          // handles if an extra error value is added at some point as a general error
-          $error_message = _t('FileAttachmentField.ERRUNKNOWNCODE', 'Sorry, an unknown error has occured. Please try again later.');
-          break;
-      }
-      return $error_message;
+            // handles if an extra error value is added at some point as a general error
+            $error_message = _t('FileAttachmentField.ERRUNKNOWNCODE', 'Sorry, an unknown error has occured. Please try again later.');
+            break;
+        }
+        return $error_message;
     }
 
     /**
      * Action to handle upload of a single file
+     *
      * @note the PHP settings to consider here are file_uploads, upload_max_filesize, post_max_size, upload_tmp_dir
      *      file_uploads - when off, the $_FILES array will be empty
      *      upload_max_filesize - files over this size will trigger error #1
@@ -808,11 +904,12 @@ class FileAttachmentField extends FileField {
      *      upload_tmp_dir - an invalid or non-writable tmp dir will cause error #6 or #7
      * @note depending on the size of the uploads allowed, you may like to increase the max input/execution time for these requests
      *
-     * @param HTTPRequest $request
+     * @param  HTTPRequest $request
      * @return HTTPResponse
      * @return HTTPResponse
      */
-    public function upload(SS_HTTPRequest $request) {
+    public function upload(SS_HTTPRequest $request)
+    {
       
         $name = $this->getSetting('paramName');
         $files = (!empty($_FILES[$name]) ? $_FILES[$name] : array());
@@ -820,15 +917,15 @@ class FileAttachmentField extends FileField {
 
         // Checking if field is not supporting uploads
         if($this->isDisabled() || $this->isReadonly() || !$this->CanUpload()) {
-          $error_message = _t('FileAttachmentField.UPLOADFORBIDDEN', 'Files cannot be uploaded via this form at the current time.');
-          return $this->httpError(403, $error_message);
+            $error_message = _t('FileAttachmentField.UPLOADFORBIDDEN', 'Files cannot be uploaded via this form at the current time.');
+            return $this->httpError(403, $error_message);
         }
         
         // No files detected in the upload, this can occur if post_max_size is < the upload size
         $value = $request->postVar($name);
         if(empty($files) || empty($value)) {
-          $error_message = _t('FileAttachmentField.NOFILESUPLOADED', 'No files were detected in your upload. Please try again later.');
-          return $this->httpError(400, $error_message);
+            $error_message = _t('FileAttachmentField.NOFILESUPLOADED', 'No files were detected in your upload. Please try again later.');
+            return $this->httpError(400, $error_message);
         }
         
         // Security token check, must go after above check as a low post_max_size can scrub the Security Token name from the request
@@ -836,8 +933,8 @@ class FileAttachmentField extends FileField {
         if($form) {
             $token = $form->getSecurityToken();
             if(!$token->checkRequest($request)) {
-              $error_message = _t('FileAttachmentField.BADSECURITYTOKEN', 'Your form session has expired, please reload the form and try again.');
-              return $this->httpError(400, $error_message);
+                $error_message = _t('FileAttachmentField.BADSECURITYTOKEN', 'Your form session has expired, please reload the form and try again.');
+                return $this->httpError(400, $error_message);
             }
         }
 
@@ -859,9 +956,9 @@ class FileAttachmentField extends FileField {
         $ids = array ();
         foreach($tmpFiles as $tmpFile) {
             if($tmpFile['error']) {
-              // http://php.net/manual/en/features.file-upload.errors.php
-              $user_message = $this->getUploadUserError($tmpFile['error']);
-              return $this->httpError(400, $user_message);
+                // http://php.net/manual/en/features.file-upload.errors.php
+                $user_message = $this->getUploadUserError($tmpFile['error']);
+                return $this->httpError(400, $user_message);
             }
             if($relationClass = $this->getFileClass($tmpFile['name'])) {
                 $fileObject = Injector::inst()->create($relationClass);
@@ -871,8 +968,8 @@ class FileAttachmentField extends FileField {
                 $this->upload->loadIntoFile($tmpFile, $fileObject, $this->getFolderName());
                 $ids[] = $fileObject->ID;
             } catch (Exception $e) {
-              $error_message = _t('FileAttachmentField.GENERALUPLOADERROR', 'Sorry, the file could not be saved at the current time, please try again later.');
-              return $this->httpError(400, $error_message);
+                $error_message = _t('FileAttachmentField.GENERALUPLOADERROR', 'Sorry, the file could not be saved at the current time, please try again later.');
+                return $this->httpError(400, $error_message);
             }
 
             if ($this->upload->isError()) {
@@ -908,10 +1005,11 @@ class FileAttachmentField extends FileField {
 
 
     /**
-     * @param HTTPRequest $request
+     * @param  HTTPRequest $request
      * @return UploadField_ItemHandler
      */
-    public function handleSelect(HTTPRequest $request) {
+    public function handleSelect(HTTPRequest $request)
+    {
         if($this->isDisabled() || $this->isReadonly() || !$this->CanAttach()) {
             return $this->httpError(403);
         }
@@ -927,7 +1025,8 @@ class FileAttachmentField extends FileField {
      * @param  int $id
      * @return boolean
      */
-    protected function deleteFileByID($id) {
+    protected function deleteFileByID($id)
+    {
         if($this->CanDelete() && $record = $this->getRecord()) {
             $ones = $record->hasOne();
 
@@ -951,9 +1050,10 @@ class FileAttachmentField extends FileField {
     /**
      * A template accessor that determines if the uploader is in "multiple" mode
      *
-     * @return  boolean
+     * @return boolean
      */
-    public function IsMultiple() {
+    public function IsMultiple()
+    {
         if($this->getSetting('uploadMultiple')) {
             return true;
         }
@@ -978,18 +1078,20 @@ class FileAttachmentField extends FileField {
     /**
      * The name of the input, e.g. the "has_one" or "many_many" relation name
      *
-     * @return  string
+     * @return string
      */
-    public function InputName() {
+    public function InputName()
+    {
         return $this->IsMultiple() ? $this->getName()."[]" : $this->getName();
     }
 
     /**
      * Gets a list of all the files that are attached to the record
      *
-     * @return  SS_List
+     * @return SS_List
      */
-    public function AttachedFiles() {
+    public function AttachedFiles()
+    {
         if($record = $this->getRecord()) {
             if($record->hasMethod($this->getName())) {
                 $result = $record->{$this->getName()}();
@@ -1028,26 +1130,31 @@ class FileAttachmentField extends FileField {
     /**
      * Gets the directory that contains all the file icons organised into sizes
      *
-     * @return  string
+     * @return string
      */
-    public function RootThumbnailsDir() {
+    public function RootThumbnailsDir()
+    {
         return $this->getSetting('thumbnailsDir') ?: DROPZONE_DIR.'/images/file-icons';
     }
 
     /**
      * Gets the directory to the file icons for the current thumbnail size
      *
-     * @return  string
+     * @return string
      */
-    public function ThumbnailsDir() {
+    public function ThumbnailsDir()
+    {
         return $this->RootThumbnailsDir().'/'.$this->TemplateThumbnailSize()."px";
     }
 
 
-    public function CSSSize() {
+    public function CSSSize()
+    {
         $w = $this->getSelectedThumbnailWidth();
-        if($w < 150) return "small";
-        if($w < 250) return "medium";
+        if($w < 150) { return "small";
+        }
+        if($w < 250) { return "medium";
+        }
 
         return "large";
     }
@@ -1056,62 +1163,70 @@ class FileAttachmentField extends FileField {
     /**
      * The directory that the module is installed to. A template accessor
      *
-     * @return  string
+     * @return string
      */
-    public function DropzoneDir() {
+    public function DropzoneDir()
+    {
         return DROPZONE_DIR;
     }
 
     /**
      * Gets the value
      *
-     * @return  string|array
+     * @return string|array
      */
-    public function Value() {
+    public function Value()
+    {
         return $this->dataValue();
     }
 
     /**
      * Returns true if the "upload" permission returns true
      *
-     * @return  boolean
+     * @return boolean
      */
-    public function CanUpload() {
+    public function CanUpload()
+    {
         return $this->checkPerm('upload');
     }
 
     /**
      * Returns true if the "delete" permission returns true
      *
-     * @return  boolean
+     * @return boolean
      */
-    public function CanDelete() {
+    public function CanDelete()
+    {
         return $this->checkPerm('delete');
     }
 
     /**
      * Returns true if the "detach" permission returns true
      *
-     * @return  boolean
+     * @return boolean
      */
-    public function CanDetach() {
+    public function CanDetach()
+    {
         return $this->checkPerm('detach');
     }
 
     /**
      * Returns true if the "attach" permission returns true
      *
-     * @return  boolean
+     * @return boolean
      */
-    public function CanAttach() {
+    public function CanAttach()
+    {
         return $this->checkPerm('attach');
     }
 
     /**
      * Renders the preview template, optionally for a given file
+     *
      * @param int $fileID
      */
-    public function PreviewTemplate($fileID = null) {
+    public function PreviewTemplate($fileID = null)
+    {
         return $this->renderWith($this->previewTemplate);
 
     }
@@ -1120,22 +1235,25 @@ class FileAttachmentField extends FileField {
      * Gets the closest thumbnail size for the template, given the list of
      * icon_sizes (e.g. 32px, 64px, 128px)
      *
-     * @return  int
+     * @return int
      */
-    public function TemplateThumbnailSize() {
+    public function TemplateThumbnailSize()
+    {
         $w = $this->getSelectedThumbnailWidth();
 
         foreach($this->config()->icon_sizes as $size) {
-            if($w <= $size) return $size;
+            if($w <= $size) { return $size;
+            }
         }
     }
 
     /**
      * Returns true if the uploader auto-processes
      *
-     * @return  boolean
+     * @return boolean
      */
-    public function AutoProcess() {
+    public function AutoProcess()
+    {
         $result = (bool) $this->getSetting('autoProcessQueue');
 
         return $result;
@@ -1143,11 +1261,14 @@ class FileAttachmentField extends FileField {
 
     /**
      * Checks for a given permission. If it is a closure, invoke the method
+     *
      * @param  string $perm
      * @return boolean
      */
-    protected function checkPerm($perm) {
-        if(!isset($this->permissions[$perm])) return false;
+    protected function checkPerm($perm)
+    {
+        if(!isset($this->permissions[$perm])) { return false;
+        }
 
         if(is_callable($this->permissions[$perm])) {
             return $this->permissions[$perm]();
@@ -1166,7 +1287,8 @@ class FileAttachmentField extends FileField {
      * @param  string $filename
      * @return string
      */
-    public function getFileClass($filename = null) {
+    public function getFileClass($filename = null)
+    {
         $name = $this->getName();
         $record = $this->getRecord();
 
@@ -1179,13 +1301,14 @@ class FileAttachmentField extends FileField {
 
         if($record) {
             $class = $record->getRelationClass($name);
-            if(!$class) $class = File::class;
+            if(!$class) { $class = File::class;
+            }
         }
 
         if($filename) {
-            if($defaultClass == "Image" &&
-               $this->config()->upgrade_images &&
-               !Injector::inst()->get($class) instanceof Image
+            if($defaultClass == "Image" 
+                && $this->config()->upgrade_images 
+                && !Injector::inst()->get($class) instanceof Image
             ) {
                 $class = Image::class;
             }
@@ -1196,9 +1319,11 @@ class FileAttachmentField extends FileField {
 
     /**
      * Get the record that this form field is editing
+     *
      * @return DataObject
      */
-    public function getRecord() {
+    public function getRecord()
+    {
         if (!$this->record && $this->form) {
             if (($record = $this->form->getRecord()) && ($record instanceof DataObject)) {
                 $this->record = $record;
@@ -1206,8 +1331,8 @@ class FileAttachmentField extends FileField {
             else if ($controller = $this->form->getController()) {
                 if($controller->hasMethod('data')
                     && ($record = $controller->data())
-                    && ($record instanceof DataObject))
-                {
+                    && ($record instanceof DataObject)
+                ) {
                     $this->record = $record;
                 } else if($controller->hasMethod('getRecord')) {
                     if($controller->hasMethod('currentPageID')) {
@@ -1226,10 +1351,13 @@ class FileAttachmentField extends FileField {
 
     /**
      * Gets the name of the relation, if attached to a record
+     *
      * @return string
      */
-    protected function getRelation($record = null) {
-        if(!$record) $record = $this->getRecord();
+    protected function getRelation($record = null)
+    {
+        if(!$record) { $record = $this->getRecord();
+        }
 
         if($record) {
             $fieldname = $this->getName();
@@ -1249,7 +1377,8 @@ class FileAttachmentField extends FileField {
      * @param  string $setting
      * @return mixed
      */
-    protected function getSetting($setting) {
+    protected function getSetting($setting)
+    {
         if(isset($this->settings[$setting])) {
             return $this->settings[$setting];
         }
@@ -1266,7 +1395,8 @@ class FileAttachmentField extends FileField {
      *
      * @return array
      */
-    protected function getDefaults() {
+    protected function getDefaults()
+    {
         $file_path = BASE_PATH.'/'.DROPZONE_DIR.'/'.$this->config()->default_config_path;
         if(!file_exists($file_path)) {
             throw new Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
@@ -1277,9 +1407,11 @@ class FileAttachmentField extends FileField {
 
     /**
      * Gets the thumbnail width given the current view type
+     *
      * @return int
      */
-    public function getSelectedThumbnailWidth() {
+    public function getSelectedThumbnailWidth()
+    {
         if($w = $this->getSetting('thumbnailWidth')) {
             return $w;
         }
@@ -1291,9 +1423,11 @@ class FileAttachmentField extends FileField {
 
     /**
      * Gets the thumbnail height given the current view type
+     *
      * @return int
      */
-    public function getSelectedThumbnailHeight() {
+    public function getSelectedThumbnailHeight()
+    {
         if($h = $this->getSetting('thumbnailHeight')) {
             return $h;
         }
@@ -1309,7 +1443,8 @@ class FileAttachmentField extends FileField {
      *
      * @return string
      */
-    public function getConfigJSON() {
+    public function getConfigJSON()
+    {
         $data = $this->settings;
         $defaults = $this->getDefaults();
         foreach($this->config()->defaults as $setting => $value) {
@@ -1345,14 +1480,17 @@ class FileAttachmentField extends FileField {
         return Convert::array2json($data);
     }
 
-    public function performReadonlyTransformation() {
+    public function performReadonlyTransformation()
+    {
         $readonly = clone $this;
-        $readonly->setPermissions([
+        $readonly->setPermissions(
+            [
             'attach' => false,
             'detach' => false,
             'upload' => false,
             'delete' => false
-        ]);
+            ]
+        );
 
         $readonly->setReadonly(true);
         $readonly->addExtraClass('readonly');
