@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Dev\BuildTask;
+use SilverStripe\ORM\DB;
 /**
  * Delete all files being tracked that weren't saved against anything.
  *

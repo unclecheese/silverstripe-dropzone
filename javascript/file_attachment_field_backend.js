@@ -1,6 +1,6 @@
 (function($) {
 $('.dropzone-holder.backend').entwine({
-	
+
 	IFrameUrl: null,
 
 	IFrameParams: null,
@@ -14,7 +14,7 @@ $('.dropzone-holder.backend').entwine({
 	openKickAssets: function () {
 		var self = this;
 		var config = this.getConfig();
-		var method = this.data('dropzoneInterface').settings.uploadMultiple ? 'requestFiles' : 'requestFile';		
+		var method = this.data('dropzoneInterface').settings.uploadMultiple ? 'requestFiles' : 'requestFile';
 		var perms = {
 			canDelete: false,
 			canUpload: false,
@@ -25,7 +25,7 @@ $('.dropzone-holder.backend').entwine({
 
 		window.KickAssets[method](perms, function (response) {
 			if(!response) return;
-			
+
 			var files = (method === 'requestFile') ? [response] : response;
 			var ids = files.map(function (f) {
 				return f.id;
@@ -51,16 +51,16 @@ $('.dropzone-holder.backend').entwine({
 		}
 		else {
 			this.openAssetAdmin();
-		}		
+		}
 	},
 
 	openAssetAdmin: function (iframeUrl, iframeParams) {
 		var self = this;
-		var dialogId = 'ss-uploadfield-dialog-' + this.attr('id'), 
+		var dialogId = 'ss-uploadfield-dialog-' + this.attr('id'),
 						dialog = jQuery('#' + dialogId);
-		
-		if(!dialog.length) dialog = jQuery('<div class="ss-uploadfield-dialog" id="' + dialogId + '" />');		
-		
+
+		if(!dialog.length) dialog = jQuery('<div class="ss-uploadfield-dialog" id="' + dialogId + '" />');
+
 		// Show dialog
 		dialog.ssdialog({iframeUrl: this.getIFrameUrl() + '?' + this.getIFrameParams(), height: 550});
 
@@ -68,12 +68,12 @@ $('.dropzone-holder.backend').entwine({
 		dialog.find('iframe').bind('load', function(e) {
 			var contents = $(this).contents(), gridField = contents.find('.ss-gridfield');
 			contents.find('table.ss-gridfield').css('margin-top', 0);
-			contents.find('input[name=action_doAttach]').unbind('click.openSelectDialog').bind('click.openSelectDialog', function() {								
+			contents.find('input[name=action_doAttach]').unbind('click.openSelectDialog').bind('click.openSelectDialog', function() {
 				var ids = $.map(gridField.find('.ss-gridfield-item.ui-selected'), function(el) {return $(el).data('id');});
-				
+
 				self.requestFileTemplates(ids);
 				dialog.ssdialog('close');
-				
+
 				return false;
 			});
 		});
@@ -89,33 +89,43 @@ $('.dropzone-holder.backend').entwine({
 			success: function (json) {
 				json.forEach(function(item) {
 					self.attachFile(item.id, item.html);
-				});						
+				});
 			}
 		});
 	},
 
 	attachFile: function (id, html) {
 		var uploader = this.data('dropzoneInterface');
-		var DroppedFile = this.data('dropzoneFile');		
+		var DroppedFile = this.data('dropzoneFile');
 		var file = new DroppedFile(uploader, {serverID: id});
 		var $li = $(html);
-		
-		if(!uploader.settings.uploadMultiple) {		
+
+		if(!uploader.settings.uploadMultiple) {
 			uploader.clear();
 		}
 
 		uploader.droppedFiles.push(file);
-		file.createInput();		
+		file.createInput();
 		$(uploader.settings.previewsContainer).append($li);
 		uploader.bindEvents($li[0], id);
-	}	
+	}
 });
 
 $('.dropzone-holder.backend a.dropzone-select-existing').entwine({
 	onclick: function(e) {
 		e.preventDefault();
-		this.closest('.dropzone-holder').openSelectDialog();		
+		this.closest('.dropzone-holder').openSelectDialog();
 	}
 });
+
+$('.file-attachment-field-previews .file-icon, .file-attachment-field-previews .file-meta').entwine({
+	onclick: function(e) {
+		e.preventDefault();
+
+		var parent = $(this).parents('li');
+
+		window.open(parent.data('file-link') , '_blank');
+	}
+})
 
 })(jQuery);

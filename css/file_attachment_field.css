@@ -3,7 +3,7 @@ template, .unsupported {display:none;}
 .dropzone-holder {
   clear:both;
   background:#fff;
-  border:1px solid #999;    
+  border:1px solid #999;
   position:relative;
   padding: 1em;
   min-height: 150px;
@@ -12,7 +12,7 @@ template, .unsupported {display:none;}
   margin-bottom:20px;
 }
 .dropzone-holder.uploadable {
-  border:1px dashed #999;  
+  border:1px dashed #999;
 }
 .dropzone-holder * {
   -webkit-box-sizing: border-box;
@@ -48,7 +48,7 @@ template, .unsupported {display:none;}
 
 
 .fileattachment ul.file-attachment-field-previews li {
-  list-style:none;  
+  list-style:none;
   position:relative;
   border: 1px solid #e7eaec;
   list-style:none;
@@ -77,7 +77,7 @@ template, .unsupported {display:none;}
   border:0;
   background:none;
 }
-  
+
 .fileattachment ul.file-attachment-field-previews li .check {
   display:none;
 }
@@ -94,7 +94,7 @@ template, .unsupported {display:none;}
   height: 100%;
   background-position: center;
   background-size: 66%;
-  background-repeat: no-repeat;  
+  background-repeat: no-repeat;
 }
 .fileattachment ul.file-attachment-field-previews .file-icon img {
   border:0;
@@ -109,7 +109,7 @@ template, .unsupported {display:none;}
   margin:10px;
   background:#fff;
   padding:8px 8px 70px 8px;
-  border: 1px solid #dfdcdc;  
+  border: 1px solid #dfdcdc;
   -webkit-box-sizing: content-box;
   box-sizing: content-box;
 }
@@ -156,8 +156,8 @@ template, .unsupported {display:none;}
   max-width:100%;
   font-size:10px;
   padding: 4px 8px;
-  border-top: 1px solid #e7eaec;  
-  height:20px;  
+  border-top: 1px solid #e7eaec;
+  height:20px;
 }
 
 .fileattachment ul.file-attachment-field-previews.grid .small .file-meta {
@@ -204,7 +204,7 @@ template, .unsupported {display:none;}
   vertical-align:top;
   border-radius:12px;
   display:inline-block;
-  padding:0;  
+  padding:0;
 }
 
 .fileattachment ul.file-attachment-field-previews.grid .file-progress-holder {
@@ -218,7 +218,7 @@ template, .unsupported {display:none;}
   width:auto;
   border:0;
   border-radius:12px;
-  height:3px;  
+  height:3px;
   display:block;
   padding:0;
 
@@ -229,7 +229,7 @@ template, .unsupported {display:none;}
   vertical-align:top;
   border-radius:0;
   display:inline-block;
-  padding:0;  
+  padding:0;
 }
 
 /** remove/delete UI **/
@@ -311,7 +311,7 @@ template, .unsupported {display:none;}
 }
 .fileattachment ul.file-attachment-field-previews .dropzone-action {
   width:100px;
-  height:16px; 
+  height:16px;
   display:block;
   cursor:pointer;
   text-align:right;
@@ -329,7 +329,7 @@ template, .unsupported {display:none;}
   top: 5px;
 }
 
-.fileattachment ul.file-attachment-field-previews .dropzone-action.delete {  
+.fileattachment ul.file-attachment-field-previews .dropzone-action.delete {
   top: 24px;
   color:#b80000;
 }
@@ -395,6 +395,11 @@ template, .unsupported {display:none;}
   max-width:450px;
 }
 
+.fileattachment .backend ul.file-attachment-field-previews li .file-name:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 
 
 
@@ -429,7 +434,7 @@ button.process {
 .truncate {
   white-space:nowrap;
   overflow:hidden;
-  text-overflow:ellipsis;  
+  text-overflow:ellipsis;
 }
 .pad {
   padding:10px;
