@@ -2,7 +2,11 @@
 
 namespace UncleCheese\Dropzone;
 
+use SilverStripe\Core\Manifest\ModuleLoader;
+use SilverStripe\Core\Manifest\ModuleManifest;
+use SilverStripe\Core\Manifest\ModuleResourceLoader;
 use SilverStripe\Forms\FileField;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\View\Requirements;
 use SilverStripe\Control\Controller;
@@ -58,14 +62,14 @@ class FileAttachmentField extends FileField
      *
      * @var array
      */
-    protected $settings = array ();
+    protected $settings = [];
 
     /**
      * Extra params to send to the server with the POST request
      *
      * @var array
      */
-    protected $params = array ();
+    protected $params = [];
 
     /**
      * The record that this FormField is editing
@@ -84,7 +88,7 @@ class FileAttachmentField extends FileField
      *
      * @var array
      */
-    protected $permissions = array ();
+    protected $permissions = [];
 
     /**
      * The style of uploader. Options: "grid", "list"
@@ -100,7 +104,7 @@ class FileAttachmentField extends FileField
      *
      * @var string
      */
-    protected $previewTemplate = 'Includes\\FileAttachmentField_preview';
+    protected $previewTemplate = 'UncleCheese\\Dropzone\\FileAttachmentField_preview';
 
     /**
      * UploadField compatability. Used for the select handler, when KickAssets
@@ -188,8 +192,8 @@ class FileAttachmentField extends FileField
             return $instance->isCMS();
         };
 
-        $this->setFieldHolderTemplate('forms\\FileAttachmentField_holder');
-        $this->setSmallFieldHolderTemplate('forms\\FileAttachmentField_holder_small');
+        $this->setFieldHolderTemplate(__NAMESPACE__ . '\\FileAttachmentField_holder');
+        $this->setSmallFieldHolderTemplate(__NAMESPACE__ . '\\FileAttachmentField_holder_small');
 
         parent::__construct($name, $title, $value, $form);
     }
@@ -225,12 +229,12 @@ class FileAttachmentField extends FileField
      */
     protected function defineFieldHolderRequirements()
     {
-        Requirements::javascript(DROPZONE_DIR.'/javascript/dropzone.js');
-        Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field.js');
+        Requirements::javascript('unclecheese/dropzone:javascript/dropzone.js');
+        Requirements::javascript('unclecheese/dropzone:javascript/file_attachment_field.js');
         if($this->isCMS()) {
-            Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field_backend.js');
+            Requirements::javascript('unclecheese/dropzone:javascript/file_attachment_field_backend.js');
         }
-        Requirements::css(DROPZONE_DIR.'/css/file_attachment_field.css');
+        Requirements::css('unclecheese/dropzone:css/file_attachment_field.css');
 
         if(!$this->getSetting('url')) {
             $this->settings['url'] = $this->Link('upload');
@@ -908,7 +912,7 @@ class FileAttachmentField extends FileField
      * @return HTTPResponse
      * @return HTTPResponse
      */
-    public function upload(SS_HTTPRequest $request)
+    public function upload(HTTPRequest $request)
     {
       
         $name = $this->getSetting('paramName');
@@ -1134,7 +1138,8 @@ class FileAttachmentField extends FileField
      */
     public function RootThumbnailsDir()
     {
-        return $this->getSetting('thumbnailsDir') ?: DROPZONE_DIR.'/images/file-icons';
+        return $this->getSetting('thumbnailsDir') ?:
+            ModuleResourceLoader::singleton()->resolveResource('unclecheese/dropzone:images/file-icons');
     }
 
     /**
@@ -1167,7 +1172,8 @@ class FileAttachmentField extends FileField
      */
     public function DropzoneDir()
     {
-        return DROPZONE_DIR;
+        return ModuleLoader::inst()->getManifest()->getModule('unclecheese/dropzone')
+            ->getResourcesDir();
     }
 
     /**
@@ -1325,7 +1331,8 @@ class FileAttachmentField extends FileField
     public function getRecord()
     {
         if (!$this->record && $this->form) {
-            if (($record = $this->form->getRecord()) && ($record instanceof DataObject)) {
+            $record = $this->form->getRecord();
+            if ($record && $record instanceof DataObject) {
                 $this->record = $record;
             }
             else if ($controller = $this->form->getController()) {
@@ -1397,7 +1404,9 @@ class FileAttachmentField extends FileField
      */
     protected function getDefaults()
     {
-        $file_path = BASE_PATH.'/'.DROPZONE_DIR.'/'.$this->config()->default_config_path;
+        $file_path = ModuleLoader::inst()->getManifest()->getModule('unclecheese/dropzone')
+            ->getResource($this->config()->default_config_path)
+            ->getPath();
         if(!file_exists($file_path)) {
             throw new Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
         }

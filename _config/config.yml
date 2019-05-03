@@ -2,7 +2,7 @@
 Name: dropzone
 After: 'framework/*'
 ---
-FileAttachmentField:
+UncleCheese\Dropzone\FileAttachmentField:
   default_config_path: 'javascript/default_config.json'
   icon_sizes: [16, 32, 48, 64, 128, 512]
   upgrade_images: true
@@ -23,4 +23,4 @@ FileAttachmentField:
     add_remove_links: false    
 SilverStripe\Assets\File:
   extensions: 
-    - DropzoneFile
+    - UncleCheese\Dropzone\DropzoneFile

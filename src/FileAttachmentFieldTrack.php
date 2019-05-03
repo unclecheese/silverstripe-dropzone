@@ -2,7 +2,9 @@
 
 namespace UncleCheese\Dropzone;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DataObjectInterface;
 
 /**
  * Track files as they're uploaded and remove when they've been saved.

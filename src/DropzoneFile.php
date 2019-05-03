@@ -2,6 +2,11 @@
 
 namespace UncleCheese\Dropzone;
 
+use SilverStripe\Assets\Folder;
+use SilverStripe\Assets\Image;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Manifest\ModuleResourceLoader;
 use SilverStripe\ORM\DataExtension;
 
 /**
@@ -45,7 +50,7 @@ class DropzoneFile extends DataExtension
             return $this->owner->CroppedImage($w, $h);
         }
 
-        $sizes = Config::inst()->forClass('FileAttachmentField')->icon_sizes;
+        $sizes = Config::inst()->forClass(FileAttachmentField::class)->icon_sizes;
         sort($sizes);
 
         foreach($sizes as $size) {
@@ -60,7 +65,10 @@ class DropzoneFile extends DataExtension
                     $file = $this->getFilenameForType('_blank', $size);
                 }
 
-                return new Image_Cached(Director::makeRelative($file));
+                $image = Image::create();
+                $image->setFromLocalFile(Director::getAbsFile($file), basename($file));
+
+                return $image;
             }
         }
     }
@@ -75,11 +83,10 @@ class DropzoneFile extends DataExtension
      */
     protected function getFilenameForType($ext, $size)
     {
-        return sprintf(
-            '%s/images/file-icons/%spx/%s.png',
-            DROPZONE_DIR,
+        return ModuleResourceLoader::singleton()->resolveResource(sprintf(
+            'unclecheese/dropzone:images/file-icons/%spx/%s.png',
             $size,
             strtolower($ext)
-        );
+        ));
     }
 }

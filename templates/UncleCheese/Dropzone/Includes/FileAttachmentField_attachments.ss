@@ -28,13 +28,13 @@
         <% if $Scope.CanDetach %>
             <span data-detach class="dropzone-action detach">
                 <span><%t Dropzone.DETACHFILE 'remove' %></span>
-                <img src="$Scope.DropzoneDir/images/remove.png" width="16">
+                <img src="$resourceURL('unclecheese/dropzone:images/remove.png')" width="16">
             </span>
         <% end_if %>
         <% if $Scope.CanDelete %>
             <span data-delete class="dropzone-action delete">
                 <span><%t Dropzone.MARKFORDELETION 'delete' %></span>
-                <img src="$Scope.DropzoneDir/images/trash.png" width="16">
+                <img src="$resourceURL('unclecheese/dropzone:images/trash.png')" width="16">
             </span>
         <% end_if %>
     </span>
@@ -44,7 +44,7 @@
             <span>
                 <h5><%t Dropzone.REMOVED 'removed' %></h5>
                 <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
-                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
+                <span data-delete-revert class="revert"><img src="$resourceURL('unclecheese/dropzone:images/undo.png')" width="16"></span>
             </span>
         </span>
     <% end_if %>
@@ -53,7 +53,7 @@
             <span>
                 <h5><%t Dropzone.DELETED 'deleted' %></h5>
                 <small><%t Dropzone.CHANGEAFTERSAVE 'The change will take effect after you save.' %></small>
-                <span data-delete-revert class="revert"><img src="$Scope.DropzoneDir/images/undo.png" width="16"></span>
+                <span data-delete-revert class="revert"><img src="$resourceURL('unclecheese/dropzone:images/undo.png')" width="16"></span>
             </span>
         </span>
     <% end_if %>

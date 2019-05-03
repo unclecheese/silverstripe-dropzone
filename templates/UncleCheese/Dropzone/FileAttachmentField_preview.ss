@@ -1,7 +1,7 @@
             <li class="$CSSSize" style="<% if $View == 'grid' %>width:{$SelectedThumbnailWidth}px;<% end_if %>height:{$SelectedThumbnailHeight}px;">
                 <span class="dropzone-actions">
                     <span data-dz-remove data-detach class="dropzone-action detach">
-                        <img src="$DropzoneDir/images/remove.png" width="16">
+                        <img src="$resourceURL('unclecheese/dropzone:images/remove.png')" width="16">
                     </span>
                 </span>
 
@@ -20,13 +20,13 @@
                     </span>
                 </span>
                 <span class="check-holder">
-                    <img src="$DropzoneDir/images/check.png" width="16" class="check">
+                    <img src="$resourceURL('unclecheese/dropzone:images/check.png')" width="16" class="check">
                 </span>
                 <span class="overlay error-overlay">
                     <span>
                         <h5><%t Dropzone.ERROR 'Oh no!' %></h5>
                         <small data-dz-errormessage></small>
-                        <span data-dz-remove class="revert"><img src="$DropzoneDir/images/undo_white.png" width="16"></span>
+                        <span data-dz-remove class="revert"><img src="$resourceURL('unclecheese/dropzone:images/undo_white.png')" width="16"></span>
                     </span>
                 </span>
             </li>

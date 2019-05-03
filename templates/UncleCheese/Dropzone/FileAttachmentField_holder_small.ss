@@ -20,7 +20,7 @@
         <ul data-container data-attachments class="file-attachment-field-previews $View">
             <% if $AttachedFiles %>
                 <% loop $AttachedFiles %>
-                    <% include FileAttachmentField_attachments File=$Me, Scope=$Up %>
+                    <% include UncleCheese\Dropzone\FileAttachmentField_attachments File=$Me, Scope=$Up %>
                 <% end_loop %>
             <% end_if %>
         </ul>
