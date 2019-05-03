@@ -322,7 +322,10 @@ class FileAttachmentField extends FileField {
      */
     public function setMaxFilesize($num) {
         $this->settings['maxFilesize'] = $num;
-
+        $validator = $this->getValidator();
+        if ($validator) {
+            $validator->setAllowedMaxFileSize($num.'m');
+        }
         return $this;
     }
 
@@ -475,11 +478,39 @@ class FileAttachmentField extends FileField {
     }
 
     /**
+     * @param int|array $val
+     * @param array|DataObject $data
      * @return $this
      */
     public function setValue($val, $data = array()) {
+        if (!$val && $data && $data instanceof DataObject && $data->exists()) {
+            // NOTE: This stops validation errors from occuring when editing
+            //       an already saved DataObject.
+            $fieldName = $this->getName();
+            $ids = array();
+            if ($data->hasOneComponent($fieldName)) {
+                $id = $data->{$fieldName.'ID'};
+                if ($id) {
+                   $ids[] = $id; 
+                }
+            } else if ($data->hasManyComponent($fieldName) || $data->manyManyComponent($fieldName)) {
+                $files = $data->{$fieldName}();
+                if ($files) {
+                    foreach ($files as $file) {
+                        if (!$file->exists()) {
+                            continue;
+                        }
+                        $ids[] = $file->ID; 
+                    }
+                }
+            }
+            if ($ids) {
+                $this->addValidFileIDs($ids);
+            }
+        }
         if ($data && is_array($data) && isset($data[$this->getName()])) {
             // Prevent Form::loadDataFrom() from loading invalid File IDs
+            // that may have been passed.
             $isInvalid = false;
             $validIDs = $this->getValidFileIDs();
             // NOTE(Jake): If the $data[$name] is an array, its coming from 'loadDataFrom'
@@ -570,7 +601,23 @@ class FileAttachmentField extends FileField {
         if(is_array($files)) {
             $files = implode(',', $files);
         }
-        $this->settings['acceptedFiles'] = str_replace(' ', '', $files);
+        $files = str_replace(' ', '', $files);
+        $this->settings['acceptedFiles'] = $files;
+
+        // Update validator
+        $validator = $this->getValidator();
+        if ($validator) {
+            $fileExts = explode(',', $files);
+
+            $validatorExts = array();
+            foreach ($fileExts as $fileExt) {
+                if ($fileExt && isset($fileExt[0]) && $fileExt[0] === '.') {
+                    $fileExt = substr($fileExt, 1);
+                }
+                $validatorExts[] = $fileExt;
+            }
+            $validator->setAllowedExtensions($validatorExts);
+        }
 
         return $this;
     }
@@ -717,33 +764,87 @@ class FileAttachmentField extends FileField {
     public function isCMS() {
         return Controller::curr() instanceof LeftAndMain;
     }
+    
+    /**
+     * @note these are user-friendlier versions of internal PHP errors reported back in the ['error'] value of an upload
+     * @return string
+     */
+    private function getUploadUserError($code) {
+      $error_message = "";
+      switch($code) {
+        case UPLOAD_ERR_OK:
+          // no error - 0
+          return "";
+          break;
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:
+          $error_message = _t('FileAttachmentField.ERRFILESIZE', 'The file is too large, please try again with a smaller version of the file.');
+          break;
+        case UPLOAD_ERR_PARTIAL:
+          $error_message = _t('FileAttachmentField.ERRPARTIALUPLOAD', 'The file was only partially uploaded, did you cancel the upload? Please try again.');
+          break;
+        case UPLOAD_ERR_NO_FILE:
+          $error_message = _t('FileAttachmentField.ERRNOFILE', 'No file upload was detected.');
+          break;
+        case UPLOAD_ERR_NO_TMP_DIR:
+        case UPLOAD_ERR_CANT_WRITE:
+        case UPLOAD_ERR_EXTENSION:
+          $error_message = _t('FileAttachmentField.ERRSYSTEMFAIL', 'Sorry, the system is not allowing file uploads at this time.');
+          break;
+        default:
+          // handles if an extra error value is added at some point as a general error
+          $error_message = _t('FileAttachmentField.ERRUNKNOWNCODE', 'Sorry, an unknown error has occured. Please try again later.');
+          break;
+      }
+      return $error_message;
+    }
 
     /**
      * Action to handle upload of a single file
+     * @note the PHP settings to consider here are file_uploads, upload_max_filesize, post_max_size, upload_tmp_dir
+     *      file_uploads - when off, the $_FILES array will be empty
+     *      upload_max_filesize - files over this size will trigger error #1
+     *      post_max_size - requests over this size will cause the $_FILES array to be empty
+     *      upload_tmp_dir - an invalid or non-writable tmp dir will cause error #6 or #7
+     * @note depending on the size of the uploads allowed, you may like to increase the max input/execution time for these requests
      *
      * @param HTTPRequest $request
      * @return HTTPResponse
      * @return HTTPResponse
      */
-    public function upload(HTTPRequest $request) {
-        if($this->isDisabled() || $this->isReadonly() || !$this->CanUpload()) {
-            return $this->httpError(403);
-        }
+    public function upload(SS_HTTPRequest $request) {
+      
+        $name = $this->getSetting('paramName');
+        $files = (!empty($_FILES[$name]) ? $_FILES[$name] : array());
+        $tmpFiles = array();
 
+        // Checking if field is not supporting uploads
+        if($this->isDisabled() || $this->isReadonly() || !$this->CanUpload()) {
+          $error_message = _t('FileAttachmentField.UPLOADFORBIDDEN', 'Files cannot be uploaded via this form at the current time.');
+          return $this->httpError(403, $error_message);
+        }
+        
+        // No files detected in the upload, this can occur if post_max_size is < the upload size
+        $value = $request->postVar($name);
+        if(empty($files) || empty($value)) {
+          $error_message = _t('FileAttachmentField.NOFILESUPLOADED', 'No files were detected in your upload. Please try again later.');
+          return $this->httpError(400, $error_message);
+        }
+        
+        // Security token check, must go after above check as a low post_max_size can scrub the Security Token name from the request
         $form = $this->getForm();
         if($form) {
             $token = $form->getSecurityToken();
-            if(!$token->checkRequest($request)) return $this->httpError(400);
+            if(!$token->checkRequest($request)) {
+              $error_message = _t('FileAttachmentField.BADSECURITYTOKEN', 'Your form session has expired, please reload the form and try again.');
+              return $this->httpError(400, $error_message);
+            }
         }
 
-        $name = $this->getSetting('paramName');
-        $files = $_FILES[$name];
-        $tmpFiles = array();
-
         // Sort the files out into a list of arrays containing each property
+        // http://php.net/manual/en/features.file-upload.post-method.php
         if(!empty($files['tmp_name']) && is_array($files['tmp_name'])) {
             for($i = 0; $i < count($files['tmp_name']); $i++) {
-                if(empty($files['tmp_name'][$i])) continue;
                 $tmpFile = array();
                 foreach(array('name', 'type', 'tmp_name', 'error', 'size') as $field) {
                     $tmpFile[$field] = $files[$field][$i];
@@ -758,7 +859,9 @@ class FileAttachmentField extends FileField {
         $ids = array ();
         foreach($tmpFiles as $tmpFile) {
             if($tmpFile['error']) {
-                return $this->httpError(400, $tmpFile['error']);
+              // http://php.net/manual/en/features.file-upload.errors.php
+              $user_message = $this->getUploadUserError($tmpFile['error']);
+              return $this->httpError(400, $user_message);
             }
             if($relationClass = $this->getFileClass($tmpFile['name'])) {
                 $fileObject = Injector::inst()->create($relationClass);
@@ -768,7 +871,8 @@ class FileAttachmentField extends FileField {
                 $this->upload->loadIntoFile($tmpFile, $fileObject, $this->getFolderName());
                 $ids[] = $fileObject->ID;
             } catch (Exception $e) {
-                return $this->httpError(400, $e->getMessage());
+              $error_message = _t('FileAttachmentField.GENERALUPLOADERROR', 'Sorry, the file could not be saved at the current time, please try again later.');
+              return $this->httpError(400, $error_message);
             }
 
             if ($this->upload->isError()) {

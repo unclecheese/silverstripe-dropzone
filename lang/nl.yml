@@ -1,0 +1,9 @@
+nl:
+  Dropzone:
+    ATTACHFILESHERE_OR: "Voeg bestanden toe door ze hier in te plaatsen, of"
+    ATTACHFILEHERE_OF: "Voeg een bestand toe door het hier in te plaatsen, of"
+    BROWSEYOURCOMPUTER: "blader op uw computer"
+    UPLOADFILES: "Upload bestand(en)"
+    NOTSUPPORTED: "Uw browser ondersteunt geen HTML5 uploads. Update de browser naar een nieuwere versie."
+    DETACHFILE: "weghalen"
+    MARKFORDELETION: "verwijder"
