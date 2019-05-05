@@ -23,6 +23,8 @@ class FileAttachmentFieldTrack extends DataObject
         'File' => 'File',
     );
 
+    private static $table_name = 'FileAttachmentFieldTrack';
+
     public static function untrack($fileIDs)
     {
         if (!$fileIDs) {
