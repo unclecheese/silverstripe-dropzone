@@ -1,9 +1,35 @@
 nl:
   Dropzone:
-    ATTACHFILESHERE_OR: "Voeg bestanden toe door ze hier in te plaatsen, of"
-    ATTACHFILEHERE_OF: "Voeg een bestand toe door het hier in te plaatsen, of"
-    BROWSEYOURCOMPUTER: "blader op uw computer"
-    UPLOADFILES: "Upload bestand(en)"
-    NOTSUPPORTED: "Uw browser ondersteunt geen HTML5 uploads. Update de browser naar een nieuwere versie."
+    ADDEDNOW: 'Zojuist toegevoegd'
+    ADDEDON: 'Toegegevoegd op {date}'
+    ATTACHFILESHERE_OR: "Voeg bestanden toe door ze hier te slepen, of"
+    ATTACHFILEHERE_OR: "Voeg een bestand toe door het hier te slepen, of"
+    BROWSEYOURCOMPUTER: "bladeren op je computer"
+    CHANGEAFTERSAVE: 'Deze wijziging wordt doorgevoerd na opslaan.'
+    CHOOSEEXISTING: 'kies uit bestaande bestanden'
+    DELETED: "verwijderd"
     DETACHFILE: "weghalen"
+    ERROR: 'Oh no!'
+    NOTSUPPORTED: "Je browser ondersteunt geen HTML5 uploads. Update de browser naar een nieuwere versie."
     MARKFORDELETION: "verwijder"
+    OR: ' of '
+    REMOVED: "verwijderd"
+    UPLOADFILES: 'Bestand(en) uploaden'
+    YOUCANALSO: 'je kunt ook'
+  FileAttachmentField:
+    BADSECURITYTOKEN: 'Je formulier sessie is verlopen, herlaad the formulier en probeer het opnieuw.'
+    ERRFILESIZE: 'Dit bestand is te groot, probeer het nogmaals met een kleinere versie.'
+    ERRNOFILE: 'Er werden geen bestanden gedectecteerd.'
+    ERRPARTIALUPLOAD: 'Dit bestand is slechts gedeeltelijk geupload, heb je de upload afgebroken? Probeer het nogmaals.'
+    ERRSYSTEMFAIL: 'Sorry, momenteel zijn upload niet mogelijk.'
+    ERRUNKNOWNCODE: 'Sorry, er trad een onbekende fout op. Probeer het later nogmaals.'
+    GENERALUPLOADERROR: 'Sorry, het bestand kon niet worden opgeslagen. Probeer het later nogmaals.'
+    NOFILESUPLOADED: 'Geen bestanden gedetecteerd tijdens het uploaden. Probeer het later nogmaals.'
+    UPLOADFORBIDDEN: 'Momenteel kunnen geen bestanden worden geupload via dit formulier.'
+    VALIDATION: 'Ongeldig bestands ID verzonden %s.'
+  UncleCheese\Dropzone\FileAttachmentFieldTrack:
+    PLURALNAME: 'File Attachment Field Tracks'
+    PLURALS:
+      one: 'A File Attachment Field Track'
+      other: '{count} File Attachment Field Tracks'
+    SINGULARNAME: 'File Attachment Field Track'
