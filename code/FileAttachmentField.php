@@ -840,7 +840,7 @@ class FileAttachmentField extends FileField {
               return $this->httpError(400, $user_message);
             }
             if($relationClass = $this->getFileClass($tmpFile['name'])) {
-                $fileObject = Object::create($relationClass);
+                $fileObject = Injector::inst()->create($relationClass);
             }
 
             try {
