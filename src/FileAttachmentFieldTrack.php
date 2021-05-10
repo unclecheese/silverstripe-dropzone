@@ -2,6 +2,7 @@
 
 namespace UncleCheese\Dropzone;
 
+use SilverStripe\Assets\File;
 use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataObjectInterface;
@@ -20,7 +21,7 @@ class FileAttachmentFieldTrack extends DataObject
     );
 
     private static $has_one = array(
-        'File' => 'File',
+        'File' => File::class,
     );
 
     private static $table_name = 'FileAttachmentFieldTrack';
