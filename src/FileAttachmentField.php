@@ -1120,7 +1120,11 @@ class FileAttachmentField extends FileField
 
             $attachments = ArrayList::create();
             foreach ($ids as $id) {
-                $file = File::get()->byID((int) $id);
+                if ($id instanceof File) {
+                    $file = $id;
+                } else {
+                    $file = File::get()->byID((int) $id);
+                }
                 if ($file && $file->canView()) {
                     $attachments->push($file);
                 }
