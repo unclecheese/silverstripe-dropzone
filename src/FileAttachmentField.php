@@ -1312,9 +1312,9 @@ class FileAttachmentField extends FileField
         }
 
         if($filename) {
-            if($defaultClass == "Image" 
+            if($defaultClass == \SilverStripe\Assets\Image::class
                 && $this->config()->upgrade_images 
-                && !Injector::inst()->get($class) instanceof Image
+                && !Injector::inst()->get($class) instanceof \SilverStripe\Assets\Image
             ) {
                 $class = Image::class;
             }
