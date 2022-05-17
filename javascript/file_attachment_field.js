@@ -389,7 +389,7 @@ DroppedFile.prototype = {
         if(!file.type.match(/image.*/)) {
             file.previewElement.classList.add('has-preview');
             q('[data-dz-thumbnail]', file.previewElement).forEach(function(img) {
-                var ext = file.name.split('.').pop();
+                var ext = file.name.split('.').pop().toLowerCase();
                 img.style.display = 'none';
                 img.src = imageDir+"/"+ext+".png";
                 
