@@ -41,27 +41,28 @@ class DropzoneFile extends DataExtension
      */
     public function getPreviewThumbnail($w = null, $h = null)
     {
-        if(!$w) { $w = $this->owner->config()->grid_thumbnail_width;
+        if (!$w) {
+            $w = $this->owner->config()->grid_thumbnail_width;
         }
-        if(!$h) { $h = $this->owner->config()->grid_thumbnail_height;
+        if (!$h) {
+            $h = $this->owner->config()->grid_thumbnail_height;
         }
 
-        if($this->IsImage() && Director::fileExists($this->owner->Filename)) {
+        if ($this->IsImage() && Director::fileExists($this->owner->Filename)) {
             return $this->owner->CroppedImage($w, $h);
         }
 
         $sizes = Config::inst()->forClass(FileAttachmentField::class)->icon_sizes;
         sort($sizes);
 
-        foreach($sizes as $size) {
-            if($w <= $size) {
-                if($this->owner instanceof Folder) {
+        foreach ($sizes as $size) {
+            if ($w <= $size) {
+                if ($this->owner instanceof Folder) {
                     $file = $this->getFilenameForType('_folder', $size);
-                }
-                else {
+                } else {
                     $file = $this->getFilenameForType($this->owner->getExtension(), $size);
                 }
-                if(!file_exists(BASE_PATH.'/'.$file)) {
+                if (!file_exists(BASE_PATH . '/' . $file)) {
                     $file = $this->getFilenameForType('_blank', $size);
                 }
 

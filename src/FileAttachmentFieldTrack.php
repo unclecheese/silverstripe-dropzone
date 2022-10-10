@@ -49,11 +49,11 @@ class FileAttachmentFieldTrack extends DataObject
                 if ($controller->hasMethod('data')) {
                     // Store page visiting on frontend (ContentController)
                     $pageRecord = $controller->data();
-                } else if ($controller->hasMethod('currentPageID')) {
+                } elseif ($controller->hasMethod('currentPageID')) {
                     // Store editing page in CMS (LeftAndMain)
                     $id = $controller->currentPageID();
                     $pageRecord = $controller->getRecord($id);
-                } else if ($controller->hasMethod('getRecord')) {
+                } elseif ($controller->hasMethod('getRecord')) {
                     $pageRecord = $controller->getRecord();
                 }
 
@@ -74,7 +74,7 @@ class FileAttachmentFieldTrack extends DataObject
     public function Record()
     {
         if ($this->RecordClass && $this->RecordID) {
-            return DataObject::get_one($this->RecordClass, "ID = ".(int)$this->RecordID);
+            return DataObject::get_one($this->RecordClass, "ID = " . (int)$this->RecordID);
         }
     }
 }
