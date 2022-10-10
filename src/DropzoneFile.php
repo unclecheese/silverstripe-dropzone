@@ -52,7 +52,7 @@ class DropzoneFile extends DataExtension
             return $this->owner->CroppedImage($w, $h);
         }
 
-        $sizes = Config::inst()->forClass(FileAttachmentField::class)->icon_sizes;
+        $sizes = Config::forClass(FileAttachmentField::class)->icon_sizes;
         sort($sizes);
 
         foreach ($sizes as $size) {
@@ -67,7 +67,7 @@ class DropzoneFile extends DataExtension
                 }
 
                 $image = Image::create();
-                $image->setFromLocalFile(Director::getAbsFile($file), basename($file));
+                $image->setFromLocalFile(Director::getAbsFile($file), basename($file ?? ''));
 
                 return $image;
             }
@@ -87,7 +87,7 @@ class DropzoneFile extends DataExtension
         return ModuleResourceLoader::singleton()->resolveURL(sprintf(
             'unclecheese/dropzone:images/file-icons/%spx/%s.png',
             $size,
-            strtolower($ext)
+            strtolower($ext ?? '')
         ));
     }
 }

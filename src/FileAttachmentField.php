@@ -2,6 +2,7 @@
 
 namespace UncleCheese\Dropzone;
 
+use Exception;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\Core\Manifest\ModuleManifest;
 use SilverStripe\Core\Manifest\ModuleResourceLoader;
@@ -134,7 +135,7 @@ class FileAttachmentField extends FileField
             function ($c) {
                 return strtoupper($c[1]);
             },
-            $str
+            $str ?? ''
         );
     }
 
@@ -146,6 +147,9 @@ class FileAttachmentField extends FileField
      */
     public static function underscorise($str)
     {
+        if (!is_string($str)) {
+            return '';
+        }
         $str[0] = strtolower($str[0]);
 
         return preg_replace_callback(
@@ -167,8 +171,8 @@ class FileAttachmentField extends FileField
     {
         $bytes = min(
             [
-            File::ini2bytes(ini_get('post_max_size') ?: '8M'),
-            File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
+                Convert::memstring2bytes(ini_get('post_max_size') ?: '8M'),
+                Convert::memstring2bytes(ini_get('upload_max_filesize') ?: '2M')
             ]
         );
 
@@ -282,6 +286,7 @@ class FileAttachmentField extends FileField
             }
         }
 
+        /** @var DataObject $record */
         $ones = $record->hasOne();
 
         if (($relation = $this->getRelation($record))) {
@@ -679,7 +684,7 @@ class FileAttachmentField extends FileField
         if (is_array($files)) {
             $files = implode(',', $files);
         }
-        $files = str_replace(' ', '', $files);
+        $files = str_replace(' ', '', $files ?? '');
         $this->settings['acceptedFiles'] = $files;
 
         // Update validator
@@ -1117,7 +1122,7 @@ class FileAttachmentField extends FileField
             }
 
             if (!is_array($ids)) {
-                $ids = explode(',', $ids);
+                $ids = explode(',', $ids ?? '');
             }
 
             $attachments = ArrayList::create();
@@ -1364,7 +1369,7 @@ class FileAttachmentField extends FileField
     /**
      * Gets the name of the relation, if attached to a record
      *
-     * @return string
+     * @return RelationList|UnsavedRelationList|bool
      */
     protected function getRelation($record = null)
     {
@@ -1417,7 +1422,7 @@ class FileAttachmentField extends FileField
             throw new Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
         }
 
-        return Convert::json2array(file_get_contents($file_path));
+        return json_decode(file_get_contents($file_path) ?? '', true);
     }
 
     /**
@@ -1492,7 +1497,7 @@ class FileAttachmentField extends FileField
             }
         }
 
-        return Convert::array2json($data);
+        return json_encode($data);
     }
 
     public function performReadonlyTransformation()
