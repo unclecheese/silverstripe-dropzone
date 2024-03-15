@@ -84,7 +84,7 @@ class DropzoneFile extends DataExtension
     protected function getFilenameForType($ext, $size)
     {
         return ModuleResourceLoader::singleton()->resolveURL(sprintf(
-            'unclecheese/dropzone:images/file-icons/%spx/%s.png',
+            'chromos33/dropzone:images/file-icons/%spx/%s.png',
             $size,
             strtolower($ext)
         ));
