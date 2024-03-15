@@ -2,6 +2,7 @@
 
 namespace UncleCheese\Dropzone;
 
+use SilverStripe\Core\Convert;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\Core\Manifest\ModuleManifest;
 use SilverStripe\Core\Manifest\ModuleResourceLoader;
@@ -24,6 +25,7 @@ use SilverStripe\ORM\SS_List;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\RelationList;
 use SilverStripe\ORM\UnsavedRelationList;
+
 
 /**
  * Defines the FileAttachementField form field type
@@ -163,8 +165,8 @@ class FileAttachmentField extends FileField
     {
         $bytes = min(
             array(
-            File::ini2bytes(ini_get('post_max_size') ?: '8M'),
-            File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
+            Convert::memstring2bytes(ini_get('post_max_size') ?: '8M'),
+            Convert::memstring2bytes(ini_get('upload_max_filesize') ?: '2M')
             )
         );
 
