@@ -1,5 +1,5 @@
 {
-    "name": "unclecheese/dropzone",
+    "name": "chromos33/dropzone",
     "description": "An HTML5 upload field for the CMS and frontend forms.",
     "type": "silverstripe-vendormodule",
     "keywords": ["silverstripe", "upload", "uploader", "files", "forms", "cms"],
@@ -9,7 +9,7 @@
         "email": "unclecheese@leftandmain.com"
     }],
     "require": {
-        "silverstripe/framework": "4.*"
+        "silverstripe/framework": "^4 | ^5"
     },
     "extra": {
         "installer-name": "dropzone",
