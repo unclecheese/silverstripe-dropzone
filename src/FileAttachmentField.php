@@ -2,6 +2,7 @@
 
 namespace UncleCheese\Dropzone;
 
+use SilverStripe\Core\Convert;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\Core\Manifest\ModuleManifest;
 use SilverStripe\Core\Manifest\ModuleResourceLoader;
@@ -18,12 +19,12 @@ use SilverStripe\Assets\Folder;
 use SilverStripe\Assets\Image;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Admin\LeftAndMain;
-use SilverStripe\Core\Convert;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\RelationList;
 use SilverStripe\ORM\UnsavedRelationList;
+
 
 /**
  * Defines the FileAttachementField form field type
@@ -163,8 +164,8 @@ class FileAttachmentField extends FileField
     {
         $bytes = min(
             array(
-            File::ini2bytes(ini_get('post_max_size') ?: '8M'),
-            File::ini2bytes(ini_get('upload_max_filesize') ?: '2M')
+            Convert::memstring2bytes(ini_get('post_max_size') ?: '8M'),
+            Convert::memstring2bytes(ini_get('upload_max_filesize') ?: '2M')
             )
         );
 
@@ -229,12 +230,12 @@ class FileAttachmentField extends FileField
      */
     protected function defineFieldHolderRequirements()
     {
-        Requirements::javascript('unclecheese/dropzone:javascript/dropzone.js');
-        Requirements::javascript('unclecheese/dropzone:javascript/file_attachment_field.js');
+        Requirements::javascript('chromos33/dropzone:javascript/dropzone.js');
+        Requirements::javascript('chromos33/dropzone:javascript/file_attachment_field.js');
         if($this->isCMS()) {
-            Requirements::javascript('unclecheese/dropzone:javascript/file_attachment_field_backend.js');
+            Requirements::javascript('chromos33/dropzone:javascript/file_attachment_field_backend.js');
         }
-        Requirements::css('unclecheese/dropzone:css/file_attachment_field.css');
+        Requirements::css('chromos33/dropzone:css/file_attachment_field.css');
 
         if(!$this->getSetting('url')) {
             $this->settings['url'] = $this->Link('upload');
@@ -1139,7 +1140,7 @@ class FileAttachmentField extends FileField
     public function RootThumbnailsDir()
     {
         return $this->getSetting('thumbnailsDir') ?:
-            ModuleResourceLoader::singleton()->resolveURL('unclecheese/dropzone:images/file-icons');
+            ModuleResourceLoader::singleton()->resolveURL('chromos33/dropzone:images/file-icons');
     }
 
     /**
@@ -1312,9 +1313,9 @@ class FileAttachmentField extends FileField
         }
 
         if($filename) {
-            if($defaultClass == "Image" 
+            if($defaultClass == \SilverStripe\Assets\Image::class
                 && $this->config()->upgrade_images 
-                && !Injector::inst()->get($class) instanceof Image
+                && !Injector::inst()->get($class) instanceof \SilverStripe\Assets\Image
             ) {
                 $class = Image::class;
             }
@@ -1404,14 +1405,13 @@ class FileAttachmentField extends FileField
      */
     protected function getDefaults()
     {
-        $file_path = ModuleLoader::inst()->getManifest()->getModule('unclecheese/dropzone')
+        $file_path = ModuleLoader::inst()->getManifest()->getModule('chromos33/dropzone')
             ->getResource($this->config()->default_config_path)
             ->getPath();
         if(!file_exists($file_path)) {
             throw new Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
         }
-
-        return Convert::json2array(file_get_contents($file_path));
+        return json_decode(file_get_contents($file_path),true);
     }
 
     /**
@@ -1486,7 +1486,7 @@ class FileAttachmentField extends FileField
             }
         }
 
-        return Convert::array2json($data);
+        return json_encode($data);
     }
 
     public function performReadonlyTransformation()
