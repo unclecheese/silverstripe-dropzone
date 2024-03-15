@@ -19,7 +19,6 @@ use SilverStripe\Assets\Folder;
 use SilverStripe\Assets\Image;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Admin\LeftAndMain;
-use SilverStripe\Core\Convert;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\ORM\SS_List;
 use SilverStripe\ORM\ArrayList;
@@ -1406,14 +1405,13 @@ class FileAttachmentField extends FileField
      */
     protected function getDefaults()
     {
-        $file_path = ModuleLoader::inst()->getManifest()->getModule('unclecheese/dropzone')
+        $file_path = ModuleLoader::inst()->getManifest()->getModule('chromos33/dropzone')
             ->getResource($this->config()->default_config_path)
             ->getPath();
         if(!file_exists($file_path)) {
             throw new Exception("FileAttachmentField::getDefaults() - There is no config json file at $file_path");
         }
-
-        return Convert::json2array(file_get_contents($file_path));
+        return json_decode(file_get_contents($file_path),true);
     }
 
     /**
@@ -1488,7 +1486,7 @@ class FileAttachmentField extends FileField
             }
         }
 
-        return Convert::array2json($data);
+        return json_encode($data);
     }
 
     public function performReadonlyTransformation()
